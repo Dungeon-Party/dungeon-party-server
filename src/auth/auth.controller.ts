@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
@@ -11,6 +11,8 @@ import {
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
 
+// TODO: Add logout endpoint
+// TODO: Add refresh token endpoint
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -46,5 +48,12 @@ export class AuthController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post('api-key/create')
+  async createApiKey(@Request() req, @Body() body: { name: string }) {
+    return this.authService.generateApiKey(body.name, req.user)
   }
 }
