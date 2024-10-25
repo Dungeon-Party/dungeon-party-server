@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ApiKey, User } from '@prisma/client'
-import { verify } from 'argon2'
+import * as argon2 from 'argon2'
 
 import { UserService } from '../users/user.service'
 import { PrismaService } from 'src/common/prisma/prisma.service'
@@ -26,7 +26,7 @@ export class AuthService {
       OR: [{ email: username }, { username: username }],
     })
 
-    if (!user || !(await verify(user.password, pass))) {
+    if (!user || !(await argon2.verify(user.password, pass))) {
       throw new UnauthorizedException()
     }
     delete user.password
@@ -40,18 +40,10 @@ export class AuthService {
       username: user.username,
       email: user.email,
     }
-    const refreshToken = this.jwtService.sign(payload)
-    return this.userService
-      .updateUser({
-        where: { id: user.id },
-        data: { refreshToken },
-      })
-      .then(() => {
-        return {
-          accessToken: this.jwtService.sign(payload),
-          refreshToken: refreshToken,
-        }
-      })
+    return {
+      accessToken: this.jwtService.sign(payload, { expiresIn: '1h' }),
+      refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
+    }
   }
 
   async deleteRefreshToken(user: User) {
