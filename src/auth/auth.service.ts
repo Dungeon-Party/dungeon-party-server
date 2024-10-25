@@ -40,9 +40,18 @@ export class AuthService {
       username: user.username,
       email: user.email,
     }
-    return {
-      access_token: this.jwtService.sign(payload),
-    }
+    const refreshToken = this.jwtService.sign(payload)
+    return this.userService
+      .updateUser({
+        where: { id: user.id },
+        data: { refreshToken },
+      })
+      .then(() => {
+        return {
+          accessToken: this.jwtService.sign(payload),
+          refreshToken: refreshToken,
+        }
+      })
   }
 
   async validateApiKey(key: string): Promise<Partial<User>> {
