@@ -54,6 +54,21 @@ export class AuthService {
       })
   }
 
+  async deleteRefreshToken(user: User) {
+    return this.userService
+      .updateUser({
+        where: { id: user.id },
+        data: { refreshToken: null },
+      })
+      .then(() => {
+        return { message: 'Refresh token deleted' }
+      })
+  }
+
+  async refreshToken(user: User) {
+    return this.generateJwt(user)
+  }
+
   async validateApiKey(key: string): Promise<Partial<User>> {
     return this.userService.findValidApiKey(key)
   }

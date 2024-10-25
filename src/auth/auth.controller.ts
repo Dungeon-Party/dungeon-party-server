@@ -43,6 +43,20 @@ export class AuthController {
   }
 
   @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post('logout')
+  signOut(@Request() req) {
+    return this.authService.deleteRefreshToken(req.user)
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post('refresh')
+  refresh(@Request() req) {
+    return this.authService.generateJwt(req.user)
+  }
+
+  @ApiBearerAuth()
   @ApiSecurity('api-key')
   @UseGuards(AuthGuard(['jwt', 'api-key']))
   @Get('profile')
