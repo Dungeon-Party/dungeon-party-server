@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { Prisma, User } from '@prisma/client'
-import { hashSync } from 'bcryptjs'
+import * as argon2 from 'argon2'
 
 import { PrismaService } from '../common/prisma/prisma.service'
 import { Logger } from '../common/winston/winston.service'
@@ -35,7 +35,7 @@ export class UserService {
   }
 
   async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    data.password = hashSync(data.password, process.env.SALT_ROUNDS || 10)
+    data.password = await argon2.hash(data.password, { type: argon2.argon2i })
     return this.prisma.user.create({
       data,
     })
@@ -58,21 +58,33 @@ export class UserService {
     })
   }
 
-  async findApiKey(key: string): Promise<Partial<User> | null> {
-    return this.prisma.user.findFirst({
-      where: {
-        apiKey: {
-          some: {
-            key,
-            expiresAt: { gt: new Date() },
+  async findValidApiKey(key: string): Promise<Partial<User> | null> {
+    const keyPrefix = key.split('.')[0]
+    return this.prisma.apiKey
+      .findFirst({
+        where: {
+          key: { startsWith: keyPrefix },
+          expiresAt: { gt: new Date() },
+        },
+        select: {
+          key: true,
+          user: {
+            select: {
+              name: true,
+              username: true,
+              email: true,
+            },
           },
         },
-      },
-      select: {
-        name: true,
-        username: true,
-        email: true,
-      },
-    })
+      })
+      .then((apiKey) => {
+        if (apiKey) {
+          const apiKeyToVerify = apiKey.key.split('.')[1]
+          if (argon2.verify(apiKeyToVerify, key)) {
+            return apiKey.user
+          }
+        }
+        return null
+      })
   }
 }

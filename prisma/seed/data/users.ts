@@ -1,6 +1,4 @@
-import { genSaltSync, hashSync } from 'bcryptjs'
-
-const salt = genSaltSync(10)
+import * as argon2 from 'argon2'
 
 const users = [
   {
@@ -13,10 +11,9 @@ const users = [
 ]
 
 export default async () => {
-  return users.map((user) => {
-    return {
-      ...user,
-      password: hashSync(user.password, salt),
-    }
-  })
-}  
+  for (const user of users) {
+    user.password = await argon2.hash(user.password, { type: argon2.argon2i })
+  }
+
+  return users
+}

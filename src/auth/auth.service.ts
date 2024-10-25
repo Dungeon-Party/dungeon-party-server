@@ -2,7 +2,7 @@ import { randomBytes } from 'crypto'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { ApiKey, User } from '@prisma/client'
-import { compareSync } from 'bcryptjs'
+import { verify } from 'argon2'
 
 import { UserService } from '../users/user.service'
 import { PrismaService } from 'src/common/prisma/prisma.service'
@@ -25,7 +25,8 @@ export class AuthService {
     const user = await this.userService.findOne({
       OR: [{ email: username }, { username: username }],
     })
-    if (!user || !compareSync(pass, user.password)) {
+
+    if (!user || !(await verify(user.password, pass))) {
       throw new UnauthorizedException()
     }
     delete user.password
@@ -45,7 +46,7 @@ export class AuthService {
   }
 
   async validateApiKey(key: string): Promise<Partial<User>> {
-    return this.userService.findApiKey(key)
+    return this.userService.findValidApiKey(key)
   }
 
   async generateApiKey(keyName: string, user: User): Promise<Partial<ApiKey>> {

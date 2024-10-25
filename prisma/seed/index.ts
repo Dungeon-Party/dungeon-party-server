@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client'
+
 import data from './data/'
+
 const prisma = new PrismaClient()
 
 const runSeeders = async () => {
@@ -10,7 +12,7 @@ const runSeeders = async () => {
       value.map(async (item) => {
         return prisma[key].upsert({
           where: { id: item.id },
-          update: {},
+          update: item,
           create: item,
         })
       }),
