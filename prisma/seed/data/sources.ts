@@ -1,4 +1,4 @@
-export default [
+export default async () => ([
   {
     id: 1,
     name: 'Dungeons and Dragons 5e SRD',
@@ -6,4 +6,4 @@ export default [
     type: 'core',
     systemId: 1,
   },
-]
+])

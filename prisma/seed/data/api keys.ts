@@ -6,7 +6,7 @@ const getExpirationDate = () => {
   return date.toISOString()
 }
 
-export default [
+export default async () => ([
   {
     id: 1,
     name: 'Test API Key',
@@ -14,4 +14,4 @@ export default [
     expiresAt: getExpirationDate(),
     userId: 1,
   },
-]
+])

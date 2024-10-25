@@ -1,4 +1,4 @@
-export default [
+export default async () => ([
   {
     id: 1,
     name: 'Dwarf',
@@ -62,4 +62,4 @@ export default [
     size: 'Medium',
     sourceId: 1,
   },
-]
+])

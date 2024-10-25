@@ -1,4 +1,4 @@
-export default [
+export default async () => ([
   {
     id: 1,
     name: 'Athletics',
@@ -125,4 +125,4 @@ export default [
     systemId: 1,
     abilityId: 6,
   },
-]
+])

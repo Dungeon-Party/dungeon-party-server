@@ -12,9 +12,11 @@ const users = [
   },
 ]
 
-export default users.map((user) => {
-  return {
-    ...user,
-    password: hashSync(user.password, salt),
-  }
-})
+export default async () => {
+  return users.map((user) => {
+    return {
+      ...user,
+      password: hashSync(user.password, salt),
+    }
+  })
+}  
