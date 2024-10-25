@@ -35,7 +35,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config)
   SwaggerModule.setup(':version/docs', app, documentFactory, {
     useGlobalPrefix: true,
-    jsonDocumentUrl: 'swagger/json',
+    jsonDocumentUrl: ':version/docs/json',
     patchDocumentOnRequest: (req, _res, document) => {
       // NOTE: Make a deep copy of the original document or it will be modified on subsequent calls!
       const copyDocument = JSON.parse(JSON.stringify(document))
