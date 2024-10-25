@@ -7,9 +7,6 @@ import * as argon2 from 'argon2'
 import { UserService } from '../users/user.service'
 import { PrismaService } from 'src/common/prisma/prisma.service'
 
-// TODO: Add logout logic
-// TODO: Add refresh token logic
-// TODO: Salt the api token
 @Injectable()
 export class AuthService {
   constructor(
@@ -46,42 +43,39 @@ export class AuthService {
     }
   }
 
-  async deleteRefreshToken(user: User) {
-    return this.userService
-      .updateUser({
-        where: { id: user.id },
-        data: { refreshToken: null },
-      })
-      .then(() => {
-        return { message: 'Refresh token deleted' }
-      })
-  }
-
-  async refreshToken(user: User) {
-    return this.generateJwt(user)
-  }
-
   async validateApiKey(key: string): Promise<Partial<User>> {
     return this.userService.findValidApiKey(key)
   }
 
-  async generateApiKey(keyName: string, user: User): Promise<Partial<ApiKey>> {
-    const apiKeyString = 'dp-' + randomBytes(16).toString('hex')
+  async generateApiKey(user: User, keyName: string): Promise<Partial<ApiKey>> {
+    const apiKeyPrefix = randomBytes(10).toString('hex')
+    const apiKeyString = randomBytes(16).toString('hex')
+    const apiKeyStringHashed = await argon2.hash(apiKeyString, {
+      type: argon2.argon2i,
+    })
+    const apiKeyRaw = `dp-${apiKeyPrefix}.${apiKeyString}`
+    const apiKeyHashed = `dp-${apiKeyPrefix}.${apiKeyStringHashed}`
     const expirationDate = new Date()
     expirationDate.setDate(expirationDate.getDate() + 7)
 
-    return await this.prisma.apiKey.create({
-      data: {
-        name: keyName,
-        key: apiKeyString,
-        expiresAt: expirationDate.toISOString(),
-        userId: user.id,
-      },
-      select: {
-        name: true,
-        key: true,
-        expiresAt: true,
-      },
-    })
+    return this.prisma.apiKey
+      .create({
+        data: {
+          name: keyName,
+          key: apiKeyHashed,
+          expiresAt: expirationDate.toISOString(),
+          userId: user.id,
+        },
+        select: {
+          name: true,
+          expiresAt: true,
+        },
+      })
+      .then((apiKey) => {
+        return {
+          ...apiKey,
+          key: apiKeyRaw,
+        }
+      })
   }
 }

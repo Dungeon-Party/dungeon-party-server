@@ -11,8 +11,6 @@ import {
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
 
-// TODO: Add logout endpoint
-// TODO: Add refresh token endpoint
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
@@ -44,13 +42,6 @@ export class AuthController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Post('logout')
-  signOut(@Request() req) {
-    return this.authService.deleteRefreshToken(req.user)
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
   @Post('refresh')
   refresh(@Request() req) {
     return this.authService.generateJwt(req.user)
@@ -68,6 +59,6 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @Post('api-key/create')
   async createApiKey(@Request() req, @Body() body: { name: string }) {
-    return this.authService.generateApiKey(body.name, req.user)
+    return this.authService.generateApiKey(req.user, body.name)
   }
 }
