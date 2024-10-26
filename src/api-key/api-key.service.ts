@@ -1,17 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { CreateApiKeyDto } from './dto/create-api-key.dto';
-import { PrismaService } from '../common/prisma/prisma.service';
-import crypto from 'crypto'
+import * as crypto from 'crypto'
+import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import * as argon2 from 'argon2'
-import { UserEntity } from '../users/entities/user.entity';
-import { ApiKeyEntity } from './entities/api-key.entity';
-import { Prisma } from '@prisma/client';
+
+import { PrismaService } from '../common/prisma/prisma.service'
+import { UserEntity } from '../users/entities/user.entity'
+import { CreateApiKeyDto } from './dto/create-api-key.dto'
+import { ApiKeyEntity } from './entities/api-key.entity'
 
 @Injectable()
 export class ApiKeyService {
-  constructor(
-    private readonly prismaService: PrismaService
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(createApiKeyDto: CreateApiKeyDto): Promise<ApiKeyEntity> {
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
