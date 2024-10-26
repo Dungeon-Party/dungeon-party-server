@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt'
 import { User } from '@prisma/client'
 import * as argon2 from 'argon2'
 
+import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../users/user.service'
-import { ApiKeyService } from 'src/api-key/api-key.service'
 
 @Injectable()
 export class AuthService {
