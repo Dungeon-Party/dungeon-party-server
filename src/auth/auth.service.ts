@@ -1,18 +1,17 @@
-import { randomBytes } from 'crypto'
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { ApiKey, User } from '@prisma/client'
+import { User } from '@prisma/client'
 import * as argon2 from 'argon2'
 
-import { PrismaService } from '../common/prisma/prisma.service'
 import { UserService } from '../users/user.service'
+import { ApiKeyService } from 'src/api-key/api-key.service'
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
+    private apiKeyService: ApiKeyService,
     private jwtService: JwtService,
-    private prisma: PrismaService,
   ) {}
 
   async validateUser(
@@ -44,38 +43,6 @@ export class AuthService {
   }
 
   async validateApiKey(key: string): Promise<Partial<User>> {
-    return this.userService.findValidApiKey(key)
-  }
-
-  async generateApiKey(user: User, keyName: string): Promise<Partial<ApiKey>> {
-    const apiKeyPrefix = randomBytes(10).toString('hex')
-    const apiKeyString = randomBytes(16).toString('hex')
-    const apiKeyStringHashed = await argon2.hash(apiKeyString, {
-      type: argon2.argon2i,
-    })
-    const apiKeyRaw = `dp-${apiKeyPrefix}.${apiKeyString}`
-    const apiKeyHashed = `dp-${apiKeyPrefix}.${apiKeyStringHashed}`
-    const expirationDate = new Date()
-    expirationDate.setDate(expirationDate.getDate() + 7)
-
-    return this.prisma.apiKey
-      .create({
-        data: {
-          name: keyName,
-          key: apiKeyHashed,
-          expiresAt: expirationDate.toISOString(),
-          userId: user.id,
-        },
-        select: {
-          name: true,
-          expiresAt: true,
-        },
-      })
-      .then((apiKey) => {
-        return {
-          ...apiKey,
-          key: apiKeyRaw,
-        }
-      })
+    return this.apiKeyService.findValidApiKey(key)
   }
 }

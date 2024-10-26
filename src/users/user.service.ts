@@ -12,9 +12,7 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async findOne(userWhereInput: Prisma.UserWhereInput): Promise<User | null> {
-    return this.prisma.user.findFirst({
-      where: userWhereInput,
-    })
+    return this.prisma.user.findFirst({ where: userWhereInput })
   }
 
   async findAll(params: {
@@ -56,35 +54,5 @@ export class UserService {
     return this.prisma.user.delete({
       where,
     })
-  }
-
-  async findValidApiKey(key: string): Promise<Partial<User> | null> {
-    const keyPrefix = key.split('.')[0]
-    return this.prisma.apiKey
-      .findFirst({
-        where: {
-          key: { startsWith: keyPrefix },
-          expiresAt: { gt: new Date() },
-        },
-        select: {
-          key: true,
-          user: {
-            select: {
-              name: true,
-              username: true,
-              email: true,
-            },
-          },
-        },
-      })
-      .then((apiKey) => {
-        if (apiKey) {
-          const apiKeyToVerify = apiKey.key.split('.')[1]
-          if (argon2.verify(apiKeyToVerify, key)) {
-            return apiKey.user
-          }
-        }
-        return null
-      })
   }
 }

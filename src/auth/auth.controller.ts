@@ -54,11 +54,4 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user
   }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
-  @Post('api-key/create')
-  async createApiKey(@Request() req, @Body() body: { name: string }) {
-    return this.authService.generateApiKey(req.user, body.name)
-  }
 }
