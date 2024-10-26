@@ -1,8 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ApiKeyController } from './api-key.controller';
-import { ApiKeyService } from './api-key.service';
-import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
-import { ApiKeyEntity } from './entities/api-key.entity';
+import { Test, TestingModule } from '@nestjs/testing'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+
+import { ApiKeyController } from './api-key.controller'
+import { ApiKeyService } from './api-key.service'
+import { ApiKeyEntity } from './entities/api-key.entity'
 
 describe('ApiKeyController', () => {
   let apiKeyController: ApiKeyController
@@ -14,16 +15,16 @@ describe('ApiKeyController', () => {
       providers: [
         {
           provide: ApiKeyService,
-          useValue: mockDeep<ApiKeyService>()
-        }
+          useValue: mockDeep<ApiKeyService>(),
+        },
       ],
     })
-    .useMocker(mockDeep)
-    .compile();
+      .useMocker(mockDeep)
+      .compile()
 
-    apiKeyController = module.get(ApiKeyController);
+    apiKeyController = module.get(ApiKeyController)
     apiKeyService = module.get(ApiKeyService)
-  });
+  })
 
   describe('create', () => {
     it('should return the result of apiKeyService create method', () => {
@@ -37,7 +38,9 @@ describe('ApiKeyController', () => {
         updatedAt: new Date(),
       }
       apiKeyService.create.mockResolvedValueOnce(result)
-      expect(apiKeyController.create({ name: result.name, userId: result.userId })).resolves.toEqual(result)
+      expect(
+        apiKeyController.create({ name: result.name, userId: result.userId }),
+      ).resolves.toEqual(result)
     })
 
     it('should call apiKeyService create method with the correct arguments', () => {
@@ -68,4 +71,4 @@ describe('ApiKeyController', () => {
       expect(apiKeyService.remove).toHaveBeenCalledWith({ id: Number(id) })
     })
   })
-});
+})

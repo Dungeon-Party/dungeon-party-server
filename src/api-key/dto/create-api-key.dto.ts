@@ -1,7 +1,7 @@
 import { ApiKeyEntity } from '../entities/api-key.entity'
 
 export class CreateApiKeyDto implements Partial<ApiKeyEntity> {
-    name: string
+  name: string
 
-    userId: number
+  userId: number
 }

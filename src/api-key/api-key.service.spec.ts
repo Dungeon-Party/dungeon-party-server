@@ -51,7 +51,42 @@ describe('ApiKeyService', () => {
     })
   })
 
-  // describe('remove', () => {})
+  describe('remove', () => {
+    it('should return the result of prismaService.apiKey.delete method', async () => {
+      const result: ApiKeyEntity = {
+        id: 1,
+        name: 'test',
+        key: 'should-not-returned',
+        expiresAt: new Date(),
+        userId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      prismaService.apiKey.delete.mockResolvedValueOnce(result)
+      const ApiKeyWhereUniqueInput = { id: 1 }
 
-  // describe('findValidApiKey', () => {})
+      const apiKey = await apiKeyService.remove(ApiKeyWhereUniqueInput)
+      expect(apiKey).toEqual(result)
+    })
+  })
+
+  describe('findValidApiKey', () => {
+    it('should return the result of prismaService.apiKey.findFirst method', async () => {
+      const result = {
+        id: 1,
+        name: 'test',
+        key: 'dp-kljsdf892hhlk3hkl.kljsdf892hhlk3hkl',
+        expiresAt: new Date(),
+        userId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        user: {
+          name: 'test',
+          username: 'test',
+          email: 'test@email.com',
+        },
+      }
+      prismaService.apiKey.findFirst.mockResolvedValueOnce(result)
+    })
+  })
 })

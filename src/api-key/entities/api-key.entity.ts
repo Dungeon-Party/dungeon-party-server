@@ -24,6 +24,6 @@ export class ApiKeyEntity implements ApiKey {
   updatedAt: Date
 
   constructor(partial: Partial<ApiKeyEntity>) {
-    Object.assign(this, partial);
+    Object.assign(this, partial)
   }
 }
