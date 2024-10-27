@@ -68,7 +68,7 @@ export class ApiKeyService {
       .then((apiKey) => {
         if (apiKey) {
           const apiKeyToVerify = apiKey.key.split('.')[1]
-          if (argon2.verify(apiKeyToVerify, key)) {
+          if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
             return new UserEntity(apiKey.user)
           }
         }

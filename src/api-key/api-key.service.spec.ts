@@ -23,7 +23,7 @@ describe('ApiKeyService', () => {
   })
 
   describe('create', () => {
-    it('should return the result of prismaService.apiKey.create method', async () => {
+    it('should return the result of prismaService.apiKey.create method ', async () => {
       const apiKeyPart = Buffer.from('kljsdf892hhlk3hkl')
       const result: ApiKeyEntity = {
         id: 1,
@@ -47,6 +47,9 @@ describe('ApiKeyService', () => {
       expect(apiKey).toEqual({
         ...result,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
+      })
+      expect(argon2.hash).toHaveBeenCalledWith(apiKeyPart.toString('hex'), {
+        type: argon2.argon2i,
       })
     })
   })
@@ -75,7 +78,7 @@ describe('ApiKeyService', () => {
       const result = {
         id: 1,
         name: 'test',
-        key: 'dp-kljsdf892hhlk3hkl.kljsdf892hhlk3hkl',
+        key: 'dp-kljsdf892hhlk3hkl.5657413213',
         expiresAt: new Date(),
         userId: 1,
         createdAt: new Date(),
@@ -87,6 +90,14 @@ describe('ApiKeyService', () => {
         },
       }
       prismaService.apiKey.findFirst.mockResolvedValueOnce(result)
+      jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
+      const key = 'dp-kljsdf892hhlk3hkl.1657894531'
+      const response = await apiKeyService.findValidApiKey(key)
+      expect(argon2.verify).toHaveBeenCalledWith(
+        result.key.split('.')[1],
+        key.split('.')[1],
+      )
+      expect(response).toEqual(result.user)
     })
   })
 })
