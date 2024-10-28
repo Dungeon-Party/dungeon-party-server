@@ -1,4 +1,8 @@
-import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common'
+import {
+  ClassSerializerInterceptor,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
@@ -12,14 +16,25 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   })
+
+  // Setup Winston Logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
+
+  // Setup helmet
+  app.use(helmet())
+
+  // Setup global prefix
   app.setGlobalPrefix('api')
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+
+  // Setup versioning
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
   })
-  app.use(helmet())
+
+  // Setup class serializer interceptor and validation pipe
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+  app.useGlobalPipes(new ValidationPipe())
 
   const config = new DocumentBuilder()
     .setTitle('Dungeon Party API')
