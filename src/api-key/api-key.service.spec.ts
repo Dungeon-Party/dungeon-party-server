@@ -52,6 +52,8 @@ describe('ApiKeyService', () => {
         type: argon2.argon2i,
       })
     })
+
+    it.todo('should return the type of ApiKeyEntity')
   })
 
   describe('remove', () => {
@@ -71,6 +73,8 @@ describe('ApiKeyService', () => {
       const apiKey = await apiKeyService.remove(ApiKeyWhereUniqueInput)
       expect(apiKey).toEqual(result)
     })
+
+    it.todo('should return the type of ApiKeyEntity')
   })
 
   describe('findValidApiKey', () => {
@@ -99,5 +103,7 @@ describe('ApiKeyService', () => {
       )
       expect(response).toEqual(result.user)
     })
+
+    it.todo('should return null if the key is invalid')
   })
 })

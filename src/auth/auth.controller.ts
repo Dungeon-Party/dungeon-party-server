@@ -40,6 +40,8 @@ export class AuthController {
     return this.authService.generateJwt(req.user)
   }
 
+  // TODO: Implement signup
+
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Post('refresh')

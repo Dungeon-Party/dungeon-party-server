@@ -42,4 +42,34 @@ describe('AuthController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined()
   })
+
+  describe('login', () => {
+    it.todo('should return an access token and a refresh token')
+
+    it.todo('should return an error when the user does not exist')
+
+    it.todo('should return an error when the password is incorrect')
+
+    it.todo('should be protected by the local strategy')
+  })
+
+  describe('refresh', () => {
+    it.todo('should return an access token')
+
+    it.todo('should return an error when the user does not exist')
+
+    it.todo('should return an error when the password is incorrect')
+
+    it.todo('should be protected by the jwt strategy')
+  })
+
+  describe('profile', () => {
+    it.todo('should return the user profile')
+
+    it.todo('should return an error when the user does not exist')
+
+    it.todo('should be protected by the jwt strategy')
+
+    it.todo('should be protected by the api key strategy')
+  })
 })

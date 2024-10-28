@@ -48,6 +48,18 @@ describe('ApiKeyController', () => {
       apiKeyController.create(createApiKeyDto)
       expect(apiKeyService.create).toHaveBeenCalledWith(createApiKeyDto)
     })
+
+    it.todo('should be protected by the jwt guard')
+
+    it.todo('should return the type of ApiKeyEntity')
+
+    it.todo('should throw an error if the name is not provided')
+
+    it.todo('should throw an error if the userId is not provided')
+
+    it.todo('should throw an error if the userId is not a number')
+
+    it.todo('should throw an error if the userId is not found')
   })
 
   describe('remove', () => {
@@ -70,5 +82,15 @@ describe('ApiKeyController', () => {
       apiKeyController.remove(id)
       expect(apiKeyService.remove).toHaveBeenCalledWith({ id: Number(id) })
     })
+
+    it.todo('should be protected by the jwt guard')
+
+    it.todo('should return the type of ApiKeyEntity')
+
+    it.todo('should throw an error if the id is not a number')
+
+    it.todo('should throw an error if the id is not provided')
+
+    it.todo('should throw an error if the id is not found')
   })
 })

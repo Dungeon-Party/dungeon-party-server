@@ -42,4 +42,22 @@ describe('AuthService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined()
   })
+
+  describe('validateUser', () => {
+    it.todo('should return a user when the credentials are valid')
+
+    it.todo('should throw an error when the user does not exist')
+
+    it.todo('should throw an error when the password is incorrect')
+  })
+
+  describe('generateJwt', () => {
+    it.todo('should return an access token and a refresh token')
+
+    it.todo('should include the user information in the payload')
+
+    it.todo('should expire the access token in 1 hour')
+
+    it.todo('should expire the refresh token in 7 days')
+  })
 })
