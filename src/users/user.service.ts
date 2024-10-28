@@ -3,12 +3,9 @@ import { Prisma, User } from '@prisma/client'
 import * as argon2 from 'argon2'
 
 import { PrismaService } from '../common/prisma/prisma.service'
-import { Logger } from '../common/winston/winston.service'
 
 @Injectable()
 export class UserService {
-  private readonly logger = new Logger(UserService.name)
-
   constructor(private prisma: PrismaService) {}
 
   async findOne(userWhereInput: Prisma.UserWhereInput): Promise<User | null> {

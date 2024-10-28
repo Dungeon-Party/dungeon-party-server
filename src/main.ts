@@ -4,15 +4,15 @@ import { NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { Request } from 'express'
 import helmet from 'helmet'
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 
 import { AppModule } from './app.module'
-import { Logger } from './common/winston/winston.service'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   })
-  app.useLogger(app.get(Logger))
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
   app.setGlobalPrefix('api')
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
   app.enableVersioning({
