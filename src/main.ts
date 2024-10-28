@@ -1,5 +1,5 @@
-import { VersioningType } from '@nestjs/common'
-import { NestFactory } from '@nestjs/core'
+import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common'
+import { NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { Request } from 'express'
 import helmet from 'helmet'
@@ -13,6 +13,7 @@ async function bootstrap() {
   })
   app.useLogger(app.get(Logger))
   app.setGlobalPrefix('api')
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
