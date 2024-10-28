@@ -1,4 +1,5 @@
 import { ClassSerializerInterceptor, VersioningType } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { NestFactory, Reflector } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { Request } from 'express'
@@ -60,6 +61,6 @@ async function bootstrap() {
     },
   })
 
-  await app.listen(process.env.PORT ?? 3000)
+  await app.listen(parseInt(app.get(ConfigService).get<string>('http.port')))
 }
 bootstrap()
