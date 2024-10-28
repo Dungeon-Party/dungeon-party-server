@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { utilities, WinstonModule } from 'nest-winston'
+import { PrismaModule } from 'nestjs-prisma'
 import { format, transports } from 'winston'
 
 import { ApiKeyModule } from './api-key/api-key.module'
 import { AuthModule } from './auth/auth.module'
-import { PrismaModule } from './common/prisma/prisma.module'
 import { UserModule } from './users/user.module'
 import databaseConfig from './config/database.config'
 import httpConfig from './config/http.config'
@@ -31,10 +31,10 @@ import securityConfig from './config/security.config'
       }),
       inject: [ConfigService],
     }),
-    PrismaModule,
+    PrismaModule.forRoot(),
     AuthModule,
-    UserModule,
     ApiKeyModule,
+    UserModule,
   ],
 })
 export class AppModule {}

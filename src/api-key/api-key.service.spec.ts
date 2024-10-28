@@ -2,8 +2,8 @@ import * as crypto from 'crypto'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { PrismaService } from 'nestjs-prisma'
 
-import { PrismaService } from '../common/prisma/prisma.service'
 import { ApiKeyService } from './api-key.service'
 import { ApiKeyEntity } from './entities/api-key.entity'
 

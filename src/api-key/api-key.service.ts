@@ -2,15 +2,15 @@ import * as crypto from 'crypto'
 import { Injectable } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import * as argon2 from 'argon2'
+import { PrismaService } from 'nestjs-prisma'
 
-import { PrismaService } from '../common/prisma/prisma.service'
 import { UserEntity } from '../users/entities/user.entity'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
 @Injectable()
 export class ApiKeyService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly db: PrismaService) {}
 
   async create(createApiKeyDto: CreateApiKeyDto): Promise<ApiKeyEntity> {
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
@@ -23,7 +23,7 @@ export class ApiKeyService {
     const expirationDate = new Date()
     expirationDate.setDate(expirationDate.getDate() + 7)
 
-    return this.prismaService.apiKey
+    return this.db.apiKey
       .create({
         data: {
           name: createApiKeyDto.name,
@@ -41,14 +41,14 @@ export class ApiKeyService {
   }
 
   async remove(ApiKeyWhereUniqueInput: Prisma.ApiKeyWhereUniqueInput) {
-    return this.prismaService.apiKey.delete({
+    return this.db.apiKey.delete({
       where: ApiKeyWhereUniqueInput,
     })
   }
 
   async findValidApiKey(key: string): Promise<Partial<UserEntity> | null> {
     const keyPrefix = key.split('.')[0]
-    return this.prismaService.apiKey
+    return this.db.apiKey
       .findFirst({
         where: {
           key: { startsWith: keyPrefix },
