@@ -12,30 +12,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 
 import { AppModule } from './app.module'
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    bufferLogs: true,
-  })
-
-  // Setup Winston Logger
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
-
-  // Setup helmet
-  app.use(helmet())
-
-  // Setup global prefix
-  app.setGlobalPrefix('api')
-
-  // Setup versioning
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  })
-
-  // Setup class serializer interceptor and validation pipe
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
-  app.useGlobalPipes(new ValidationPipe())
-
+function bootstrapSwagger(app) {
   const config = new DocumentBuilder()
     .setTitle('Dungeon Party API')
     .setDescription('API for Dungeon Party')
@@ -75,6 +52,34 @@ async function bootstrap() {
       return copyDocument
     },
   })
+}
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  })
+
+  // Setup Winston Logger
+  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
+
+  // Setup helmet
+  app.use(helmet())
+
+  // Setup global prefix
+  app.setGlobalPrefix('api')
+
+  // Setup versioning
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  })
+
+  // Setup class serializer interceptor and validation pipe
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
+  app.useGlobalPipes(new ValidationPipe())
+
+  // Setup Swagger
+  bootstrapSwagger(app)
 
   await app.listen(parseInt(app.get(ConfigService).get<string>('http.port')))
 }
