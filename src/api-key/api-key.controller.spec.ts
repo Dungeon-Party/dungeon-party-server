@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyController } from './api-key.controller'
 import { ApiKeyService } from './api-key.service'
+import { isGuarded } from '../utils/test-utils'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
 describe('ApiKeyController', () => {
@@ -49,17 +51,9 @@ describe('ApiKeyController', () => {
       expect(apiKeyService.create).toHaveBeenCalledWith(createApiKeyDto)
     })
 
-    it.todo('should be protected by the jwt guard')
-
-    it.todo('should return the type of ApiKeyEntity')
-
-    it.todo('should throw an error if the name is not provided')
-
-    it.todo('should throw an error if the userId is not provided')
-
-    it.todo('should throw an error if the userId is not a number')
-
-    it.todo('should throw an error if the userId is not found')
+    it('should be protected by the jwt guard', () => {
+      expect(isGuarded(apiKeyController.create, JwtAuthGuard)).toBeTruthy()
+    })
   })
 
   describe('remove', () => {
@@ -83,14 +77,8 @@ describe('ApiKeyController', () => {
       expect(apiKeyService.remove).toHaveBeenCalledWith({ id: Number(id) })
     })
 
-    it.todo('should be protected by the jwt guard')
-
-    it.todo('should return the type of ApiKeyEntity')
-
-    it.todo('should throw an error if the id is not a number')
-
-    it.todo('should throw an error if the id is not provided')
-
-    it.todo('should throw an error if the id is not found')
+    it('should be protected by the jwt guard', () => {
+      expect(isGuarded(apiKeyController.create, JwtAuthGuard)).toBeTruthy()
+    })
   })
 })

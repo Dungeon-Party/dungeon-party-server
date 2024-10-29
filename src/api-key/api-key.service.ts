@@ -33,17 +33,21 @@ export class ApiKeyService {
         },
       })
       .then((apiKey) => {
-        return {
+        return new ApiKeyEntity({
           ...apiKey,
           key: apiKeyRaw,
-        }
+        })
       })
   }
 
   async remove(ApiKeyWhereUniqueInput: Prisma.ApiKeyWhereUniqueInput) {
-    return this.db.apiKey.delete({
-      where: ApiKeyWhereUniqueInput,
-    })
+    return this.db.apiKey
+      .delete({
+        where: ApiKeyWhereUniqueInput,
+      })
+      .then((apiKey) => {
+        return new ApiKeyEntity(apiKey)
+      })
   }
 
   async findValidApiKey(key: string): Promise<Partial<UserEntity> | null> {

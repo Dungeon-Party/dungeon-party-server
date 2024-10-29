@@ -76,7 +76,7 @@ async function bootstrap() {
 
   // Setup class serializer interceptor and validation pipe
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
-  app.useGlobalPipes(new ValidationPipe())
+  app.useGlobalPipes(new ValidationPipe({ transform: true }))
 
   // Setup Swagger
   bootstrapSwagger(app)

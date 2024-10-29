@@ -53,7 +53,33 @@ describe('ApiKeyService', () => {
       })
     })
 
-    it.todo('should return the type of ApiKeyEntity')
+    it('should return the type of ApiKeyEntity', async () => {
+      const apiKeyPart = Buffer.from('kljsdf892hhlk3hkl')
+      const result: ApiKeyEntity = {
+        id: 1,
+        name: 'test',
+        key: 'should-not-returned',
+        expiresAt: new Date(),
+        userId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      prismaService.apiKey.create.mockResolvedValueOnce(result)
+      jest.spyOn(crypto, 'randomBytes').mockImplementation(() => {
+        return apiKeyPart
+      })
+      jest
+        .spyOn(argon2, 'hash')
+        .mockResolvedValueOnce(apiKeyPart.toString('hex'))
+      const createApiKeyDto = { name: 'test', userId: 1 }
+
+      const apiKey = await apiKeyService.create(createApiKeyDto)
+      expect(apiKey).toEqual({
+        ...result,
+        key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
+      })
+      expect(apiKey).toBeInstanceOf(ApiKeyEntity)
+    })
   })
 
   describe('remove', () => {
@@ -74,7 +100,23 @@ describe('ApiKeyService', () => {
       expect(apiKey).toEqual(result)
     })
 
-    it.todo('should return the type of ApiKeyEntity')
+    it('should return the type of ApiKeyEntity', async () => {
+      const result: ApiKeyEntity = {
+        id: 1,
+        name: 'test',
+        key: 'should-not-returned',
+        expiresAt: new Date(),
+        userId: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+      prismaService.apiKey.delete.mockResolvedValueOnce(result)
+      const ApiKeyWhereUniqueInput = { id: 1 }
+
+      const apiKey = await apiKeyService.remove(ApiKeyWhereUniqueInput)
+      expect(apiKey).toEqual(result)
+      expect(apiKey).toBeInstanceOf(ApiKeyEntity)
+    })
   })
 
   describe('findValidApiKey', () => {
@@ -104,6 +146,9 @@ describe('ApiKeyService', () => {
       expect(response).toEqual(result.user)
     })
 
-    it.todo('should return null if the key is invalid')
+    it('should return null if the key is invalid', async () => {
+      prismaService.apiKey.findFirst.mockResolvedValueOnce(null)
+      expect(await apiKeyService.findValidApiKey('invalid-key')).toBeNull()
+    })
   })
 })
