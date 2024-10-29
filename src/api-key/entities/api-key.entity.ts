@@ -3,39 +3,39 @@ import { ApiKey } from '@prisma/client'
 import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
 export class ApiKeyEntity implements ApiKey {
-  @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
+  @ApiProperty()
   id: number
 
-  @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @ApiProperty()
   name: string
 
-  @ApiProperty()
   @IsNotEmpty()
   @IsString()
+  @ApiProperty()
   key: string
 
-  @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
+  @ApiProperty()
   userId: number
 
-  @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
+  @ApiProperty()
   expiresAt: Date
 
-  @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
+  @ApiProperty()
   createdAt: Date
 
-  @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
+  @ApiProperty()
   updatedAt: Date
 
   constructor(partial: Partial<ApiKeyEntity>) {

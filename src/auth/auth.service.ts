@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { User } from '@prisma/client'
 import * as argon2 from 'argon2'
@@ -9,6 +10,7 @@ import { UserService } from '../users/user.service'
 @Injectable()
 export class AuthService {
   constructor(
+    private configService: ConfigService,
     private userService: UserService,
     private apiKeyService: ApiKeyService,
     private jwtService: JwtService,
@@ -37,8 +39,16 @@ export class AuthService {
       email: user.email,
     }
     return {
-      accessToken: this.jwtService.sign(payload, { expiresIn: '1h' }),
-      refreshToken: this.jwtService.sign(payload, { expiresIn: '7d' }),
+      accessToken: this.jwtService.sign(payload, {
+        expiresIn: this.configService.get<string>(
+          'security.jwt.accessExpiresIn',
+        ),
+      }),
+      refreshToken: this.jwtService.sign(payload, {
+        expiresIn: this.configService.get<string>(
+          'security.jwt.refreshExpiresIn',
+        ),
+      }),
     }
   }
 

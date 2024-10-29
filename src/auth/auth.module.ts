@@ -22,10 +22,13 @@ import { AuthService } from './auth.service'
       useFactory: (config: ConfigService) => ({
         global: true,
         secret: config.get<string>('security.jwt.secret'),
-        signOptions: { expiresIn: '10m' },
+        signOptions: {
+          expiresIn: config.get<string>('security.jwt.accessExpiresIn'),
+        },
       }),
       inject: [ConfigService],
     }),
+    ConfigModule,
   ],
   controllers: [AuthController],
   providers: [

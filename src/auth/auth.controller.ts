@@ -1,5 +1,4 @@
 import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -8,23 +7,18 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
+import { ApiKeyAuthGuard } from './guards/apikey-auth.guard'
+import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
+import LoginDto from './dto/login.dto'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        username: { type: 'string' },
-        password: { type: 'string' },
-      },
-    },
-  })
+  @ApiBody({ type: LoginDto })
   @ApiResponse({
     status: 200,
     schema: {
@@ -43,7 +37,7 @@ export class AuthController {
   // TODO: Implement signup
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Post('refresh')
   refresh(@Request() req) {
     return this.authService.generateJwt(req.user)
@@ -51,7 +45,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @ApiSecurity('api-key')
-  @UseGuards(AuthGuard(['jwt', 'api-key']))
+  @UseGuards(JwtAuthGuard, ApiKeyAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
     return req.user
