@@ -1,14 +1,15 @@
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { Test, TestingModule } from '@nestjs/testing'
-import { mockDeep } from 'jest-mock-extended'
+import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { UserModule } from '../users/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 
 describe('AuthController', () => {
-  let controller: AuthController
+  let authController: AuthController
+  let authService: DeepMockProxy<AuthService>
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -21,21 +22,35 @@ describe('AuthController', () => {
         }),
         PassportModule,
       ],
-      controllers: [AuthController, AuthService],
-      providers: [AuthService],
+      controllers: [AuthController],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: mockDeep<AuthService>(),
+        },
+      ],
     })
       .useMocker(mockDeep)
       .compile()
 
-    controller = module.get(AuthController)
-  })
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined()
+    authController = module.get(AuthController)
+    authService = module.get(AuthService)
   })
 
   describe('login', () => {
-    it.todo('should return an access token and a refresh token')
+    it('should return an access token and a refresh token', () => {
+      const result = {
+        accessToken: 'test-access-token',
+        refreshToken: 'test-refresh-token',
+      }
+      authService.generateJwt.mockResolvedValueOnce(result)
+      expect(
+        authController.login({
+          email: 'test@email.com',
+          password: 'test-password',
+        }),
+      ).resolves.toEqual(result)
+    })
 
     it.todo('should return an error when the user does not exist')
 

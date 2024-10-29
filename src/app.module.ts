@@ -5,6 +5,7 @@ import { format, transports } from 'winston'
 
 import { ApiKeyModule } from './api-key/api-key.module'
 import { AuthModule } from './auth/auth.module'
+import { HealthModule } from './health/health.module'
 import { UserModule } from './users/user.module'
 import databaseConfig from './config/database.config'
 import httpConfig from './config/http.config'
@@ -33,6 +34,7 @@ import securityConfig from './config/security.config'
     AuthModule,
     ApiKeyModule,
     UserModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
