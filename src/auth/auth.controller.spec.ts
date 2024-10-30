@@ -6,6 +6,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { UserModule } from '../users/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { UserEntity } from '../users/entities/user.entity'
 
 describe('AuthController', () => {
   let authController: AuthController
@@ -48,7 +49,7 @@ describe('AuthController', () => {
         authController.login({
           email: 'test@email.com',
           password: 'test-password',
-        }),
+        } as UserEntity),
       ).resolves.toEqual(result)
     })
 

@@ -10,6 +10,8 @@ import { ApiBody, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
+import { User } from '../decorators/user.decorator'
+import { UserEntity } from '../users/entities/user.entity'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 
 @ApiTags('api-key')
@@ -20,15 +22,19 @@ export class ApiKeyController {
   @ApiBody({ type: CreateApiKeyDto })
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createApiKeyDto: CreateApiKeyDto) {
-    return this.apiKeyService.create(createApiKeyDto)
+  create(
+    @Body() createApiKeyDto: CreateApiKeyDto,
+    @User('id') userId: UserEntity['id'],
+  ) {
+    return this.apiKeyService.create(createApiKeyDto, userId)
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') apiKeyId: string, @User('id') userId: UserEntity['id']) {
     return this.apiKeyService.remove({
-      id: Number(id),
+      id: Number(apiKeyId),
+      userId: userId,
     })
   }
 }

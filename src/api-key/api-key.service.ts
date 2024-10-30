@@ -12,7 +12,10 @@ import { ApiKeyEntity } from './entities/api-key.entity'
 export class ApiKeyService {
   constructor(private readonly db: PrismaService) {}
 
-  async create(createApiKeyDto: CreateApiKeyDto): Promise<ApiKeyEntity> {
+  async create(
+    createApiKeyDto: CreateApiKeyDto,
+    userId: UserEntity['id'],
+  ): Promise<ApiKeyEntity> {
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
     const apiKeyString = crypto.randomBytes(16).toString('hex')
     const apiKeyStringHashed = await argon2.hash(apiKeyString, {
@@ -29,7 +32,7 @@ export class ApiKeyService {
           name: createApiKeyDto.name,
           key: apiKeyHashed,
           expiresAt: expirationDate.toISOString(),
-          userId: createApiKeyDto.userId,
+          userId: userId,
         },
       })
       .then((apiKey) => {
@@ -52,7 +55,7 @@ export class ApiKeyService {
       })
   }
 
-  async findValidApiKey(key: string): Promise<Partial<UserEntity> | null> {
+  async findValidApiKey(key: string): Promise<UserEntity | null> {
     const keyPrefix = key.split('.')[0]
     return this.db.apiKey
       .findFirst({
@@ -62,13 +65,7 @@ export class ApiKeyService {
         },
         select: {
           key: true,
-          user: {
-            select: {
-              name: true,
-              username: true,
-              email: true,
-            },
-          },
+          user: true,
         },
       })
       .then((apiKey) => {

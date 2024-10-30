@@ -41,14 +41,14 @@ describe('ApiKeyController', () => {
       }
       apiKeyService.create.mockResolvedValueOnce(result)
       expect(
-        apiKeyController.create({ name: result.name, userId: result.userId }),
+        apiKeyController.create({ name: result.name }, 1),
       ).resolves.toEqual(result)
     })
 
     it('should call apiKeyService create method with the correct arguments', () => {
-      const createApiKeyDto = { name: 'test', userId: 1 }
-      apiKeyController.create(createApiKeyDto)
-      expect(apiKeyService.create).toHaveBeenCalledWith(createApiKeyDto)
+      const createApiKeyDto = { name: 'test' }
+      apiKeyController.create(createApiKeyDto, 1)
+      expect(apiKeyService.create).toHaveBeenCalledWith(createApiKeyDto, 1)
     })
 
     it('should be protected by the jwt guard', () => {
@@ -68,13 +68,16 @@ describe('ApiKeyController', () => {
         updatedAt: new Date(),
       }
       apiKeyService.remove.mockResolvedValue(result)
-      expect(apiKeyController.remove('1')).resolves.toEqual(result)
+      expect(apiKeyController.remove('1', 1)).resolves.toEqual(result)
     })
 
     it('should call apiKeyService remove method with the correct arguments', () => {
       const id = '1'
-      apiKeyController.remove(id)
-      expect(apiKeyService.remove).toHaveBeenCalledWith({ id: Number(id) })
+      apiKeyController.remove(id, 1)
+      expect(apiKeyService.remove).toHaveBeenCalledWith({
+        id: Number(id),
+        userId: 1,
+      })
     })
 
     it('should be protected by the jwt guard', () => {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
@@ -11,6 +11,8 @@ import {
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
+import { User } from '../decorators/user.decorator'
+import { UserEntity } from '../users/entities/user.entity'
 import LoginDto from './dto/login.dto'
 
 @ApiTags('auth')
@@ -30,8 +32,8 @@ export class AuthController {
   })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req) {
-    return this.authService.generateJwt(req.user)
+  login(@User() user: UserEntity) {
+    return this.authService.generateJwt(user)
   }
 
   // TODO: Implement signup
@@ -39,15 +41,15 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('refresh')
-  refresh(@Request() req) {
-    return this.authService.generateJwt(req.user)
+  refresh(@User() user: UserEntity) {
+    return this.authService.generateJwt(user)
   }
 
   @ApiBearerAuth()
   @ApiSecurity('api-key')
   @UseGuards(AuthGuard(['jwt', 'api-key']))
   @Get('profile')
-  getProfile(@Request() req) {
-    return req.user
+  getProfile(@User() user: UserEntity) {
+    return user
   }
 }

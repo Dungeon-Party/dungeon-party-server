@@ -1,11 +1,12 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { User } from '@prisma/client'
 import * as argon2 from 'argon2'
 
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../users/user.service'
+import { UserEntity } from '../users/entities/user.entity'
+import JwtPayloadDto from './dto/jwt-payload.dto'
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
   async validateUser(
     username: string,
     pass: string,
-  ): Promise<Partial<User> | null> {
+  ): Promise<UserEntity | null> {
     const user = await this.userService.findOne({
       OR: [{ email: username }, { username: username }],
     })
@@ -27,12 +28,13 @@ export class AuthService {
     if (!user || !(await argon2.verify(user.password, pass))) {
       throw new UnauthorizedException()
     }
-    delete user.password
     return user
   }
 
-  async generateJwt(user: User) {
-    const payload = {
+  async generateJwt(
+    user: UserEntity,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    const payload: Partial<JwtPayloadDto> = {
       sub: user.id,
       iss: 'dungeon-party',
       username: user.username,
@@ -52,7 +54,7 @@ export class AuthService {
     }
   }
 
-  async validateApiKey(key: string): Promise<Partial<User>> {
+  async validateApiKey(key: string): Promise<UserEntity> {
     return this.apiKeyService.findValidApiKey(key)
   }
 }

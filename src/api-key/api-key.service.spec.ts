@@ -41,9 +41,9 @@ describe('ApiKeyService', () => {
       jest
         .spyOn(argon2, 'hash')
         .mockResolvedValueOnce(apiKeyPart.toString('hex'))
-      const createApiKeyDto = { name: 'test', userId: 1 }
+      const createApiKeyDto = { name: 'test' }
 
-      const apiKey = await apiKeyService.create(createApiKeyDto)
+      const apiKey = await apiKeyService.create(createApiKeyDto, 1)
       expect(apiKey).toEqual({
         ...result,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
@@ -73,7 +73,7 @@ describe('ApiKeyService', () => {
         .mockResolvedValueOnce(apiKeyPart.toString('hex'))
       const createApiKeyDto = { name: 'test', userId: 1 }
 
-      const apiKey = await apiKeyService.create(createApiKeyDto)
+      const apiKey = await apiKeyService.create(createApiKeyDto, 1)
       expect(apiKey).toEqual({
         ...result,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
