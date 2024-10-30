@@ -23,7 +23,7 @@ describe('ApiKeyService', () => {
   })
 
   describe('create', () => {
-    it('should return the result of prismaService.apiKey.create method ', async () => {
+    it('should return the result of PrismaService.apiKey.create method ', async () => {
       const apiKeyPart = Buffer.from('kljsdf892hhlk3hkl')
       const result: ApiKeyEntity = {
         id: 1,
@@ -83,7 +83,7 @@ describe('ApiKeyService', () => {
   })
 
   describe('remove', () => {
-    it('should return the result of prismaService.apiKey.delete method', async () => {
+    it('should return the result of PrismaService.apiKey.delete method', async () => {
       const result: ApiKeyEntity = {
         id: 1,
         name: 'test',

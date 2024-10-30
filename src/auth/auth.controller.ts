@@ -1,5 +1,4 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -8,12 +7,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
+import ApiKeyAuthGuard from './guards/apikey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
 import { User } from '../decorators/user.decorator'
 import { UserEntity } from '../users/entities/user.entity'
 import LoginDto from './dto/login.dto'
+import TokenResponseDto from './dto/token-response.dto'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -21,15 +22,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @ApiBody({ type: LoginDto })
-  @ApiResponse({
-    status: 200,
-    schema: {
-      type: 'object',
-      properties: {
-        access_token: { type: 'string' },
-      },
-    },
-  })
+  @ApiResponse({ type: TokenResponseDto })
   @UseGuards(LocalAuthGuard)
   @Post('login')
   login(@User() user: UserEntity) {
@@ -47,7 +40,8 @@ export class AuthController {
 
   @ApiBearerAuth()
   @ApiSecurity('api-key')
-  @UseGuards(AuthGuard(['jwt', 'api-key']))
+  @UseGuards(JwtAuthGuard)
+  @UseGuards(ApiKeyAuthGuard)
   @Get('profile')
   getProfile(@User() user: UserEntity) {
     return user

@@ -3,10 +3,15 @@ import { PassportModule } from '@nestjs/passport'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
+import ApiKeyAuthGuard from './guards/apikey-auth.guard'
+import { JwtAuthGuard } from './guards/jwt-auth.guard'
+import { LocalAuthGuard } from './guards/local-auth.guard'
 import { UserModule } from '../users/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { UserEntity } from '../users/entities/user.entity'
+import { isGuarded } from '../utils/test-utils'
+import TokenResponseDto from './dto/token-response.dto'
 
 describe('AuthController', () => {
   let authController: AuthController
@@ -39,44 +44,55 @@ describe('AuthController', () => {
   })
 
   describe('login', () => {
-    it('should return an access token and a refresh token', () => {
+    it('should return the result of AuthService.generateJwt', async () => {
       const result = {
         accessToken: 'test-access-token',
         refreshToken: 'test-refresh-token',
-      }
+      } as TokenResponseDto
       authService.generateJwt.mockResolvedValueOnce(result)
-      expect(
-        authController.login({
-          email: 'test@email.com',
-          password: 'test-password',
-        } as UserEntity),
-      ).resolves.toEqual(result)
+      const response = await authController.login({
+        email: 'test-email',
+        password: 'test-password',
+      } as UserEntity)
+      expect(response).toEqual(result)
     })
 
-    it.todo('should return an error when the user does not exist')
-
-    it.todo('should return an error when the password is incorrect')
-
-    it.todo('should be protected by the local strategy')
+    it('should be protected by the local guard', () => {
+      expect(isGuarded(authController.login, LocalAuthGuard)).toBeTruthy()
+    })
   })
 
   describe('refresh', () => {
-    it.todo('should return an access token')
+    it('should return the result of AuthService.generateJwt', async () => {
+      const result = {
+        accessToken: 'test-access-token',
+        refreshToken: 'test-refresh-token',
+      } as TokenResponseDto
+      authService.generateJwt.mockResolvedValueOnce(result)
+      const response = await authController.refresh({
+        email: 'test-email',
+        password: 'test-password',
+      } as UserEntity)
+      expect(response).toEqual(result)
+    })
 
-    it.todo('should return an error when the user does not exist')
-
-    it.todo('should return an error when the password is incorrect')
-
-    it.todo('should be protected by the jwt strategy')
+    it('should be protected by the jwt strategy', () => {
+      expect(isGuarded(authController.refresh, JwtAuthGuard)).toBeTruthy()
+    })
   })
 
   describe('profile', () => {
-    it.todo('should return the user profile')
+    it('should return the user profile', () => {
+      const user = { email: 'test-email' } as UserEntity
+      expect(authController.getProfile(user)).toEqual(user)
+    })
 
-    it.todo('should return an error when the user does not exist')
+    it('should be protected by the jwt strategy', () => {
+      expect(isGuarded(authController.getProfile, JwtAuthGuard)).toBeTruthy()
+    })
 
-    it.todo('should be protected by the jwt strategy')
-
-    it.todo('should be protected by the api key strategy')
+    it('should be protected by the api key strategy', () => {
+      expect(isGuarded(authController.getProfile, ApiKeyAuthGuard)).toBeTruthy()
+    })
   })
 })
