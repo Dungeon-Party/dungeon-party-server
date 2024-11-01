@@ -56,8 +56,8 @@ describe('ApiKeyController', () => {
     })
   })
 
-  describe('remove', () => {
-    it('should return the result of apiKeyService remove method', () => {
+  describe('delete', () => {
+    it('should return the result of apiKeyService delete method', () => {
       const result: ApiKeyEntity = {
         id: 1,
         name: 'test',
@@ -67,14 +67,14 @@ describe('ApiKeyController', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       }
-      apiKeyService.remove.mockResolvedValue(result)
-      expect(apiKeyController.remove('1', 1)).resolves.toEqual(result)
+      apiKeyService.delete.mockResolvedValue(result)
+      expect(apiKeyController.delete('1', 1)).resolves.toEqual(result)
     })
 
-    it('should call apiKeyService remove method with the correct arguments', () => {
+    it('should call apiKeyService delete method with the correct arguments', () => {
       const id = '1'
-      apiKeyController.remove(id, 1)
-      expect(apiKeyService.remove).toHaveBeenCalledWith({
+      apiKeyController.delete(id, 1)
+      expect(apiKeyService.delete).toHaveBeenCalledWith({
         id: Number(id),
         userId: 1,
       })

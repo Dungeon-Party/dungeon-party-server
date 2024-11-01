@@ -96,7 +96,7 @@ describe('ApiKeyService', () => {
       prismaService.apiKey.delete.mockResolvedValueOnce(result)
       const ApiKeyWhereUniqueInput = { id: 1 }
 
-      const apiKey = await apiKeyService.remove(ApiKeyWhereUniqueInput)
+      const apiKey = await apiKeyService.delete(ApiKeyWhereUniqueInput)
       expect(apiKey).toEqual(result)
     })
 
@@ -113,7 +113,7 @@ describe('ApiKeyService', () => {
       prismaService.apiKey.delete.mockResolvedValueOnce(result)
       const ApiKeyWhereUniqueInput = { id: 1 }
 
-      const apiKey = await apiKeyService.remove(ApiKeyWhereUniqueInput)
+      const apiKey = await apiKeyService.delete(ApiKeyWhereUniqueInput)
       expect(apiKey).toEqual(result)
       expect(apiKey).toBeInstanceOf(ApiKeyEntity)
     })

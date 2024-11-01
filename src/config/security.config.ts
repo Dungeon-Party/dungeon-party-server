@@ -1,5 +1,5 @@
-import { registerAs } from '@nestjs/config'
 import { randomBytes } from 'crypto'
+import { registerAs } from '@nestjs/config'
 
 export default registerAs('security', () => ({
   jwt: {

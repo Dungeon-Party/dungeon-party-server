@@ -5,7 +5,6 @@ import {
   loggingMiddleware,
   LoggingMiddlewareOptions,
   PrismaModule,
-  providePrismaClientExceptionFilter,
 } from 'nestjs-prisma'
 import { format, transports } from 'winston'
 
@@ -64,7 +63,6 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
     UserModule,
     HealthModule,
   ],
-  providers: [providePrismaClientExceptionFilter()],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

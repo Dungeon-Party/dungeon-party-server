@@ -3,7 +3,7 @@ import { PassportModule } from '@nestjs/passport'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import ApiKeyAuthGuard from './guards/apikey-auth.guard'
+import JwtOrApiKeyAuthGuard from './guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { UserModule } from '../users/user.module'
@@ -87,12 +87,10 @@ describe('AuthController', () => {
       expect(authController.getProfile(user)).toEqual(user)
     })
 
-    it('should be protected by the jwt strategy', () => {
-      expect(isGuarded(authController.getProfile, JwtAuthGuard)).toBeTruthy()
-    })
-
-    it('should be protected by the api key strategy', () => {
-      expect(isGuarded(authController.getProfile, ApiKeyAuthGuard)).toBeTruthy()
+    it('should be protected by the jwt or api-key strategy', () => {
+      expect(
+        isGuarded(authController.getProfile, JwtOrApiKeyAuthGuard),
+      ).toBeTruthy()
     })
   })
 })

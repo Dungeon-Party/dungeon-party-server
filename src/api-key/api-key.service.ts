@@ -43,7 +43,7 @@ export class ApiKeyService {
       })
   }
 
-  async remove(
+  async delete(
     ApiKeyWhereUniqueInput: Prisma.ApiKeyWhereUniqueInput,
   ): Promise<ApiKeyEntity | null> {
     return this.db.apiKey

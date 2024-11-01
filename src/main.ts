@@ -1,16 +1,11 @@
-import {
-  ClassSerializerInterceptor,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { NestFactory, Reflector } from '@nestjs/core'
+import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { Request } from 'express'
-import helmet from 'helmet'
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
 
 import { AppModule } from './app.module'
+import bootstrap from './main.config'
 
 function bootstrapSwagger(app) {
   const config = new DocumentBuilder()
@@ -54,7 +49,7 @@ function bootstrapSwagger(app) {
   })
 }
 
-async function bootstrap() {
+async function start() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   })
@@ -62,25 +57,12 @@ async function bootstrap() {
   // Setup Winston Logger
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
 
-  // Setup helmet
-  app.use(helmet())
-
-  // Setup global prefix
-  app.setGlobalPrefix('api')
-
-  // Setup versioning
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion: '1',
-  })
-
-  // Setup class serializer interceptor and validation pipe
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
-  app.useGlobalPipes(new ValidationPipe({ transform: true }))
+  bootstrap(app)
 
   // Setup Swagger
   bootstrapSwagger(app)
 
   await app.listen(parseInt(app.get(ConfigService).get<string>('http.port')))
 }
-bootstrap()
+
+start()

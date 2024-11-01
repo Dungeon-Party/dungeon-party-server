@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
-import { PrismaModule } from 'nestjs-prisma'
 
 import { ApiKeyStrategy } from './strategies/apikey.strategy'
 import { JwtStrategy } from './strategies/jwt.strategy'
@@ -14,7 +13,6 @@ import { AuthService } from './auth.service'
 
 @Module({
   imports: [
-    PrismaModule.forRoot(),
     UserModule,
     PassportModule,
     JwtModule.registerAsync({

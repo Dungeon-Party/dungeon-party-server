@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma, User } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import * as argon2 from 'argon2'
 import { PrismaService } from 'nestjs-prisma'
+
+import { UserEntity } from './entities/user.entity'
 
 @Injectable()
 export class UserService {
   constructor(private db: PrismaService) {}
 
-  async findOne(userWhereInput: Prisma.UserWhereInput): Promise<User | null> {
+  async findOne(
+    userWhereInput: Prisma.UserWhereInput,
+  ): Promise<UserEntity | null> {
     return this.db.user.findFirst({ where: userWhereInput })
   }
 
@@ -17,7 +21,7 @@ export class UserService {
     cursor?: Prisma.UserWhereUniqueInput
     where?: Prisma.UserWhereInput
     orderBy?: Prisma.UserOrderByWithRelationInput
-  }): Promise<User[]> {
+  }): Promise<UserEntity[]> {
     const { skip, take, cursor, where, orderBy } = params
     return this.db.user.findMany({
       skip,
@@ -28,17 +32,17 @@ export class UserService {
     })
   }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
+  async create(data: Prisma.UserCreateInput): Promise<UserEntity> {
     data.password = await argon2.hash(data.password, { type: argon2.argon2i })
     return this.db.user.create({
       data,
     })
   }
 
-  async updateUser(params: {
+  async update(params: {
     where: Prisma.UserWhereUniqueInput
     data: Prisma.UserUpdateInput
-  }): Promise<User> {
+  }): Promise<UserEntity> {
     const { where, data } = params
     return this.db.user.update({
       data,
@@ -46,7 +50,7 @@ export class UserService {
     })
   }
 
-  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
+  async delete(where: Prisma.UserWhereUniqueInput): Promise<UserEntity> {
     return this.db.user.delete({
       where,
     })

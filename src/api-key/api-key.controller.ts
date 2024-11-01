@@ -31,8 +31,8 @@ export class ApiKeyController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') apiKeyId: string, @User('id') userId: UserEntity['id']) {
-    return this.apiKeyService.remove({
+  delete(@Param('id') apiKeyId: string, @User('id') userId: UserEntity['id']) {
+    return this.apiKeyService.delete({
       id: Number(apiKeyId),
       userId: userId,
     })

@@ -7,7 +7,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
-import ApiKeyAuthGuard from './guards/apikey-auth.guard'
+import JwtOrApiKeyAuthGuard from './guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
@@ -40,10 +40,9 @@ export class AuthController {
 
   @ApiBearerAuth()
   @ApiSecurity('api-key')
-  @UseGuards(JwtAuthGuard)
-  @UseGuards(ApiKeyAuthGuard)
+  @UseGuards(JwtOrApiKeyAuthGuard)
   @Get('profile')
   getProfile(@User() user: UserEntity) {
-    return user
+    return new UserEntity(user)
   }
 }

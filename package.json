@@ -21,6 +21,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e:cov": "yarn test:e2e --coverage",
     "db:format": "prisma format",
     "db:seed": "prisma db seed",
     "db:push": "prisma db push",
@@ -72,6 +73,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.0.0",
     "husky": "^9.1.6",
+    "istanbul-api": "^3.0.0",
     "jest": "^29.5.0",
     "jest-mock-extended": "^4.0.0-beta1",
     "lint-staged": "^15.2.10",
@@ -93,14 +95,18 @@
       "ts"
     ],
     "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
+    "coverageReporters": [
+      "cobertura",
+      "text"
+    ],
     "collectCoverageFrom": [
       "**/*.(controller|service).(t|j)s"
     ],
-    "coverageDirectory": "../coverage",
+    "coverageDirectory": "../coverage/unit",
     "testEnvironment": "node"
   },
   "lint-staged": {

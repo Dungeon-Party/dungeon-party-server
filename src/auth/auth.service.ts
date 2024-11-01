@@ -45,21 +45,34 @@ export class AuthService {
       username: user.username,
       email: user.email,
     }
+
+    const jwtSecret =
+      process.env.NODE_ENV === 'test'
+        ? 'test-secret'
+        : this.configService.get<string>('security.jwt.secret')
+    const accessExpiresIn =
+      process.env.NODE_ENV === 'test'
+        ? '10m'
+        : this.configService.get<string>('security.jwt.accessExpiresIn')
+    const refreshExpiresIn =
+      process.env.NODE_ENV === 'test'
+        ? '1d'
+        : this.configService.get<string>('security.jwt.refreshExpiresIn')
+
     return new TokenResponseDto({
       accessToken: this.jwtService.sign(payload, {
-        expiresIn: this.configService.get<string>(
-          'security.jwt.accessExpiresIn',
-        ),
+        expiresIn: accessExpiresIn,
+        secret: jwtSecret,
       }),
       refreshToken: this.jwtService.sign(payload, {
-        expiresIn: this.configService.get<string>(
-          'security.jwt.refreshExpiresIn',
-        ),
+        expiresIn: refreshExpiresIn,
+        secret: jwtSecret,
       }),
     })
   }
 
   async validateApiKey(key: string): Promise<UserEntity> {
+    // TODO: Auth service should be responsible for authenticating the API Key
     return this.apiKeyService.findValidApiKey(key)
   }
 }
