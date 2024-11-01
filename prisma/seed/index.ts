@@ -1,15 +1,18 @@
 import { PrismaClient } from '@prisma/client'
+
 import data from './data/'
+
 const prisma = new PrismaClient()
 
 const runSeeders = async () => {
-  for (const [key, value] of Object.entries(data)) {
+  for (const [key, valueFunction] of Object.entries(data)) {
     console.log(`Seeding ${key}...`)
+    const value = await valueFunction()
     await Promise.all(
       value.map(async (item) => {
         return prisma[key].upsert({
           where: { id: item.id },
-          update: {},
+          update: item,
           create: item,
         })
       }),

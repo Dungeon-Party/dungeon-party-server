@@ -1,4 +1,5 @@
 import Users from './users'
+import ApiKeys from './api keys'
 import Systems from './systems'
 import Sources from './sources'
 import AbilityScores from './ability scores'
@@ -15,6 +16,7 @@ import Feats from './feats'
 
 export default {
   user: Users,
+  apiKey: ApiKeys,
   system: Systems,
   source: Sources,
   abilityScore: AbilityScores,

@@ -1,4 +1,4 @@
-export default [
+export default async () => ([
   {
     id: 1,
     name: 'Path of the Berserker',
@@ -83,4 +83,4 @@ export default [
     classId: 12,
     sourceId: 1,
   },
-]
+])
