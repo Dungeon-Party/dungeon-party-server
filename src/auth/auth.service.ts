@@ -6,6 +6,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import * as argon2 from 'argon2'
+import { ApiKeyEntity } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../users/user.service'
@@ -46,14 +47,17 @@ export class AuthService {
       email: user.email,
     }
 
+    /* istanbul ignore next */
     const jwtSecret =
       process.env.NODE_ENV === 'test'
         ? 'test-secret'
         : this.configService.get<string>('security.jwt.secret')
+    /* istanbul ignore next */
     const accessExpiresIn =
       process.env.NODE_ENV === 'test'
         ? '10m'
         : this.configService.get<string>('security.jwt.accessExpiresIn')
+    /* istanbul ignore next */
     const refreshExpiresIn =
       process.env.NODE_ENV === 'test'
         ? '1d'
@@ -72,7 +76,16 @@ export class AuthService {
   }
 
   async validateApiKey(key: string): Promise<UserEntity> {
-    // TODO: Auth service should be responsible for authenticating the API Key
-    return this.apiKeyService.findValidApiKey(key)
+    return this.apiKeyService
+      .findOne(key)
+      .then((apiKey: ApiKeyEntity) => {
+        const apiKeyToVerify = apiKey.key.split('.')[1]
+        if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
+          return apiKey.userId
+        }
+      })
+      .then((userId: UserEntity['id']) => {
+        return this.userService.findOne({ id: userId })
+      })
   }
 }

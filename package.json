@@ -101,7 +101,8 @@
     },
     "coverageReporters": [
       "cobertura",
-      "text"
+      "text",
+      "html"
     ],
     "collectCoverageFrom": [
       "**/*.(controller|service).(t|j)s"

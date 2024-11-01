@@ -119,7 +119,7 @@ describe('ApiKeyService', () => {
     })
   })
 
-  describe('findValidApiKey', () => {
+  describe('findOne', () => {
     it('should return the result of prismaService.apiKey.findFirst method', async () => {
       const result = {
         id: 1,
@@ -129,26 +129,22 @@ describe('ApiKeyService', () => {
         userId: 1,
         createdAt: new Date(),
         updatedAt: new Date(),
-        user: {
-          name: 'test',
-          username: 'test',
-          email: 'test@email.com',
-        },
       }
+
       prismaService.apiKey.findFirst.mockResolvedValueOnce(result)
-      jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const key = 'dp-kljsdf892hhlk3hkl.1657894531'
-      const response = await apiKeyService.findValidApiKey(key)
-      expect(argon2.verify).toHaveBeenCalledWith(
-        result.key.split('.')[1],
-        key.split('.')[1],
-      )
-      expect(response).toEqual(result.user)
+      const response = await apiKeyService.findOne(key)
+      const prismaServiceFindFirstArgs =
+        prismaService.apiKey.findFirst.mock.calls[0][0]
+      expect(prismaServiceFindFirstArgs.where.key).toEqual({
+        startsWith: result.key.split('.')[0],
+      })
+      expect(response).toEqual(result)
     })
 
-    it('should return null if the key is invalid', async () => {
+    it('should return null if the key is not found', async () => {
       prismaService.apiKey.findFirst.mockResolvedValueOnce(null)
-      expect(await apiKeyService.findValidApiKey('invalid-key')).toBeNull()
+      expect(await apiKeyService.findOne('invalid-key')).toBeNull()
     })
   })
 })

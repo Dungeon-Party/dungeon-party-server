@@ -18,6 +18,7 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
+      /* istanbul ignore next */
       async () => this.prismaHealth.pingCheck('prisma', this.prisma),
     ])
   }

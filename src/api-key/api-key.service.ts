@@ -55,27 +55,13 @@ export class ApiKeyService {
       })
   }
 
-  async findValidApiKey(key: string): Promise<UserEntity | null> {
+  async findOne(key: string): Promise<Partial<ApiKeyEntity> | null> {
     const keyPrefix = key.split('.')[0]
-    return this.db.apiKey
-      .findFirst({
-        where: {
-          key: { startsWith: keyPrefix },
-          expiresAt: { gt: new Date() },
-        },
-        select: {
-          key: true,
-          user: true,
-        },
-      })
-      .then((apiKey) => {
-        if (apiKey) {
-          const apiKeyToVerify = apiKey.key.split('.')[1]
-          if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
-            return new UserEntity(apiKey.user)
-          }
-        }
-        return null
-      })
+    return this.db.apiKey.findFirst({
+      where: {
+        key: { startsWith: keyPrefix },
+        expiresAt: { gt: new Date() },
+      },
+    })
   }
 }
