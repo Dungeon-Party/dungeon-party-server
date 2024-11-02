@@ -6,10 +6,10 @@ import * as request from 'supertest'
 
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard'
 import { AuthModule } from '../src/auth/auth.module'
-import { UserService } from '../src/users/user.service'
+import { UserService } from '../src/user/user.service'
 import LoginDto from '../src/auth/dto/login.dto'
 import bootstrap from '../src/main.config'
-import { UserEntity } from '../src/users/entities/user.entity'
+import { UserEntity } from '../src/user/entities/user.entity'
 
 describe('Auth (e2e)', () => {
   let app: INestApplication

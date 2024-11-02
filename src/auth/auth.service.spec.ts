@@ -6,13 +6,13 @@ import { Test, TestingModule } from '@nestjs/testing'
 import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { UserModule } from '../users/user.module'
+import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { ApiKeyService } from '../api-key/api-key.service'
-import { UserService } from '../users/user.service'
+import { UserService } from '../user/user.service'
 import { AuthService } from './auth.service'
 import { ApiKeyEntity } from '../api-key/entities/api-key.entity'
-import { UserEntity } from '../users/entities/user.entity'
+import { UserEntity } from '../user/entities/user.entity'
 import TokenResponseDto from './dto/token-response.dto'
 
 describe('AuthService', () => {

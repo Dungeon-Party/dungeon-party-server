@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client'
 import * as argon2 from 'argon2'
 import { PrismaService } from 'nestjs-prisma'
 
-import { UserEntity } from '../users/entities/user.entity'
+import { UserEntity } from '../user/entities/user.entity'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
 

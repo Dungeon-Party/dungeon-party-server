@@ -12,7 +12,7 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
 import { User } from '../decorators/user.decorator'
-import { UserEntity } from '../users/entities/user.entity'
+import { UserEntity } from '../user/entities/user.entity'
 import LoginDto from './dto/login.dto'
 import TokenResponseDto from './dto/token-response.dto'
 

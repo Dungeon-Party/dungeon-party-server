@@ -9,8 +9,8 @@ import * as argon2 from 'argon2'
 import { ApiKeyEntity } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
-import { UserService } from '../users/user.service'
-import { UserEntity } from '../users/entities/user.entity'
+import { UserService } from '../user/user.service'
+import { UserEntity } from '../user/entities/user.entity'
 import JwtPayloadDto from './dto/jwt-payload.dto'
 import TokenResponseDto from './dto/token-response.dto'
 
