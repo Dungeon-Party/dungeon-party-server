@@ -4,18 +4,16 @@ import { PrismaService } from 'nestjs-prisma'
 
 @Injectable()
 export class UserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly db: PrismaService) {}
 
   async createUser(params: { data: Prisma.UserCreateInput }): Promise<User> {
     const { data } = params
-    return this.prisma.user.create({ data })
+    return this.db.user.create({ data })
   }
 
-  async getUser(params: {
-    where: Prisma.UserWhereUniqueInput
-  }): Promise<User | null> {
+  async getUser(params: { where: Prisma.UserWhereUniqueInput }): Promise<User> {
     const { where } = params
-    return this.prisma.user.findUnique({ where })
+    return this.db.user.findUnique({ where })
   }
 
   async getUsers(params: {
@@ -26,7 +24,7 @@ export class UserRepository {
     orderBy?: Prisma.UserOrderByWithRelationInput
   }): Promise<User[]> {
     const { skip, take, cursor, where, orderBy } = params
-    return this.prisma.user.findMany({
+    return this.db.user.findMany({
       skip,
       take,
       cursor,
@@ -35,11 +33,9 @@ export class UserRepository {
     })
   }
 
-  async findUser(params: {
-    where: Prisma.UserWhereInput
-  }): Promise<User | null> {
+  async findUser(params: { where: Prisma.UserWhereInput }): Promise<User> {
     const { where } = params
-    return this.prisma.user.findFirst({ where })
+    return this.db.user.findFirst({ where })
   }
 
   async updateUser(params: {
@@ -47,13 +43,13 @@ export class UserRepository {
     data: Prisma.UserUpdateInput
   }): Promise<User> {
     const { where, data } = params
-    return this.prisma.user.update({ data, where })
+    return this.db.user.update({ data, where })
   }
 
   async deleteUser(params: {
     where: Prisma.UserWhereUniqueInput
-  }): Promise<User | null> {
+  }): Promise<User> {
     const { where } = params
-    return this.prisma.user.delete({ where })
+    return this.db.user.delete({ where })
   }
 }

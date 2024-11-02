@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CanActivate } from '@nestjs/common'
-import { User } from '@prisma/client'
+import { ApiKey, User } from '@prisma/client'
 import { faker } from '@faker-js/faker'
 
 import { UserEntity } from '../user/entities/user.entity'
@@ -57,4 +57,16 @@ export const getUser = (): UserEntity => {
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
   } as User
+}
+
+export const getApiKey = () => {
+  return {
+    id: faker.number.int(),
+    name: faker.lorem.word(),
+    key: `dp-${faker.string.alphanumeric({ length: 20 })}.${faker.string.alphanumeric({ length: 32 })}`,
+    userId: faker.number.int(),
+    expiresAt: faker.date.future(),
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
+  } as ApiKey
 }
