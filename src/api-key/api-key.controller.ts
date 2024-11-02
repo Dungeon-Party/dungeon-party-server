@@ -26,15 +26,12 @@ export class ApiKeyController {
     @Body() createApiKeyDto: CreateApiKeyDto,
     @User('id') userId: UserEntity['id'],
   ) {
-    return this.apiKeyService.create(createApiKeyDto, userId)
+    return this.apiKeyService.createApiKey(createApiKeyDto, userId)
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  delete(@Param('id') apiKeyId: string, @User('id') userId: UserEntity['id']) {
-    return this.apiKeyService.delete({
-      id: Number(apiKeyId),
-      userId: userId,
-    })
+  delete(@Param('id') apiKeyId: number, @User('id') userId: UserEntity['id']) {
+    return this.apiKeyService.deleteApiKey(apiKeyId, userId)
   }
 }

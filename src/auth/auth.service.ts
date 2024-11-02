@@ -78,7 +78,7 @@ export class AuthService {
 
   async validateApiKey(key: string): Promise<UserEntity> {
     return this.apiKeyService
-      .findOne(key)
+      .findValidApiKey(key)
       .then((apiKey: ApiKeyEntity) => {
         const apiKeyToVerify = apiKey.key.split('.')[1]
         if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {

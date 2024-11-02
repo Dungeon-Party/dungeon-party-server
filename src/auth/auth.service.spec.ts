@@ -11,8 +11,8 @@ import { AuthController } from './auth.controller'
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
 import { AuthService } from './auth.service'
-import { ApiKeyEntity } from '../api-key/entities/api-key.entity'
 import { UserEntity } from '../user/entities/user.entity'
+import { getApiKey, getUser } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
 describe('AuthService', () => {
@@ -134,37 +134,20 @@ describe('AuthService', () => {
 
   describe('validateApiKey', () => {
     it('should return a user when the API key is valid', async () => {
-      const user = {
-        id: 1,
-        username: 'test',
-        email: 'test@email.com',
-        password: 'test-password',
-      } as UserEntity
-      const apiKey = {
-        id: 1,
-        name: 'test',
-        key: 'dp-test.123456',
-        expiresAt: new Date(),
-        userId: 1,
-      } as ApiKeyEntity
+      const user = getUser()
+      const apiKey = getApiKey()
 
       userService.findUserById.mockResolvedValueOnce(user)
-      apiKeyService.findOne.mockResolvedValueOnce(apiKey)
+      apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateApiKey(apiKey.key)
       expect(response).toEqual(user)
     })
 
     it('should throw an error when the API key is invalid', async () => {
-      const apiKey = {
-        id: 1,
-        name: 'test',
-        key: 'dp-test.123456',
-        expiresAt: new Date(),
-        userId: 1,
-      } as ApiKeyEntity
+      const apiKey = getApiKey()
 
-      apiKeyService.findOne.mockResolvedValueOnce(apiKey)
+      apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
       return authService
         .validateApiKey(apiKey.key)
