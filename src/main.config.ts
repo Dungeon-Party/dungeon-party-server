@@ -25,5 +25,11 @@ export default function bootstrap(app) {
 
   // Setup class serializer interceptor and validation pipe
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
-  app.useGlobalPipes(new ValidationPipe({ transform: true }))
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      forbidNonWhitelisted: true,
+      whitelist: true,
+    }),
+  )
 }

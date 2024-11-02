@@ -1,15 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger'
-import { IsNotEmpty, IsString } from 'class-validator'
+import { PickType } from '@nestjs/swagger'
 
 import { ApiKeyEntity } from '../entities/api-key.entity'
 
-export class CreateApiKeyDto implements Partial<ApiKeyEntity> {
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty()
-  name: string
-
-  constructor(partial: Partial<ApiKeyEntity>) {
-    Object.assign(this, partial)
-  }
-}
+export class CreateApiKeyDto extends PickType(ApiKeyEntity, [
+  'name',
+] as const) {}
