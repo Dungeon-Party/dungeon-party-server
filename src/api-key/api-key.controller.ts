@@ -14,8 +14,8 @@ import { UserEntity } from '../user/entities/user.entity'
 import { User } from '../user/user.decorator'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 
-@ApiTags('api-key')
-@Controller('api-key')
+@ApiTags('api-keys')
+@Controller('api-keys')
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 

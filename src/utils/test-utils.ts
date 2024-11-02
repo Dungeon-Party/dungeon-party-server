@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CanActivate } from '@nestjs/common'
+import { User } from '@prisma/client'
+import { faker } from '@faker-js/faker'
+
+import { UserEntity } from '../user/entities/user.entity'
 
 /**
  * Checks whether a route or a Controller is protected with the specified Guard.
@@ -7,10 +11,10 @@ import { CanActivate } from '@nestjs/common'
  * @param guardType is the type of the Guard, e.g. JwtAuthGuard.
  * @returns true if the specified Guard is applied.
  */
-export function isGuarded(
+export const isGuarded = (
   route: ((...args: any[]) => any) | (new (...args: any[]) => unknown),
   guardType: new (...args: any[]) => CanActivate,
-) {
+) => {
   const guards: any[] = Reflect.getMetadata('__guards__', route)
 
   if (!guards) {
@@ -32,4 +36,25 @@ export function isGuarded(
     )
   }
   return true
+}
+
+export const getUser = (): UserEntity => {
+  const firstName = faker.person.firstName()
+  const lastName = faker.person.lastName()
+
+  return {
+    id: faker.number.int(),
+    name: `${firstName} ${lastName}`,
+    email: faker.internet.email({
+      firstName,
+      lastName,
+    }),
+    username: faker.internet.username({
+      firstName,
+      lastName,
+    }),
+    password: faker.internet.password(),
+    createdAt: faker.date.past(),
+    updatedAt: faker.date.recent(),
+  } as User
 }

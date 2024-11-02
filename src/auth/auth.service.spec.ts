@@ -64,7 +64,9 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findOne.mockResolvedValueOnce(user as UserEntity)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
+        user as UserEntity,
+      )
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateUser(
         user.username,
@@ -74,7 +76,7 @@ describe('AuthService', () => {
     })
 
     it('should throw an error when the user does not exist', async () => {
-      userService.findOne.mockResolvedValueOnce(null)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(null)
       try {
         await authService.validateUser('test', 'test')
       } catch (error) {
@@ -89,7 +91,9 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findOne.mockResolvedValueOnce(user as UserEntity)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
+        user as UserEntity,
+      )
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
       try {
         await authService.validateUser(user.username, 'wrong-password')
@@ -144,7 +148,7 @@ describe('AuthService', () => {
         userId: 1,
       } as ApiKeyEntity
 
-      userService.findOne.mockResolvedValueOnce(user)
+      userService.findUserById.mockResolvedValueOnce(user)
       apiKeyService.findOne.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateApiKey(apiKey.key)

@@ -1,58 +1,73 @@
-import { Injectable } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
-import * as argon2 from 'argon2'
-import { PrismaService } from 'nestjs-prisma'
+import { Injectable, NotFoundException } from '@nestjs/common'
 
+import { CreateUserDto } from './dto/create-user.dto'
+import { UpdateUserDto } from './dto/update-user.dto'
 import { UserEntity } from './entities/user.entity'
+import { UserRepository } from './user.repository'
 
 @Injectable()
 export class UserService {
-  constructor(private db: PrismaService) {}
+  constructor(private readonly repo: UserRepository) {}
 
-  async findOne(
-    userWhereInput: Prisma.UserWhereInput,
+  async createUser(data: CreateUserDto): Promise<UserEntity> {
+    return this.repo
+      .createUser({
+        data,
+      })
+      .then((user) => {
+        return new UserEntity(user)
+      })
+  }
+
+  async findUserById(id: number): Promise<UserEntity | null> {
+    return this.repo.getUser({ where: { id } }).then((user) => {
+      return new UserEntity(user)
+    })
+  }
+
+  async findUserByEmailOrUsername(
+    userEmail: UserEntity['email'],
+    userUsername: UserEntity['username'],
   ): Promise<UserEntity | null> {
-    return this.db.user.findFirst({ where: userWhereInput })
+    return this.repo
+      .findUser({
+        where: { OR: [{ email: userEmail }, { username: userUsername }] },
+      })
+      .then((user) => {
+        if (!user) {
+          throw new NotFoundException('User not found')
+        }
+        return new UserEntity(user)
+      })
   }
 
-  async findAll(params: {
-    skip?: number
-    take?: number
-    cursor?: Prisma.UserWhereUniqueInput
-    where?: Prisma.UserWhereInput
-    orderBy?: Prisma.UserOrderByWithRelationInput
-  }): Promise<UserEntity[]> {
-    const { skip, take, cursor, where, orderBy } = params
-    return this.db.user.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
+  async getAllUsers(): Promise<UserEntity[]> {
+    return this.repo.getUsers({}).then((users) => {
+      return users.map((user) => new UserEntity(user))
     })
   }
 
-  async create(data: Prisma.UserCreateInput): Promise<UserEntity> {
-    data.password = await argon2.hash(data.password, { type: argon2.argon2i })
-    return this.db.user.create({
-      data,
-    })
+  async updateUser(
+    userId: UserEntity['id'],
+    data: UpdateUserDto,
+  ): Promise<UserEntity> {
+    return this.repo
+      .updateUser({
+        where: { id: userId },
+        data,
+      })
+      .then((user) => {
+        return new UserEntity(user)
+      })
   }
 
-  async update(params: {
-    where: Prisma.UserWhereUniqueInput
-    data: Prisma.UserUpdateInput
-  }): Promise<UserEntity> {
-    const { where, data } = params
-    return this.db.user.update({
-      data,
-      where,
-    })
-  }
-
-  async delete(where: Prisma.UserWhereUniqueInput): Promise<UserEntity> {
-    return this.db.user.delete({
-      where,
-    })
+  async deleteUser(userId: UserEntity['id']): Promise<UserEntity> {
+    return this.repo
+      .deleteUser({
+        where: { id: userId },
+      })
+      .then((user) => {
+        return new UserEntity(user)
+      })
   }
 }

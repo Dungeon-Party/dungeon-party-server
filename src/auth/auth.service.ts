@@ -27,9 +27,10 @@ export class AuthService {
     username: string,
     pass: string,
   ): Promise<UserEntity | null> {
-    const user = await this.userService.findOne({
-      OR: [{ email: username }, { username: username }],
-    })
+    const user = await this.userService.findUserByEmailOrUsername(
+      username,
+      username,
+    )
 
     if (!user) {
       throw new NotFoundException('User not found')
@@ -85,7 +86,7 @@ export class AuthService {
         }
       })
       .then((userId: UserEntity['id']) => {
-        return this.userService.findOne({ id: userId })
+        return this.userService.findUserById(userId)
       })
   }
 }
