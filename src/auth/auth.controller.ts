@@ -1,7 +1,8 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiOkResponse,
   ApiResponse,
   ApiSecurity,
   ApiTags,
@@ -14,12 +15,13 @@ import { AuthService } from './auth.service'
 import { UserEntity } from '../user/entities/user.entity'
 import { User } from '../user/user.decorator'
 import LoginDto from './dto/login.dto'
+import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @ApiBody({ type: LoginDto })
   @ApiResponse({ type: TokenResponseDto })
@@ -29,7 +31,12 @@ export class AuthController {
     return this.authService.generateJwt(user)
   }
 
-  // TODO: Implement signup
+  @ApiBody({ type: SignUpDto })
+  @ApiOkResponse({ type: UserEntity })
+  @Post('register')
+  register(@Body() data: SignUpDto) {
+    return this.authService.register(data)
+  }
 
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

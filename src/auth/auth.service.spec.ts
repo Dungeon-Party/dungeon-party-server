@@ -1,4 +1,8 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtModule, JwtService } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
@@ -155,6 +159,38 @@ describe('AuthService', () => {
         .catch((error) => {
           expect(error).toBeInstanceOf(UnauthorizedException)
         })
+    })
+  })
+
+  describe('register', () => {
+    it('should return a user when the registration is successful', async () => {
+      const user = getUser()
+      const signupDto = {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        passwordConfirmation: user.password,
+      }
+      userService.createUser.mockResolvedValueOnce(user)
+      const response = await authService.register(signupDto)
+      expect(response).toEqual(user)
+    })
+
+    it('should throw an error when the passwords do not match', async () => {
+      const user = getUser()
+      const signupDto = {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        passwordConfirmation: 'wrong password',
+      }
+      try {
+        await authService.register(signupDto)
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException)
+      }
     })
   })
 })

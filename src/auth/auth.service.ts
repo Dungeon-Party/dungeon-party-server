@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -12,6 +13,7 @@ import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
 import { UserEntity } from '../user/entities/user.entity'
 import JwtPayloadDto from './dto/jwt-payload.dto'
+import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'
 
 @Injectable()
@@ -35,9 +37,17 @@ export class AuthService {
     if (!user) {
       throw new NotFoundException('User not found')
     } else if (!(await argon2.verify(user.password, pass))) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('Invalid password')
     }
     return user
+  }
+
+  async register(signupDto: SignUpDto): Promise<UserEntity> {
+    if (signupDto.password !== signupDto.passwordConfirmation) {
+      throw new BadRequestException('Passwords do not match')
+    }
+    delete signupDto.passwordConfirmation
+    return this.userService.createUser(signupDto)
   }
 
   async generateJwt(user: UserEntity): Promise<TokenResponseDto> {
