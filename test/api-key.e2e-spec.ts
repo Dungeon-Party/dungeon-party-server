@@ -46,7 +46,7 @@ describe.only('Api-Key (e2e)', () => {
     await app.close()
   })
 
-  describe('/api/v1/api-key POST', () => {
+  describe('/api/v1/api-keys POST', () => {
     it('should create an api key', async () => {
       const apiKey = {
         id: 1,
@@ -57,7 +57,7 @@ describe.only('Api-Key (e2e)', () => {
       prismaService.apiKey.create.mockResolvedValueOnce(apiKey)
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
-        .post('/api/v1/api-key')
+        .post('/api/v1/api-keys')
         .send({
           name: 'test-key',
         })
@@ -73,7 +73,7 @@ describe.only('Api-Key (e2e)', () => {
     it('should return 403 if not authorized', async () => {
       jwtAuthGuard.canActivate.mockReturnValueOnce(false)
       return request(app.getHttpServer())
-        .post('/api/v1/api-key')
+        .post('/api/v1/api-keys')
         .send({
           name: 'test-key',
         })
@@ -83,13 +83,13 @@ describe.only('Api-Key (e2e)', () => {
     it('should return 400 if name is missing', async () => {
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
-        .post('/api/v1/api-key')
+        .post('/api/v1/api-keys')
         .send({})
         .expect(400)
     })
   })
 
-  describe('/api/v1/api-key/:id DELETE', () => {
+  describe('/api/v1/api-keys/:id DELETE', () => {
     it('should delete an api key', async () => {
       const apiKey = {
         id: 1,
@@ -101,7 +101,7 @@ describe.only('Api-Key (e2e)', () => {
       prismaService.apiKey.delete.mockResolvedValueOnce(apiKey)
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
-        .delete('/api/v1/api-key/1')
+        .delete('/api/v1/api-keys/1')
         .expect(200)
         .expect(apiKey)
     })
@@ -109,7 +109,7 @@ describe.only('Api-Key (e2e)', () => {
     it('should return 403 if not authorized', async () => {
       jwtAuthGuard.canActivate.mockReturnValueOnce(false)
       return request(app.getHttpServer())
-        .delete('/api/v1/api-key/1')
+        .delete('/api/v1/api-keys/1')
         .expect(403) // 403 Forbidden vs 401
     })
 
@@ -122,7 +122,7 @@ describe.only('Api-Key (e2e)', () => {
       )
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
-        .delete('/api/v1/api-key/1')
+        .delete('/api/v1/api-keys/1')
         .expect(404)
     })
   })

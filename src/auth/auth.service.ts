@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -9,9 +10,10 @@ import * as argon2 from 'argon2'
 import { ApiKeyEntity } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
-import { UserService } from '../users/user.service'
-import { UserEntity } from '../users/entities/user.entity'
+import { UserService } from '../user/user.service'
+import { UserEntity } from '../user/entities/user.entity'
 import JwtPayloadDto from './dto/jwt-payload.dto'
+import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'
 
 @Injectable()
@@ -27,16 +29,25 @@ export class AuthService {
     username: string,
     pass: string,
   ): Promise<UserEntity | null> {
-    const user = await this.userService.findOne({
-      OR: [{ email: username }, { username: username }],
-    })
+    const user = await this.userService.findUserByEmailOrUsername(
+      username,
+      username,
+    )
 
     if (!user) {
       throw new NotFoundException('User not found')
     } else if (!(await argon2.verify(user.password, pass))) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('Invalid password')
     }
     return user
+  }
+
+  async register(signupDto: SignUpDto): Promise<UserEntity> {
+    if (signupDto.password !== signupDto.passwordConfirmation) {
+      throw new BadRequestException('Passwords do not match')
+    }
+    delete signupDto.passwordConfirmation
+    return this.userService.createUser(signupDto)
   }
 
   async generateJwt(user: UserEntity): Promise<TokenResponseDto> {
@@ -77,7 +88,7 @@ export class AuthService {
 
   async validateApiKey(key: string): Promise<UserEntity> {
     return this.apiKeyService
-      .findOne(key)
+      .findValidApiKey(key)
       .then((apiKey: ApiKeyEntity) => {
         const apiKeyToVerify = apiKey.key.split('.')[1]
         if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
@@ -85,7 +96,7 @@ export class AuthService {
         }
       })
       .then((userId: UserEntity['id']) => {
-        return this.userService.findOne({ id: userId })
+        return this.userService.findUserById(userId)
       })
   }
 }

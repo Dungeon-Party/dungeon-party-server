@@ -4,7 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyController } from './api-key.controller'
 import { ApiKeyService } from './api-key.service'
-import { isGuarded } from '../utils/test-utils'
+import { getApiKey, isGuarded } from '../utils/test-utils'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
 describe('ApiKeyController', () => {
@@ -39,7 +39,7 @@ describe('ApiKeyController', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       }
-      apiKeyService.create.mockResolvedValueOnce(result)
+      apiKeyService.createApiKey.mockResolvedValueOnce(result)
       expect(
         apiKeyController.create({ name: result.name }, 1),
       ).resolves.toEqual(result)
@@ -48,7 +48,10 @@ describe('ApiKeyController', () => {
     it('should call apiKeyService create method with the correct arguments', () => {
       const createApiKeyDto = { name: 'test' }
       apiKeyController.create(createApiKeyDto, 1)
-      expect(apiKeyService.create).toHaveBeenCalledWith(createApiKeyDto, 1)
+      expect(apiKeyService.createApiKey).toHaveBeenCalledWith(
+        createApiKeyDto,
+        1,
+      )
     })
 
     it('should be protected by the jwt guard', () => {
@@ -58,26 +61,20 @@ describe('ApiKeyController', () => {
 
   describe('delete', () => {
     it('should return the result of apiKeyService delete method', () => {
-      const result: ApiKeyEntity = {
-        id: 1,
-        name: 'test',
-        key: 'test-api-key',
-        expiresAt: new Date(),
-        userId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-      apiKeyService.delete.mockResolvedValue(result)
-      expect(apiKeyController.delete('1', 1)).resolves.toEqual(result)
+      const apiKey = getApiKey()
+      apiKeyService.deleteApiKey.mockResolvedValue(apiKey)
+      expect(
+        apiKeyController.delete(apiKey.id, apiKey.userId),
+      ).resolves.toEqual(apiKey)
     })
 
-    it('should call apiKeyService delete method with the correct arguments', () => {
-      const id = '1'
-      apiKeyController.delete(id, 1)
-      expect(apiKeyService.delete).toHaveBeenCalledWith({
-        id: Number(id),
-        userId: 1,
-      })
+    it('should call apiKeyService delete method with the correct arguments', async () => {
+      const apiKey = getApiKey()
+      await apiKeyController.delete(apiKey.id, apiKey.userId)
+      expect(apiKeyService.deleteApiKey).toHaveBeenCalledWith(
+        apiKey.id,
+        apiKey.userId,
+      )
     })
 
     it('should be protected by the jwt guard', () => {

@@ -1,4 +1,8 @@
-import { NotFoundException, UnauthorizedException } from '@nestjs/common'
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtModule, JwtService } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
@@ -6,13 +10,13 @@ import { Test, TestingModule } from '@nestjs/testing'
 import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
-import { UserModule } from '../users/user.module'
+import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { ApiKeyService } from '../api-key/api-key.service'
-import { UserService } from '../users/user.service'
+import { UserService } from '../user/user.service'
 import { AuthService } from './auth.service'
-import { ApiKeyEntity } from '../api-key/entities/api-key.entity'
-import { UserEntity } from '../users/entities/user.entity'
+import { UserEntity } from '../user/entities/user.entity'
+import { getApiKey, getUser } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
 describe('AuthService', () => {
@@ -64,7 +68,9 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findOne.mockResolvedValueOnce(user as UserEntity)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
+        user as UserEntity,
+      )
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateUser(
         user.username,
@@ -74,7 +80,7 @@ describe('AuthService', () => {
     })
 
     it('should throw an error when the user does not exist', async () => {
-      userService.findOne.mockResolvedValueOnce(null)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(null)
       try {
         await authService.validateUser('test', 'test')
       } catch (error) {
@@ -89,7 +95,9 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findOne.mockResolvedValueOnce(user as UserEntity)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
+        user as UserEntity,
+      )
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
       try {
         await authService.validateUser(user.username, 'wrong-password')
@@ -130,37 +138,20 @@ describe('AuthService', () => {
 
   describe('validateApiKey', () => {
     it('should return a user when the API key is valid', async () => {
-      const user = {
-        id: 1,
-        username: 'test',
-        email: 'test@email.com',
-        password: 'test-password',
-      } as UserEntity
-      const apiKey = {
-        id: 1,
-        name: 'test',
-        key: 'dp-test.123456',
-        expiresAt: new Date(),
-        userId: 1,
-      } as ApiKeyEntity
+      const user = getUser()
+      const apiKey = getApiKey()
 
-      userService.findOne.mockResolvedValueOnce(user)
-      apiKeyService.findOne.mockResolvedValueOnce(apiKey)
+      userService.findUserById.mockResolvedValueOnce(user)
+      apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateApiKey(apiKey.key)
       expect(response).toEqual(user)
     })
 
     it('should throw an error when the API key is invalid', async () => {
-      const apiKey = {
-        id: 1,
-        name: 'test',
-        key: 'dp-test.123456',
-        expiresAt: new Date(),
-        userId: 1,
-      } as ApiKeyEntity
+      const apiKey = getApiKey()
 
-      apiKeyService.findOne.mockResolvedValueOnce(apiKey)
+      apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
       return authService
         .validateApiKey(apiKey.key)
@@ -168,6 +159,38 @@ describe('AuthService', () => {
         .catch((error) => {
           expect(error).toBeInstanceOf(UnauthorizedException)
         })
+    })
+  })
+
+  describe('register', () => {
+    it('should return a user when the registration is successful', async () => {
+      const user = getUser()
+      const signupDto = {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        passwordConfirmation: user.password,
+      }
+      userService.createUser.mockResolvedValueOnce(user)
+      const response = await authService.register(signupDto)
+      expect(response).toEqual(user)
+    })
+
+    it('should throw an error when the passwords do not match', async () => {
+      const user = getUser()
+      const signupDto = {
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        passwordConfirmation: 'wrong password',
+      }
+      try {
+        await authService.register(signupDto)
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException)
+      }
     })
   })
 })

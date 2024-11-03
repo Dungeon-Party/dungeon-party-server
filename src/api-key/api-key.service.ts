@@ -1,18 +1,17 @@
 import * as crypto from 'crypto'
 import { Injectable } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
 import * as argon2 from 'argon2'
-import { PrismaService } from 'nestjs-prisma'
 
-import { UserEntity } from '../users/entities/user.entity'
+import { UserEntity } from '../user/entities/user.entity'
+import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
 @Injectable()
 export class ApiKeyService {
-  constructor(private readonly db: PrismaService) {}
+  constructor(private readonly repo: ApiKeyRepository) {}
 
-  async create(
+  async createApiKey(
     createApiKeyDto: CreateApiKeyDto,
     userId: UserEntity['id'],
   ): Promise<ApiKeyEntity> {
@@ -26,13 +25,13 @@ export class ApiKeyService {
     const expirationDate = new Date()
     expirationDate.setDate(expirationDate.getDate() + 7)
 
-    return this.db.apiKey
-      .create({
+    return this.repo
+      .createApiKey({
         data: {
           name: createApiKeyDto.name,
           key: apiKeyHashed,
           expiresAt: expirationDate.toISOString(),
-          userId: userId,
+          user: { connect: { id: userId } },
         },
       })
       .then((apiKey) => {
@@ -43,25 +42,30 @@ export class ApiKeyService {
       })
   }
 
-  async delete(
-    ApiKeyWhereUniqueInput: Prisma.ApiKeyWhereUniqueInput,
-  ): Promise<ApiKeyEntity | null> {
-    return this.db.apiKey
-      .delete({
-        where: ApiKeyWhereUniqueInput,
+  async deleteApiKey(
+    apiKeyId: ApiKeyEntity['id'],
+    userId: UserEntity['id'],
+  ): Promise<ApiKeyEntity> {
+    return this.repo
+      .deleteApiKey({
+        where: { id: apiKeyId, userId: userId },
       })
       .then((apiKey) => {
         return new ApiKeyEntity(apiKey)
       })
   }
 
-  async findOne(key: string): Promise<Partial<ApiKeyEntity> | null> {
+  async findValidApiKey(key: string): Promise<ApiKeyEntity> {
     const keyPrefix = key.split('.')[0]
-    return this.db.apiKey.findFirst({
-      where: {
-        key: { startsWith: keyPrefix },
-        expiresAt: { gt: new Date() },
-      },
-    })
+    return this.repo
+      .findApiKey({
+        where: {
+          key: { startsWith: keyPrefix },
+          expiresAt: { gt: new Date() },
+        },
+      })
+      .then((apiKey) => {
+        return new ApiKeyEntity(apiKey)
+      })
   }
 }

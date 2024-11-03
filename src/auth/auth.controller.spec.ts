@@ -6,11 +6,11 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import JwtOrApiKeyAuthGuard from './guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
-import { UserModule } from '../users/user.module'
+import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { UserEntity } from '../users/entities/user.entity'
-import { isGuarded } from '../utils/test-utils'
+import { UserEntity } from '../user/entities/user.entity'
+import { getUser, isGuarded } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
 describe('AuthController', () => {
@@ -91,6 +91,21 @@ describe('AuthController', () => {
       expect(
         isGuarded(authController.getProfile, JwtOrApiKeyAuthGuard),
       ).toBeTruthy()
+    })
+  })
+
+  describe('register', () => {
+    it('should return the result of AuthService.register', async () => {
+      const user = getUser()
+      authService.register.mockResolvedValueOnce(user)
+      const result = await authController.register({
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        password: user.password,
+        passwordConfirmation: user.password,
+      })
+      expect(result).toEqual(user)
     })
   })
 })

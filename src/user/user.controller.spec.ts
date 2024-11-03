@@ -3,6 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { UserController } from './user.controller'
 import { UserService } from './user.service'
+import { getUser } from '../utils/test-utils'
 import { UserEntity } from './entities/user.entity'
 
 describe('UserController', () => {
@@ -26,14 +27,11 @@ describe('UserController', () => {
     userService = module.get(UserService)
   })
 
-  describe('findAll', () => {
+  describe('getUsers', () => {
     it('should return an array of users', async () => {
-      const users: UserEntity[] = [
-        { id: 1, name: 'John Doe' } as UserEntity,
-        { id: 2, name: 'Jane Smith' } as UserEntity,
-      ]
-      userService.findAll.mockResolvedValue(users)
-      const respone = await controller.findAll()
+      const users: UserEntity[] = [getUser(), getUser()]
+      userService.getAllUsers.mockResolvedValue(users)
+      const respone = await controller.getUsers()
 
       expect(respone).toEqual(users)
     })

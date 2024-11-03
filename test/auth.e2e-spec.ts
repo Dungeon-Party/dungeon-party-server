@@ -6,10 +6,10 @@ import * as request from 'supertest'
 
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard'
 import { AuthModule } from '../src/auth/auth.module'
-import { UserService } from '../src/users/user.service'
+import { UserService } from '../src/user/user.service'
 import LoginDto from '../src/auth/dto/login.dto'
 import bootstrap from '../src/main.config'
-import { UserEntity } from '../src/users/entities/user.entity'
+import { UserEntity } from '../src/user/entities/user.entity'
 
 describe('Auth (e2e)', () => {
   let app: INestApplication
@@ -58,7 +58,7 @@ describe('Auth (e2e)', () => {
         password: 'hashed-password',
       } as UserEntity
 
-      userService.findOne.mockResolvedValueOnce(user)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
 
       return request(app.getHttpServer())
@@ -84,7 +84,7 @@ describe('Auth (e2e)', () => {
         password: 'hashed-password',
       } as UserEntity
 
-      userService.findOne.mockResolvedValueOnce(user)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
 
       return request(app.getHttpServer())
@@ -129,7 +129,7 @@ describe('Auth (e2e)', () => {
         email: 'test-email',
       } as UserEntity
 
-      userService.findOne.mockResolvedValueOnce(user)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user)
       jwtAuthGuard.canActivate.mockImplementationOnce((ctx) => {
         const request = ctx.switchToHttp().getRequest()
         request.user = user
@@ -163,6 +163,7 @@ describe('Auth (e2e)', () => {
     })
   })
 
+  // TODO: Fix this test
   // describe('/api/v1/auth/profile GET', () => {
   //   it('should get profile with JWT authentication', async () => {
   //     const user = {
