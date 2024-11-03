@@ -1,5 +1,8 @@
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { GraphQLModule } from '@nestjs/graphql'
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { utilities, WinstonModule } from 'nest-winston'
 import {
   loggingMiddleware,
@@ -57,6 +60,12 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
         ],
       }),
       inject: [ConfigService],
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
     AuthModule,
     ApiKeyModule,
