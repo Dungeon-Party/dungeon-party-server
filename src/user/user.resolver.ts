@@ -1,16 +1,29 @@
-import { Query, Resolver } from '@nestjs/graphql'
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
+import { UserService } from './user.service'
+import { CreateUserDto } from './dto/create-user.dto'
 import { User as UserEntity } from './entities/user.entity'
-import { UserRepository } from './user.repository'
 
 @Resolver()
 export class UserResolver {
-  constructor(private readonly repo: UserRepository) {}
+  constructor(private readonly userService: UserService) {}
 
-  @Query(() => [UserEntity])
+  @Query(() => [UserEntity], { name: 'users' })
   async getUsers(): Promise<UserEntity[]> {
-    return this.repo.getUsers({}).then((users) => {
+    return this.userService.getAllUsers().then((users) => {
       return users.map((user) => new UserEntity(user))
     })
+  }
+
+  @Query(() => UserEntity, { name: 'user', nullable: true })
+  async getUserById(@Args('id') id: number): Promise<UserEntity | null> {
+    return this.userService.findUserById(id).then((user) => {
+      return new UserEntity(user)
+    })
+  }
+
+  @Mutation(() => UserEntity, { name: 'createUser' })
+  async createUser(@Args('data') input: CreateUserDto): Promise<UserEntity> {
+    return this.userService.createUser(input)
   }
 }

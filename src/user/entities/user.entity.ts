@@ -13,26 +13,26 @@ import {
 @ObjectType()
 export class User implements PrismaUser {
   @ApiProperty()
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   @IsNumber()
   @IsNotEmpty()
   id: number
 
   @ApiProperty()
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   @IsString()
   @IsNotEmpty()
   name: string
 
   @ApiProperty()
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   @IsString()
   @IsEmail()
   @IsNotEmpty()
   email: string
 
   @ApiProperty()
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   @IsString()
   @IsNotEmpty()
   username: string
@@ -43,13 +43,13 @@ export class User implements PrismaUser {
   password: string
 
   @ApiProperty()
-  @Field(() => GraphQLISODateTime)
+  @Field(() => GraphQLISODateTime, { nullable: false })
   @IsDateString()
   @IsNotEmpty()
   createdAt: Date
 
   @ApiProperty()
-  @Field(() => GraphQLISODateTime)
+  @Field(() => GraphQLISODateTime, { nullable: false })
   @IsDateString()
   @IsNotEmpty()
   updatedAt: Date
