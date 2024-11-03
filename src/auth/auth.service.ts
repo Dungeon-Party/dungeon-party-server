@@ -11,7 +11,7 @@ import { ApiKeyEntity } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
-import { UserEntity } from '../user/entities/user.entity'
+import { User as UserEntity } from '../user/entities/user.entity'
 import JwtPayloadDto from './dto/jwt-payload.dto'
 import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'

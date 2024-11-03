@@ -15,7 +15,7 @@ import { AuthController } from './auth.controller'
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
 import { AuthService } from './auth.service'
-import { UserEntity } from '../user/entities/user.entity'
+import { User as UserEntity } from '../user/entities/user.entity'
 import { getApiKey, getUser } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 

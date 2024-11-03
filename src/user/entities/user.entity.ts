@@ -1,6 +1,6 @@
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
 import { ApiProperty } from '@nestjs/swagger'
-import { User } from '@prisma/client'
+import { User as PrismaUser } from '@prisma/client'
 import { Exclude } from 'class-transformer'
 import {
   IsDateString,
@@ -11,7 +11,7 @@ import {
 } from 'class-validator'
 
 @ObjectType()
-export class UserEntity implements User {
+export class User implements PrismaUser {
   @ApiProperty()
   @Field(() => Int)
   @IsNumber()
@@ -54,7 +54,7 @@ export class UserEntity implements User {
   @IsNotEmpty()
   updatedAt: Date
 
-  constructor(partial: Partial<UserEntity>) {
+  constructor(partial: Partial<User>) {
     Object.assign(this, partial)
   }
 }

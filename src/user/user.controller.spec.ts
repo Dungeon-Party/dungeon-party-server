@@ -4,7 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { UserController } from './user.controller'
 import { UserService } from './user.service'
 import { getUser } from '../utils/test-utils'
-import { UserEntity } from './entities/user.entity'
+import { User as UserEntity } from './entities/user.entity'
 
 describe('UserController', () => {
   let controller: UserController

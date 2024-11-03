@@ -3,7 +3,7 @@ import { CanActivate } from '@nestjs/common'
 import { ApiKey, User } from '@prisma/client'
 import { faker } from '@faker-js/faker'
 
-import { UserEntity } from '../user/entities/user.entity'
+import { User as UserEntity } from '../user/entities/user.entity'
 
 /**
  * Checks whether a route or a Controller is protected with the specified Guard.

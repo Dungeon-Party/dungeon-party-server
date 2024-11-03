@@ -9,7 +9,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard'
 import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { UserEntity } from '../user/entities/user.entity'
+import { User as UserEntity } from '../user/entities/user.entity'
 import { getUser, isGuarded } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 

@@ -4,7 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { UserService } from './user.service'
 import { getUser } from '../utils/test-utils'
-import { UserEntity } from './entities/user.entity'
+import { User as UserEntity } from './entities/user.entity'
 import { UserRepository } from './user.repository'
 
 describe('UserService', () => {

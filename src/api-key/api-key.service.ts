@@ -2,7 +2,7 @@ import * as crypto from 'crypto'
 import { Injectable } from '@nestjs/common'
 import * as argon2 from 'argon2'
 
-import { UserEntity } from '../user/entities/user.entity'
+import { User as UserEntity } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
