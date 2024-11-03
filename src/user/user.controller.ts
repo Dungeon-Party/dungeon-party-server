@@ -16,12 +16,7 @@ export class UserController {
   @UseGuards(JwtOrApiKeyAuthGuard)
   @Get()
   getUsers(): Promise<UserEntity[]> {
-    return this.userService.getAllUsers().then((users) => {
-      return users.map((user) => {
-        delete user.password
-        return user
-      })
-    })
+    return this.userService.getAllUsers()
   }
 
   @ApiOkResponse({ type: UserEntity })
@@ -31,8 +26,6 @@ export class UserController {
     @User() user: UserEntity,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
-    return this.userService.updateUser(user.id, updateUserDto).then((user) => {
-      return user
-    })
+    return this.userService.updateUser(user.id, updateUserDto)
   }
 }

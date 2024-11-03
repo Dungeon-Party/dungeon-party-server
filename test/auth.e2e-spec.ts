@@ -58,7 +58,7 @@ describe('Auth (e2e)', () => {
         password: 'hashed-password',
       } as UserEntity
 
-      userService.findOne.mockResolvedValueOnce(user)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
 
       return request(app.getHttpServer())
@@ -84,7 +84,7 @@ describe('Auth (e2e)', () => {
         password: 'hashed-password',
       } as UserEntity
 
-      userService.findOne.mockResolvedValueOnce(user)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
 
       return request(app.getHttpServer())
@@ -129,7 +129,7 @@ describe('Auth (e2e)', () => {
         email: 'test-email',
       } as UserEntity
 
-      userService.findOne.mockResolvedValueOnce(user)
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user)
       jwtAuthGuard.canActivate.mockImplementationOnce((ctx) => {
         const request = ctx.switchToHttp().getRequest()
         request.user = user
@@ -163,6 +163,7 @@ describe('Auth (e2e)', () => {
     })
   })
 
+  // TODO: Fix this test
   // describe('/api/v1/auth/profile GET', () => {
   //   it('should get profile with JWT authentication', async () => {
   //     const user = {
