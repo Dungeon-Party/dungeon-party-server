@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { User } from '@prisma/client'
+import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { UserService } from './user.service'
@@ -40,6 +41,14 @@ describe('UserService', () => {
       const result = await userService.createUser(user)
       expect(user).not.toBeInstanceOf(UserEntity)
       expect(result).toBeInstanceOf(UserEntity)
+    })
+
+    it('should hash the password', async () => {
+      const user = getUser()
+      userRepository.createUser.mockResolvedValue(user)
+      jest.spyOn(argon2, 'hash').mockResolvedValue('hashed-password')
+      await userService.createUser(user)
+      expect(argon2.hash).toHaveBeenCalled()
     })
   })
 

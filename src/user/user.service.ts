@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
+import * as argon2 from 'argon2'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -10,9 +11,16 @@ export class UserService {
   constructor(private readonly repo: UserRepository) {}
 
   async createUser(data: CreateUserDto): Promise<UserEntity> {
+    const hashedPassword = await argon2.hash(data.password, {
+      type: argon2.argon2i,
+    })
+
     return this.repo
       .createUser({
-        data,
+        data: {
+          ...data,
+          password: hashedPassword,
+        },
       })
       .then((user) => {
         return new UserEntity(user)
