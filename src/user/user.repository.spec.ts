@@ -28,7 +28,7 @@ describe('UserRepository', () => {
       const params = { data: user }
       prismaService.user.create.mockResolvedValue(user)
 
-      const result = await userRepository.createUser(params)
+      const result = await userRepository.create(params)
 
       expect(result).toEqual(user)
       expect(prismaService.user.create).toHaveBeenCalledWith(params)
@@ -41,7 +41,7 @@ describe('UserRepository', () => {
       const params = { where: { id: user.id } }
       prismaService.user.findUnique.mockResolvedValue(user)
 
-      const result = await userRepository.getUser(params)
+      const result = await userRepository.findUnique(params)
 
       expect(result).toEqual(user)
       expect(prismaService.user.findUnique).toHaveBeenCalledWith(params)
@@ -54,7 +54,7 @@ describe('UserRepository', () => {
       const params = { skip: 0, take: 10 }
       prismaService.user.findMany.mockResolvedValue(users)
 
-      const result = await userRepository.getUsers(params)
+      const result = await userRepository.findMany(params)
 
       expect(result).toEqual(users)
       expect(prismaService.user.findMany).toHaveBeenCalledWith(params)
@@ -67,7 +67,7 @@ describe('UserRepository', () => {
       const params = { where: { email: user.email, username: user.username } }
       prismaService.user.findFirst.mockResolvedValue(user)
 
-      const result = await userRepository.findUser(params)
+      const result = await userRepository.findFirst(params)
 
       expect(result).toEqual(user)
       expect(prismaService.user.findFirst).toHaveBeenCalledWith(params)
@@ -80,7 +80,7 @@ describe('UserRepository', () => {
       const params = { where: { id: user.id }, data: user }
       prismaService.user.update.mockResolvedValue(user)
 
-      const result = await userRepository.updateUser(params)
+      const result = await userRepository.update(params)
 
       expect(result).toEqual(user)
       expect(prismaService.user.update).toHaveBeenCalledWith(params)
@@ -93,7 +93,7 @@ describe('UserRepository', () => {
       const params = { where: { id: user.id } }
       prismaService.user.delete.mockResolvedValue(user)
 
-      const result = await userRepository.deleteUser(params)
+      const result = await userRepository.delete(params)
 
       expect(result).toEqual(user)
       expect(prismaService.user.delete).toHaveBeenCalledWith(params)

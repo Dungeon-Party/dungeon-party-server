@@ -25,9 +25,9 @@ describe('UserService', () => {
   })
 
   describe('createUser', () => {
-    it('should return the value of userRepository.createUser', async () => {
+    it('should return the value of userRepository.create', async () => {
       const user = getUser()
-      userRepository.createUser.mockResolvedValue(user)
+      userRepository.create.mockResolvedValue(user)
       const result = await userService.createUser(user)
       expect(result.name).toBe(user.name)
       expect(result.username).toBe(user.username)
@@ -36,7 +36,7 @@ describe('UserService', () => {
 
     it('should return the type of UserEntity', async () => {
       const user = getUser()
-      userRepository.createUser.mockResolvedValue(user as User)
+      userRepository.create.mockResolvedValue(user as User)
       const result = await userService.createUser(user)
       expect(user).not.toBeInstanceOf(UserEntity)
       expect(result).toBeInstanceOf(UserEntity)
@@ -44,16 +44,16 @@ describe('UserService', () => {
   })
 
   describe('findUserById', () => {
-    it('should return the value of userRepository.getUser', async () => {
+    it('should return the value of userRepository.findUnique', async () => {
       const user = getUser()
-      userRepository.getUser.mockResolvedValue(user)
+      userRepository.findUnique.mockResolvedValue(user)
       const result = await userService.findUserById(user.id)
       expect(result).toEqual(user)
     })
 
     it('should return the type of UserEntity', async () => {
       const user = getUser()
-      userRepository.getUser.mockResolvedValue(user as User)
+      userRepository.findUnique.mockResolvedValue(user as User)
       const result = await userService.findUserById(user.id)
       expect(user).not.toBeInstanceOf(UserEntity)
       expect(result).toBeInstanceOf(UserEntity)
@@ -61,9 +61,9 @@ describe('UserService', () => {
   })
 
   describe('findUserByEmailOrUsername', () => {
-    it('should return the value of userRepository.getUser', async () => {
+    it('should return the value of userRepository.findFirst', async () => {
       const user = getUser()
-      userRepository.findUser.mockResolvedValue(user)
+      userRepository.findFirst.mockResolvedValue(user)
       const result = await userService.findUserByEmailOrUsername(
         user.email,
         user.username,
@@ -73,7 +73,7 @@ describe('UserService', () => {
 
     it('should return the type of UserEntity', async () => {
       const user = getUser()
-      userRepository.findUser.mockResolvedValue(user)
+      userRepository.findFirst.mockResolvedValue(user)
       const result = await userService.findUserByEmailOrUsername(
         user.email,
         user.username,
@@ -84,16 +84,16 @@ describe('UserService', () => {
   })
 
   describe('getAllUsers', () => {
-    it('should return the value of userRepository.getUsers', async () => {
+    it('should return the value of userRepository.findMany', async () => {
       const users = [getUser(), getUser()]
-      userRepository.getUsers.mockResolvedValue(users)
+      userRepository.findMany.mockResolvedValue(users)
       const result = await userService.getAllUsers()
       expect(result).toEqual(users)
     })
 
     it('should return the type of UserEntity', async () => {
       const users = [getUser(), getUser()]
-      userRepository.getUsers.mockResolvedValue(users)
+      userRepository.findMany.mockResolvedValue(users)
       const result = await userService.getAllUsers()
       for (const user of users) {
         expect(user).not.toBeInstanceOf(UserEntity)
@@ -105,16 +105,16 @@ describe('UserService', () => {
   })
 
   describe('updateUser', () => {
-    it('should return the value of userRepository.updateUser', async () => {
+    it('should return the value of userRepository.update', async () => {
       const user = getUser()
-      userRepository.updateUser.mockResolvedValue(user)
+      userRepository.update.mockResolvedValue(user)
       const result = await userService.updateUser(user.id, user)
       expect(result.name).toBe(user.name)
     })
 
     it('should return the type of UserEntity', async () => {
       const user = getUser()
-      userRepository.updateUser.mockResolvedValue(user)
+      userRepository.update.mockResolvedValue(user)
       const result = await userService.updateUser(user.id, user)
       expect(user).not.toBeInstanceOf(UserEntity)
       expect(result).toBeInstanceOf(UserEntity)
@@ -122,16 +122,16 @@ describe('UserService', () => {
   })
 
   describe('deleteUser', () => {
-    it('should return the value of userRepository.deleteUser', async () => {
+    it('should return the value of userRepository.delete', async () => {
       const user = getUser()
-      userRepository.deleteUser.mockResolvedValue(user)
+      userRepository.delete.mockResolvedValue(user)
       const result = await userService.deleteUser(user.id)
       expect(result.name).toBe(user.name)
     })
 
     it('should return the type of UserEntity', async () => {
       const user = getUser()
-      userRepository.deleteUser.mockResolvedValue(user)
+      userRepository.delete.mockResolvedValue(user)
       const result = await userService.deleteUser(user.id)
       expect(user).not.toBeInstanceOf(UserEntity)
       expect(result).toBeInstanceOf(UserEntity)
