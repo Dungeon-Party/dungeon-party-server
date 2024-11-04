@@ -3,9 +3,9 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
 
 import JwtOrApiKeyAuthGuard from '../auth/guards/jwt-apiKey-auth.guard'
 import { UserService } from './user.service'
+import { User } from './decorators/user.decorator'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { User as UserEntity } from './entities/user.entity'
-import { User } from './user.decorator'
 
 @ApiTags('users')
 @Controller('users')

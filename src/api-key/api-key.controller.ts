@@ -10,8 +10,8 @@ import { ApiBody, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
+import { User } from '../user/decorators/user.decorator'
 import { User as UserEntity } from '../user/entities/user.entity'
-import { User } from '../user/user.decorator'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 
 @ApiTags('api-keys')
