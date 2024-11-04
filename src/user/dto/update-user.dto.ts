@@ -1,7 +1,15 @@
-import { OmitType, PartialType } from '@nestjs/swagger'
+import { Field, InputType, OmitType, PartialType } from '@nestjs/graphql'
+import { IsOptional, IsString } from 'class-validator'
 
-import { User as UserEntity } from '../entities/user.entity'
+import { User } from '../entities/user.entity'
 
+@InputType()
 export class UpdateUserDto extends PartialType(
-  OmitType(UserEntity, ['id', 'createdAt', 'updatedAt'] as const),
-) {}
+  OmitType(User, ['id', 'createdAt', 'updatedAt'] as const),
+  InputType,
+) {
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
+  password?: User['password']
+}
