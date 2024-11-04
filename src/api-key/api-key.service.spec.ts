@@ -36,7 +36,7 @@ describe('ApiKeyService', () => {
         .mockResolvedValueOnce(apiKeyPart.toString('hex'))
       const createApiKeyDto = { name: 'test' }
 
-      const result = await apiKeyService.createApiKey(createApiKeyDto, 1)
+      const result = await apiKeyService.createApiKey(1, createApiKeyDto)
       expect(result).toEqual({
         ...apiKey,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
@@ -58,7 +58,7 @@ describe('ApiKeyService', () => {
         .mockResolvedValueOnce(apiKeyPart.toString('hex'))
       const createApiKeyDto = { name: 'test', userId: 1 }
 
-      const result = await apiKeyService.createApiKey(createApiKeyDto, 1)
+      const result = await apiKeyService.createApiKey(1, createApiKeyDto)
       expect(result).toEqual({
         ...apiKey,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,

@@ -12,8 +12,8 @@ export class ApiKeyService {
   constructor(private readonly repo: ApiKeyRepository) {}
 
   async createApiKey(
-    createApiKeyDto: CreateApiKeyDto,
     userId: UserEntity['id'],
+    createApiKeyDto: CreateApiKeyDto,
   ): Promise<ApiKeyEntity> {
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
     const apiKeyString = crypto.randomBytes(16).toString('hex')
@@ -43,8 +43,8 @@ export class ApiKeyService {
   }
 
   async deleteApiKey(
-    apiKeyId: ApiKeyEntity['id'],
     userId: UserEntity['id'],
+    apiKeyId: ApiKeyEntity['id'],
   ): Promise<ApiKeyEntity> {
     return this.repo
       .deleteApiKey({
@@ -53,6 +53,22 @@ export class ApiKeyService {
       .then((apiKey) => {
         return new ApiKeyEntity(apiKey)
       })
+  }
+
+  async getAllApiKeys(user: UserEntity): Promise<ApiKeyEntity[]> {
+    return this.repo
+      .getApiKeys({
+        where: { userId: user.id },
+      })
+      .then((apiKeys) => {
+        return apiKeys.map((apiKey) => new ApiKeyEntity(apiKey))
+      })
+  }
+
+  async findApiKeyById(apiKeyId: ApiKeyEntity['id']): Promise<ApiKeyEntity> {
+    return this.repo.getApiKey({ where: { id: apiKeyId } }).then((apiKey) => {
+      return new ApiKeyEntity(apiKey)
+    })
   }
 
   async findValidApiKey(key: string): Promise<ApiKeyEntity> {

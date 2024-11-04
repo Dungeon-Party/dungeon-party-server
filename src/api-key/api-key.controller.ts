@@ -26,7 +26,7 @@ export class ApiKeyController {
     @Body() createApiKeyDto: CreateApiKeyDto,
     @User('id') userId: UserEntity['id'],
   ) {
-    return this.apiKeyService.createApiKey(createApiKeyDto, userId)
+    return this.apiKeyService.createApiKey(userId, createApiKeyDto)
   }
 
   @UseGuards(JwtAuthGuard)

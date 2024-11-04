@@ -49,8 +49,8 @@ describe('ApiKeyController', () => {
       const createApiKeyDto = { name: 'test' }
       apiKeyController.create(createApiKeyDto, 1)
       expect(apiKeyService.createApiKey).toHaveBeenCalledWith(
-        createApiKeyDto,
         1,
+        createApiKeyDto,
       )
     })
 
