@@ -19,11 +19,17 @@ datasource db {
 // - SourceType
 // - Size
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   username  String   @unique
   name      String?
+  role      Role     @default(USER)
   password  String
   apiKeys   ApiKey[]
   createdAt DateTime @default(now())

@@ -4,6 +4,7 @@ import { Exclude } from 'class-transformer'
 import {
   IsDateString,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -30,6 +31,11 @@ export class UserEntity implements User {
   @IsString()
   @IsNotEmpty()
   username: string
+
+  @ApiProperty()
+  @IsEnum({ ADMIN: 'ADMIN', USER: 'USER' })
+  @IsNotEmpty()
+  role: 'ADMIN' | 'USER'
 
   @Exclude()
   @IsString()

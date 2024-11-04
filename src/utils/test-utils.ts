@@ -53,6 +53,7 @@ export const getUser = (): UserEntity => {
       firstName,
       lastName,
     }),
+    role: faker.helpers.arrayElement(['ADMIN', 'USER']),
     password: faker.internet.password(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),

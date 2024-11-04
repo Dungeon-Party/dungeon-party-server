@@ -1,11 +1,13 @@
+import { Role } from '@prisma/client'
 import * as argon2 from 'argon2'
 
 const users = [
   {
     id: 1,
-    name: 'Rick',
-    username: 'rick',
-    email: 'rick@prisma.io',
+    name: 'Admin',
+    username: 'admin',
+    role: Role.ADMIN,
+    email: 'admin@dungeon-party.io',
     password: 'password',
   },
 ]
