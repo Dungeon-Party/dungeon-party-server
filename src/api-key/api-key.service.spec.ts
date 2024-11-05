@@ -24,10 +24,10 @@ describe('ApiKeyService', () => {
   })
 
   describe('createApiKey', () => {
-    it('should return the result of ApiKeyRepository.createApiKey method ', async () => {
+    it('should return the result of ApiKeyRepository.create method ', async () => {
       const apiKeyPart = Buffer.from('kljsdf892hhlk3hkl')
       const apiKey = getApiKey()
-      apiKeyRepository.createApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyRepository.create.mockResolvedValueOnce(apiKey)
       jest.spyOn(crypto, 'randomBytes').mockImplementation(() => {
         return apiKeyPart
       })
@@ -49,7 +49,7 @@ describe('ApiKeyService', () => {
     it('should return the type of ApiKeyEntity', async () => {
       const apiKeyPart = Buffer.from('kljsdf892hhlk3hkl')
       const apiKey = getApiKey()
-      apiKeyRepository.createApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyRepository.create.mockResolvedValueOnce(apiKey)
       jest.spyOn(crypto, 'randomBytes').mockImplementation(() => {
         return apiKeyPart
       })
@@ -69,9 +69,9 @@ describe('ApiKeyService', () => {
   })
 
   describe('deleteApiKey', () => {
-    it('should return the result of ApiKeyRepository.deleteApiKey method', async () => {
+    it('should return the result of ApiKeyRepository.delete method', async () => {
       const apiKey = getApiKey()
-      apiKeyRepository.deleteApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
 
       const result = await apiKeyService.deleteApiKey(apiKey.id, apiKey.userId)
       expect(result).toEqual(apiKey)
@@ -79,7 +79,7 @@ describe('ApiKeyService', () => {
 
     it('should return the type of ApiKeyEntity', async () => {
       const apiKey = getApiKey()
-      apiKeyRepository.deleteApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
 
       const result = await apiKeyService.deleteApiKey(apiKey.id, apiKey.userId)
       expect(result).toEqual(apiKey)
@@ -89,7 +89,7 @@ describe('ApiKeyService', () => {
   })
 
   describe('findOne', () => {
-    it('should return the result of apiKeyRepository.findApiKey method', async () => {
+    it('should return the result of apiKeyRepository.findFirst method', async () => {
       const result = {
         id: 1,
         name: 'test',
@@ -100,11 +100,11 @@ describe('ApiKeyService', () => {
         updatedAt: new Date(),
       }
 
-      apiKeyRepository.findApiKey.mockResolvedValueOnce(result)
+      apiKeyRepository.findFirst.mockResolvedValueOnce(result)
       const key = 'dp-kljsdf892hhlk3hkl.1657894531'
       const response = await apiKeyService.findValidApiKey(key)
       const prismaServiceFindFirstArgs =
-        apiKeyRepository.findApiKey.mock.calls[0][0]
+        apiKeyRepository.findFirst.mock.calls[0][0]
       expect(prismaServiceFindFirstArgs.where.key).toEqual({
         startsWith: result.key.split('.')[0],
       })
@@ -113,7 +113,7 @@ describe('ApiKeyService', () => {
 
     it('should return the type of ApiKeyEntity', async () => {
       const apiKey = getApiKey()
-      apiKeyRepository.findApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
       const result = await apiKeyService.findValidApiKey(apiKey.key)
       expect(result).toEqual(apiKey)
       expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
