@@ -60,6 +60,7 @@ export class AuthService {
 
     /* istanbul ignore next */
     const jwtSecret =
+      // FIXME: This is a workaround to make tests pass
       process.env.NODE_ENV === 'test'
         ? 'test-secret'
         : this.configService.get<string>('security.jwt.secret')

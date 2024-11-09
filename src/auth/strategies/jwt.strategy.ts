@@ -17,6 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey:
+        // FIXME: This is a workaround to make tests pass
         process.env.NODE_ENV === 'test'
           ? 'test-secret'
           : configService.get<string>('security.jwt.secret'),
