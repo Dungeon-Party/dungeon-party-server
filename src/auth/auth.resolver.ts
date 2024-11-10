@@ -1,6 +1,10 @@
+import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
+import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard'
+import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
+import { GqlUser } from '../user/decorators/gql-user.decorator'
 import { User as UserEntity } from '../user/entities/user.entity'
 import LoginDto from './dto/login.dto'
 import { SignUpDto } from './dto/signup.dto'
@@ -10,6 +14,7 @@ import TokenResponseDto from './dto/token-response.dto'
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(LocalAuthGuard)
   @Query(() => TokenResponseDto)
   async login(
     @Args('loginInput') loginInput: LoginDto,
@@ -27,8 +32,9 @@ export class AuthResolver {
     return this.authService.register(registerInput)
   }
 
-  // @Query(() => TokenResponseDto)
-  // async refresh(): Promise<TokenResponseDto> {
-  //   return this.authService.generateJwt()
-  // }
+  @UseGuards(GqlJwtAuthGuard)
+  @Query(() => TokenResponseDto)
+  async refresh(@GqlUser() user: UserEntity): Promise<TokenResponseDto> {
+    return this.authService.generateJwt(user)
+  }
 }

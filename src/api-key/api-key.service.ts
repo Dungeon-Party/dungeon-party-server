@@ -4,6 +4,7 @@ import * as argon2 from 'argon2'
 
 import { User as UserEntity } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
+import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
@@ -14,7 +15,7 @@ export class ApiKeyService {
   async createApiKey(
     userId: UserEntity['id'],
     createApiKeyDto: CreateApiKeyDto,
-  ): Promise<ApiKeyEntity> {
+  ): Promise<CreateApiKeyResponseDto> {
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
     const apiKeyString = crypto.randomBytes(16).toString('hex')
     const apiKeyStringHashed = await argon2.hash(apiKeyString, {

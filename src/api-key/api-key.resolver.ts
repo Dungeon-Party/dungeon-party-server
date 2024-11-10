@@ -5,6 +5,7 @@ import { GqlJwtAuthGuard } from '../auth/guards/gql-jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
 import { GqlUser } from '../user/decorators/gql-user.decorator'
 import { User as UserEntity } from '../user/entities/user.entity'
+import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
@@ -20,6 +21,7 @@ export class ApiKeyResolver {
     })
   }
 
+  @UseGuards(GqlJwtAuthGuard)
   @Query(() => ApiKeyEntity, { name: 'apiKey', nullable: true })
   async getApiKeyById(@Args('id') id: number): Promise<ApiKeyEntity | null> {
     return this.apiKeyService.findApiKeyById(id).then((apiKey) => {
@@ -27,14 +29,16 @@ export class ApiKeyResolver {
     })
   }
 
-  @Mutation(() => ApiKeyEntity, { name: 'createApiKey' })
+  @UseGuards(GqlJwtAuthGuard)
+  @Mutation(() => CreateApiKeyResponseDto, { name: 'createApiKey' })
   async createApiKey(
     @GqlUser() user,
     @Args('data') input: CreateApiKeyDto,
-  ): Promise<ApiKeyEntity> {
+  ): Promise<CreateApiKeyResponseDto> {
     return this.apiKeyService.createApiKey(user.id, input)
   }
 
+  @UseGuards(GqlJwtAuthGuard)
   @Mutation(() => ApiKeyEntity, { name: 'deleteApiKey' })
   async deleteApiKey(
     @GqlUser() user,
