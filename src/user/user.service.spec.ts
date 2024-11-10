@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { User } from '@prisma/client'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
@@ -80,6 +81,15 @@ describe('UserService', () => {
       )
       expect(user).not.toBeInstanceOf(UserEntity)
       expect(result).toBeInstanceOf(UserEntity)
+    })
+
+    it('should throw an error when the user does not exist', async () => {
+      userRepository.findFirst.mockResolvedValue(null)
+      try {
+        await userService.findUserByEmailOrUsername('test', 'test')
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException)
+      }
     })
   })
 
