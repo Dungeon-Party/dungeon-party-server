@@ -26,7 +26,7 @@ export class ApiKeyService {
     expirationDate.setDate(expirationDate.getDate() + 7)
 
     return this.repo
-      .createApiKey({
+      .create({
         data: {
           name: createApiKeyDto.name,
           key: apiKeyHashed,
@@ -47,7 +47,7 @@ export class ApiKeyService {
     apiKeyId: ApiKeyEntity['id'],
   ): Promise<ApiKeyEntity> {
     return this.repo
-      .deleteApiKey({
+      .delete({
         where: { id: apiKeyId, userId: userId },
       })
       .then((apiKey) => {
@@ -74,7 +74,7 @@ export class ApiKeyService {
   async findValidApiKey(key: string): Promise<ApiKeyEntity> {
     const keyPrefix = key.split('.')[0]
     return this.repo
-      .findApiKey({
+      .findFirst({
         where: {
           key: { startsWith: keyPrefix },
           expiresAt: { gt: new Date() },

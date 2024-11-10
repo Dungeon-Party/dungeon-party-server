@@ -9,7 +9,6 @@ import { LocalStrategy } from './strategies/local.strategy'
 import { ApiKeyModule } from '../api-key/api-key.module'
 import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
-import { ApiKeyService } from '../api-key/api-key.service'
 import { AuthService } from './auth.service'
 
 @Module({
@@ -31,13 +30,7 @@ import { AuthService } from './auth.service'
     ApiKeyModule,
   ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    ApiKeyService,
-    LocalStrategy,
-    JwtStrategy,
-    ApiKeyStrategy,
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy, ApiKeyStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}

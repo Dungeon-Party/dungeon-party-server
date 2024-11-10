@@ -8,6 +8,6 @@ import { ApiKeyRepository } from './api-key.repository'
   imports: [],
   controllers: [ApiKeyController],
   providers: [ApiKeyService, ApiKeyRepository],
-  exports: [ApiKeyService, ApiKeyRepository], // FIXME: don't like exporting ApiKeyRepository
+  exports: [ApiKeyService],
 })
 export class ApiKeyModule {}

@@ -5,31 +5,31 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import 'prisma'
 
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
-import { PrismaService } from 'nestjs-prisma'
 import * as request from 'supertest'
 
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard'
 import { ApiKeyModule } from '../src/api-key/api-key.module'
+import { ApiKeyRepository } from '../src/api-key/api-key.repository'
 import { ApiKeyEntity } from '../src/api-key/entities/api-key.entity'
 import bootstrap from '../src/main.config'
 
-describe.only('Api-Key (e2e)', () => {
+describe('Api-Key (e2e)', () => {
   let app: INestApplication
   let jwtAuthGuard: DeepMockProxy<JwtAuthGuard>
-  let prismaService: DeepMockProxy<PrismaService>
+  let apiKeyRepository: DeepMockProxy<ApiKeyRepository>
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [ApiKeyModule],
     })
-      .overrideProvider(PrismaService)
-      .useValue(mockDeep<PrismaService>())
+      .overrideProvider(ApiKeyRepository)
+      .useValue(mockDeep<ApiKeyRepository>())
       .overrideGuard(JwtAuthGuard)
       .useValue(mockDeep<JwtAuthGuard>())
       .useMocker(mockDeep)
       .compile()
 
-    prismaService = moduleFixture.get(PrismaService)
+    apiKeyRepository = moduleFixture.get(ApiKeyRepository)
     jwtAuthGuard = moduleFixture.get(JwtAuthGuard)
     app = moduleFixture.createNestApplication()
 
@@ -54,7 +54,7 @@ describe.only('Api-Key (e2e)', () => {
         key: 'test-key',
         userId: 1,
       } as ApiKeyEntity
-      prismaService.apiKey.create.mockResolvedValueOnce(apiKey)
+      apiKeyRepository.create.mockResolvedValueOnce(apiKey)
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
         .post('/api/v1/api-keys')
@@ -98,7 +98,7 @@ describe.only('Api-Key (e2e)', () => {
         userId: 1,
       } as ApiKeyEntity
       // apiKeyService.remove.mockResolvedValue(apiKey)
-      prismaService.apiKey.delete.mockResolvedValueOnce(apiKey)
+      apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
         .delete('/api/v1/api-keys/1')
@@ -114,7 +114,7 @@ describe.only('Api-Key (e2e)', () => {
     })
 
     it('should return 404 if api key does not exist', async () => {
-      prismaService.apiKey.delete.mockRejectedValueOnce(
+      apiKeyRepository.delete.mockRejectedValueOnce(
         new PrismaClientKnownRequestError('Not Found', {
           code: 'P2025',
           clientVersion: '2.24.0',

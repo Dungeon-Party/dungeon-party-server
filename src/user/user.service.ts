@@ -16,7 +16,7 @@ export class UserService {
     })
 
     return this.repo
-      .createUser({
+      .create({
         data: {
           ...data,
           password: hashedPassword,
@@ -28,7 +28,7 @@ export class UserService {
   }
 
   async findUserById(id: number): Promise<UserEntity | null> {
-    return this.repo.getUser({ where: { id } }).then((user) => {
+    return this.repo.findUnique({ where: { id } }).then((user) => {
       return new UserEntity(user)
     })
   }
@@ -38,7 +38,7 @@ export class UserService {
     userUsername: UserEntity['username'],
   ): Promise<UserEntity | null> {
     return this.repo
-      .findUser({
+      .findFirst({
         where: { OR: [{ email: userEmail }, { username: userUsername }] },
       })
       .then((user) => {
@@ -50,7 +50,7 @@ export class UserService {
   }
 
   async getAllUsers(): Promise<UserEntity[]> {
-    return this.repo.getUsers({}).then((users) => {
+    return this.repo.findMany({}).then((users) => {
       return users.map((user) => new UserEntity(user))
     })
   }
@@ -60,7 +60,7 @@ export class UserService {
     data: UpdateUserDto,
   ): Promise<UserEntity> {
     return this.repo
-      .updateUser({
+      .update({
         where: { id: userId },
         data,
       })
@@ -71,7 +71,7 @@ export class UserService {
 
   async deleteUser(userId: UserEntity['id']): Promise<UserEntity> {
     return this.repo
-      .deleteUser({
+      .delete({
         where: { id: userId },
       })
       .then((user) => {
