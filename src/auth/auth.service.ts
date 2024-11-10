@@ -25,6 +25,12 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  async login(username: string, password: string): Promise<TokenResponseDto> {
+    return this.validateUser(username, password).then((user) =>
+      this.generateJwt(user),
+    )
+  }
+
   async validateUser(
     username: string,
     pass: string,

@@ -10,6 +10,7 @@ import { ApiKeyModule } from '../api-key/api-key.module'
 import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { AuthResolver } from './auth.resolver'
 
 @Module({
   imports: [
@@ -30,7 +31,13 @@ import { AuthService } from './auth.service'
     ApiKeyModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, ApiKeyStrategy],
+  providers: [
+    AuthService,
+    AuthResolver,
+    LocalStrategy,
+    JwtStrategy,
+    ApiKeyStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
