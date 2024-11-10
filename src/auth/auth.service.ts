@@ -100,6 +100,8 @@ export class AuthService {
         const apiKeyToVerify = apiKey.key.split('.')[1]
         if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
           return apiKey.userId
+        } else {
+          throw new UnauthorizedException('Invalid API key')
         }
       })
       .then((userId: UserEntity['id']) => {

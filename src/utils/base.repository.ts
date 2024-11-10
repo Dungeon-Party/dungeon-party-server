@@ -66,9 +66,7 @@ export class BaseCrudRepository<
   }
 
   private getModelName(): string {
-    const modelName = this.constructor.name
-      .replace('Repository', '')
-      .toLowerCase()
-    return modelName
+    const modelName = this.constructor.name.replace('Repository', '')
+    return modelName[0].toLowerCase() + modelName.slice(1)
   }
 }

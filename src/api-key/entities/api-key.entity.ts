@@ -18,7 +18,6 @@ export class ApiKeyEntity implements ApiKey {
   name: string
 
   @IsNotEmpty()
-  @Field(() => String, { nullable: false })
   @IsString()
   @ApiProperty()
   key: string

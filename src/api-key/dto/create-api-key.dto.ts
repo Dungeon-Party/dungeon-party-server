@@ -1,7 +1,10 @@
-import { PickType } from '@nestjs/swagger'
+import { InputType, PickType } from '@nestjs/graphql'
 
 import { ApiKeyEntity } from '../entities/api-key.entity'
 
-export class CreateApiKeyDto extends PickType(ApiKeyEntity, [
-  'name',
-] as const) {}
+@InputType()
+export class CreateApiKeyDto extends PickType(
+  ApiKeyEntity,
+  ['name'] as const,
+  InputType,
+) {}
