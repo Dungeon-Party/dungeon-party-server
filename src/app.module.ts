@@ -3,6 +3,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
+import { GraphQLError, GraphQLFormattedError } from 'graphql'
 import { utilities, WinstonModule } from 'nest-winston'
 import {
   loggingMiddleware,
@@ -67,6 +68,14 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
       context: ({ req, res }) => ({ req, res }),
+      formatError: (error: GraphQLError) => {
+        const graphQLFormattedError: GraphQLFormattedError = {
+          message:
+            (error.extensions?.originalError as Error)?.message ||
+            error.message,
+        }
+        return graphQLFormattedError
+      },
     }),
     AuthModule,
     ApiKeyModule,

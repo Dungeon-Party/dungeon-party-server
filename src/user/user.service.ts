@@ -29,6 +29,9 @@ export class UserService {
 
   async findUserById(id: number): Promise<UserEntity | null> {
     return this.repo.findUnique({ where: { id } }).then((user) => {
+      if (!user) {
+        throw new NotFoundException('User not found')
+      }
       return new UserEntity(user)
     })
   }

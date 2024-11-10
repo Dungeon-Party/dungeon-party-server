@@ -1,5 +1,5 @@
 import * as crypto from 'crypto'
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import * as argon2 from 'argon2'
 
 import { User as UserEntity } from '../user/entities/user.entity'
@@ -67,6 +67,9 @@ export class ApiKeyService {
 
   async findApiKeyById(apiKeyId: ApiKeyEntity['id']): Promise<ApiKeyEntity> {
     return this.repo.findFirst({ where: { id: apiKeyId } }).then((apiKey) => {
+      if (!apiKey) {
+        throw new NotFoundException('API key not found')
+      }
       return new ApiKeyEntity(apiKey)
     })
   }
@@ -81,6 +84,9 @@ export class ApiKeyService {
         },
       })
       .then((apiKey) => {
+        if (!apiKey) {
+          throw new NotFoundException('API key not found')
+        }
         return new ApiKeyEntity(apiKey)
       })
   }

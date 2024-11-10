@@ -11,16 +11,12 @@ export class UserResolver {
 
   @Query(() => [UserEntity], { name: 'users' })
   async getUsers(): Promise<UserEntity[]> {
-    return this.userService.getAllUsers().then((users) => {
-      return users.map((user) => new UserEntity(user))
-    })
+    return this.userService.getAllUsers()
   }
 
   @Query(() => UserEntity, { name: 'user', nullable: true })
   async getUserById(@Args('id') id: number): Promise<UserEntity | null> {
-    return this.userService.findUserById(id).then((user) => {
-      return new UserEntity(user)
-    })
+    return this.userService.findUserById(id)
   }
 
   @Mutation(() => UserEntity, { name: 'createUser' })
