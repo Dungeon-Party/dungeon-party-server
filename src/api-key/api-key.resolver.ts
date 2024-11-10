@@ -1,3 +1,4 @@
+// TODO: Ensure that all necessary methods have guards
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 

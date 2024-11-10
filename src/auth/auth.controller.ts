@@ -1,3 +1,5 @@
+// TODO: Ensure that swagger description, response, and body is added to each method
+// TODO: Inject logger and log any exceptions
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,

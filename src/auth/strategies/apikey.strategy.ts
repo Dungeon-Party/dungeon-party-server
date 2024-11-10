@@ -14,6 +14,7 @@ export class ApiKeyStrategy extends PassportStrategy(
       { header: 'Authorization', prefix: 'Api-Key ' },
       true,
       async (apikey, done) => {
+        // TODO: Make sure that the service doesn't already handle unauthorized exceptions
         const user = await authService.validateApiKey(apikey)
         if (!user) {
           done(new UnauthorizedException(), false)

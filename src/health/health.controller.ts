@@ -1,3 +1,5 @@
+// TODO: Ensure that swagger description, response, and body is added to each method
+// TODO: Inject logger and log any exceptions
 import { Controller, Get } from '@nestjs/common'
 import { ApiTags } from '@nestjs/swagger'
 import {

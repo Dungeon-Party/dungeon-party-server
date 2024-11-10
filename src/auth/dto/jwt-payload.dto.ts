@@ -1,3 +1,6 @@
+// TODO: Ensure that swagger description is added to each field
+// TODO: Class Validator is properly applied to each field
+// TODO: GraphQL decorators are properly applied to each field
 import { Exclude, Expose } from 'class-transformer'
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator'
 

@@ -14,6 +14,7 @@ export class RequestLoggingMiddleware implements NestMiddleware {
       const contentLength = response.get('content-length')
       const message = `${method} ${originalUrl} ${statusCode} ${contentLength} - ${userAgent} ${ip}`
 
+      // FIXME: Correct this logic for proper logging levels
       if (statusCode < 500 && statusCode > 200) {
         this.logger.warn(message)
       } else if (statusCode >= 500) {

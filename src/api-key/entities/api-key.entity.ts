@@ -1,3 +1,7 @@
+// TODO: Ensure that swagger description is added to each field
+// TODO: Class Validator is properly applied to each field
+// TODO: GraphQL decorators are properly applied to each field
+// TODO: Ensure that the class extends the Prisma model
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
 import { ApiProperty } from '@nestjs/swagger'
 import { ApiKey } from '@prisma/client'

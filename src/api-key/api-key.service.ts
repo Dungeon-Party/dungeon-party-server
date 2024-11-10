@@ -1,3 +1,6 @@
+// TODO: Inject logger and log any exceptions
+// TODO: add JsDoc comments to all methods
+// TODO: Ensure that all method names make sense (getAllApiKeysForUser vs getAllApiKeys)
 import * as crypto from 'crypto'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import * as argon2 from 'argon2'

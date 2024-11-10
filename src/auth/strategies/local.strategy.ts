@@ -16,6 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string): Promise<Partial<User>> {
+    // TODO: Make sure that the service doesn't already handle unauthorized exceptions
     if (!username || !password) {
       throw new BadRequestException()
     }
