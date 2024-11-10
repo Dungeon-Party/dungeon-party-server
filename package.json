@@ -116,7 +116,8 @@
   "lint-staged": {
     "**/*.ts": [
       "yarn lint",
-      "yarn test --bail --findRelatedTests --passWithNoTests"
+      "yarn test --bail --findRelatedTests --passWithNoTests",
+      "yarn test:e2e --bail --findRelatedTests --passWithNoTests"
     ],
     "prisma/schema.prisma": [
       "yarn db:format"
