@@ -66,6 +66,7 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
       autoSchemaFile: true,
       playground: false,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      context: ({ req, res }) => ({ req, res }),
     }),
     AuthModule,
     ApiKeyModule,

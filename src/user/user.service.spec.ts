@@ -46,7 +46,7 @@ describe('UserService', () => {
 
     it('should hash the password', async () => {
       const user = getUser()
-      userRepository.createUser.mockResolvedValue(user)
+      userRepository.create.mockResolvedValue(user)
       jest.spyOn(argon2, 'hash').mockResolvedValue('hashed-password')
       await userService.createUser(user)
       expect(argon2.hash).toHaveBeenCalled()

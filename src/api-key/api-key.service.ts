@@ -57,7 +57,7 @@ export class ApiKeyService {
 
   async getAllApiKeys(user: UserEntity): Promise<ApiKeyEntity[]> {
     return this.repo
-      .getApiKeys({
+      .findMany({
         where: { userId: user.id },
       })
       .then((apiKeys) => {
@@ -66,7 +66,7 @@ export class ApiKeyService {
   }
 
   async findApiKeyById(apiKeyId: ApiKeyEntity['id']): Promise<ApiKeyEntity> {
-    return this.repo.getApiKey({ where: { id: apiKeyId } }).then((apiKey) => {
+    return this.repo.findFirst({ where: { id: apiKeyId } }).then((apiKey) => {
       return new ApiKeyEntity(apiKey)
     })
   }
