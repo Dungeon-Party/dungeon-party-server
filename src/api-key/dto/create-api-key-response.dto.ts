@@ -22,6 +22,7 @@ export class CreateApiKeyResponseDto {
 
   @ApiProperty({
     description: 'The name of the API Key',
+    minLength: 3,
     maxLength: 25,
     example: 'Test API Key',
     type: 'string',

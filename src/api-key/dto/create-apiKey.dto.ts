@@ -9,12 +9,14 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  MinLength,
 } from 'class-validator'
 
 @InputType()
 export class CreateApiKeyDto {
   @ApiProperty({
     description: 'The name of the API Key',
+    minLength: 3,
     maxLength: 25,
     example: 'Test API Key',
     type: 'string',
@@ -22,6 +24,7 @@ export class CreateApiKeyDto {
   @Field(() => String, { nullable: false })
   @IsNotEmpty()
   @IsString()
+  @MinLength(3)
   @MaxLength(25)
   name: string
 

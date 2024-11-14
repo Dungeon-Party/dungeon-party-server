@@ -6,7 +6,14 @@ import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
 import { ApiProperty } from '@nestjs/swagger'
 import { ApiKey } from '@prisma/client'
 import { Exclude } from 'class-transformer'
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator'
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator'
 
 import { User } from '../../user/entities/user.entity'
 
@@ -25,6 +32,7 @@ export class ApiKeyEntity implements ApiKey {
 
   @ApiProperty({
     description: 'The name of the API Key',
+    minLength: 3,
     maxLength: 25,
     example: 'Test API Key',
     type: 'string',
@@ -32,6 +40,8 @@ export class ApiKeyEntity implements ApiKey {
   @Field(() => String, { nullable: false })
   @IsNotEmpty()
   @IsString()
+  @MinLength(3)
+  @MaxLength(25)
   name: string
 
   @ApiProperty({
