@@ -41,6 +41,7 @@ export class CreateApiKeyResponseDto {
     example: 'dp-aldkhlkanlk,23.dflkj898798h23kbb3llk',
     type: 'string',
   })
+  @Field(() => String, { nullable: false })
   @IsNotEmpty()
   @IsString()
   @Expose()
