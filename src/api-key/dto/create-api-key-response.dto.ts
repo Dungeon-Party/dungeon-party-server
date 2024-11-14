@@ -3,11 +3,13 @@
 // TODO: GraphQL decorators are properly applied to each field
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
 import { ApiProperty } from '@nestjs/swagger'
+import { Exclude, Expose } from 'class-transformer'
 import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
 import { User } from '../../user/entities/user.entity'
 
 @ObjectType()
+@Exclude()
 export class CreateApiKeyResponseDto {
   @ApiProperty({
     description: 'Unique identifier for the API Key',
@@ -18,6 +20,7 @@ export class CreateApiKeyResponseDto {
   @Field(() => Int, { nullable: false })
   @IsNotEmpty()
   @IsNumber()
+  @Expose()
   id: number
 
   @ApiProperty({
@@ -30,6 +33,7 @@ export class CreateApiKeyResponseDto {
   @Field(() => String, { nullable: false })
   @IsNotEmpty()
   @IsString()
+  @Expose()
   name: string
 
   @ApiProperty({
@@ -39,6 +43,7 @@ export class CreateApiKeyResponseDto {
   })
   @IsNotEmpty()
   @IsString()
+  @Expose()
   key: string
 
   @ApiProperty({
@@ -57,6 +62,7 @@ export class CreateApiKeyResponseDto {
   @Field(() => Int, { nullable: false })
   @IsNotEmpty()
   @IsNumber()
+  @Expose()
   userId: number
 
   @ApiProperty({
@@ -68,6 +74,7 @@ export class CreateApiKeyResponseDto {
   @Field(() => GraphQLISODateTime, { nullable: false })
   @IsNotEmpty()
   @IsDateString()
+  @Expose()
   expiresAt: Date
 
   @ApiProperty({
@@ -79,6 +86,7 @@ export class CreateApiKeyResponseDto {
   @Field(() => GraphQLISODateTime, { nullable: false })
   @IsNotEmpty()
   @IsDateString()
+  @Expose()
   createdAt: Date
 
   @ApiProperty({
@@ -90,6 +98,7 @@ export class CreateApiKeyResponseDto {
   @Field(() => GraphQLISODateTime, { nullable: false })
   @IsNotEmpty()
   @IsDateString()
+  @Expose()
   updatedAt: Date
 
   constructor(partial: Partial<CreateApiKeyResponseDto>) {

@@ -5,7 +5,7 @@
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
 import { ApiProperty } from '@nestjs/swagger'
 import { ApiKey } from '@prisma/client'
-import { Exclude } from 'class-transformer'
+import { Exclude, Expose } from 'class-transformer'
 import {
   IsDateString,
   IsNotEmpty,
@@ -18,6 +18,7 @@ import {
 import { User } from '../../user/entities/user.entity'
 
 @ObjectType()
+@Exclude()
 export class ApiKeyEntity implements ApiKey {
   @ApiProperty({
     description: 'Unique identifier for the API Key',
@@ -28,6 +29,7 @@ export class ApiKeyEntity implements ApiKey {
   @Field(() => Int, { nullable: false })
   @IsNotEmpty()
   @IsNumber()
+  @Expose()
   id: number
 
   @ApiProperty({
@@ -42,6 +44,7 @@ export class ApiKeyEntity implements ApiKey {
   @IsString()
   @MinLength(3)
   @MaxLength(25)
+  @Expose()
   name: string
 
   @ApiProperty({
@@ -49,7 +52,6 @@ export class ApiKeyEntity implements ApiKey {
     example: 'dp-aldkhlkanlk,23.dflkj898798h23kbb3llk',
     type: 'string',
   })
-  @Exclude()
   @IsNotEmpty()
   @IsString()
   key: string
@@ -70,6 +72,7 @@ export class ApiKeyEntity implements ApiKey {
   @Field(() => Int, { nullable: false })
   @IsNotEmpty()
   @IsNumber()
+  @Expose()
   userId: number
 
   @ApiProperty({
@@ -81,6 +84,7 @@ export class ApiKeyEntity implements ApiKey {
   @Field(() => GraphQLISODateTime, { nullable: false })
   @IsNotEmpty()
   @IsDateString()
+  @Expose()
   expiresAt: Date
 
   @ApiProperty({
@@ -92,6 +96,7 @@ export class ApiKeyEntity implements ApiKey {
   @Field(() => GraphQLISODateTime, { nullable: false })
   @IsNotEmpty()
   @IsDateString()
+  @Expose()
   createdAt: Date
 
   @ApiProperty({
@@ -103,6 +108,7 @@ export class ApiKeyEntity implements ApiKey {
   @Field(() => GraphQLISODateTime, { nullable: false })
   @IsNotEmpty()
   @IsDateString()
+  @Expose()
   updatedAt: Date
 
   constructor(partial: Partial<ApiKeyEntity>) {
