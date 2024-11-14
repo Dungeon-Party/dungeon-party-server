@@ -7,7 +7,7 @@ import { ApiKeyService } from './api-key.service'
 import { getApiKey } from '../utils/test-utils'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
-import { ApiKeyEntity } from './entities/api-key.entity'
+import { ApiKey } from './entities/api-key.entity'
 
 describe('ApiKeyService', () => {
   let apiKeyService: ApiKeyService
@@ -47,7 +47,7 @@ describe('ApiKeyService', () => {
       })
     })
 
-    it('should return the type of ApiKeyEntity', async () => {
+    it('should return the type of ApiKey', async () => {
       const apiKeyPart = Buffer.from('kljsdf892hhlk3hkl')
       const apiKey = getApiKey()
       apiKeyRepository.create.mockResolvedValueOnce(apiKey)
@@ -64,7 +64,7 @@ describe('ApiKeyService', () => {
         ...apiKey,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
       })
-      expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
+      expect(apiKey).not.toBeInstanceOf(ApiKey)
       expect(result).toBeInstanceOf(CreateApiKeyResponseDto)
     })
   })
@@ -78,14 +78,14 @@ describe('ApiKeyService', () => {
       expect(result).toEqual(apiKey)
     })
 
-    it('should return the type of ApiKeyEntity', async () => {
+    it('should return the type of ApiKey', async () => {
       const apiKey = getApiKey()
       apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
 
       const result = await apiKeyService.deleteApiKey(apiKey.id, apiKey.userId)
       expect(result).toEqual(apiKey)
-      expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
-      expect(result).toBeInstanceOf(ApiKeyEntity)
+      expect(apiKey).not.toBeInstanceOf(ApiKey)
+      expect(result).toBeInstanceOf(ApiKey)
     })
   })
 
@@ -112,13 +112,13 @@ describe('ApiKeyService', () => {
       expect(response).toEqual(result)
     })
 
-    it('should return the type of ApiKeyEntity', async () => {
+    it('should return the type of ApiKey', async () => {
       const apiKey = getApiKey()
       apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
       const result = await apiKeyService.findValidApiKey(apiKey.key)
       expect(result).toEqual(apiKey)
-      expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
-      expect(result).toBeInstanceOf(ApiKeyEntity)
+      expect(apiKey).not.toBeInstanceOf(ApiKey)
+      expect(result).toBeInstanceOf(ApiKey)
     })
   })
 })

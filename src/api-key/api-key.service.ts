@@ -9,7 +9,7 @@ import { User as UserEntity } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-apiKey.dto'
-import { ApiKeyEntity } from './entities/api-key.entity'
+import { ApiKey } from './entities/api-key.entity'
 
 @Injectable()
 export class ApiKeyService {
@@ -48,37 +48,37 @@ export class ApiKeyService {
 
   async deleteApiKey(
     userId: UserEntity['id'],
-    apiKeyId: ApiKeyEntity['id'],
-  ): Promise<ApiKeyEntity> {
+    apiKeyId: ApiKey['id'],
+  ): Promise<ApiKey> {
     return this.repo
       .delete({
         where: { id: apiKeyId, userId: userId },
       })
       .then((apiKey) => {
-        return new ApiKeyEntity(apiKey)
+        return new ApiKey(apiKey)
       })
   }
 
-  async getAllApiKeys(user: UserEntity): Promise<ApiKeyEntity[]> {
+  async getAllApiKeys(user: UserEntity): Promise<ApiKey[]> {
     return this.repo
       .findMany({
         where: { userId: user.id },
       })
       .then((apiKeys) => {
-        return apiKeys.map((apiKey) => new ApiKeyEntity(apiKey))
+        return apiKeys.map((apiKey) => new ApiKey(apiKey))
       })
   }
 
-  async findApiKeyById(apiKeyId: ApiKeyEntity['id']): Promise<ApiKeyEntity> {
+  async findApiKeyById(apiKeyId: ApiKey['id']): Promise<ApiKey> {
     return this.repo.findFirst({ where: { id: apiKeyId } }).then((apiKey) => {
       if (!apiKey) {
         throw new NotFoundException('API key not found')
       }
-      return new ApiKeyEntity(apiKey)
+      return new ApiKey(apiKey)
     })
   }
 
-  async findValidApiKey(key: string): Promise<ApiKeyEntity> {
+  async findValidApiKey(key: string): Promise<ApiKey> {
     const keyPrefix = key.split('.')[0]
     return this.repo
       .findFirst({
@@ -91,7 +91,7 @@ export class ApiKeyService {
         if (!apiKey) {
           throw new NotFoundException('API key not found')
         }
-        return new ApiKeyEntity(apiKey)
+        return new ApiKey(apiKey)
       })
   }
 }

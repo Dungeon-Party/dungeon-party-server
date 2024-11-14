@@ -10,7 +10,7 @@ import * as request from 'supertest'
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard'
 import { ApiKeyModule } from '../src/api-key/api-key.module'
 import { ApiKeyRepository } from '../src/api-key/api-key.repository'
-import { ApiKeyEntity } from '../src/api-key/entities/api-key.entity'
+import { ApiKey } from '../src/api-key/entities/api-key.entity'
 import bootstrap from '../src/main.config'
 
 describe('Api-Key (e2e)', () => {
@@ -53,7 +53,7 @@ describe('Api-Key (e2e)', () => {
         name: 'test-key',
         key: 'test-key',
         userId: 1,
-      } as ApiKeyEntity
+      } as ApiKey
       apiKeyRepository.create.mockResolvedValueOnce(apiKey)
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
@@ -96,7 +96,7 @@ describe('Api-Key (e2e)', () => {
         name: 'test-key',
         key: 'test-key', // Ensure that the key is not exposed
         userId: 1,
-      } as ApiKeyEntity
+      } as ApiKey
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { key, ...response } = apiKey
       apiKeyRepository.delete.mockResolvedValueOnce(apiKey)

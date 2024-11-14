@@ -10,7 +10,7 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import * as argon2 from 'argon2'
-import { ApiKeyEntity } from 'src/api-key/entities/api-key.entity'
+import { ApiKey } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
@@ -99,7 +99,7 @@ export class AuthService {
   async validateApiKey(key: string): Promise<UserEntity> {
     return this.apiKeyService
       .findValidApiKey(key)
-      .then((apiKey: ApiKeyEntity) => {
+      .then((apiKey: ApiKey) => {
         const apiKeyToVerify = apiKey.key.split('.')[1]
         if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
           return apiKey.userId

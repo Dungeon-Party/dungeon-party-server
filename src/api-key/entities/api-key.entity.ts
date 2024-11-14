@@ -3,8 +3,8 @@
 // TODO: GraphQL decorators are properly applied to each field
 // TODO: Ensure that the class extends the Prisma model
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
-import { ApiProperty } from '@nestjs/swagger'
-import { ApiKey } from '@prisma/client'
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
+import { ApiKey as PrismaApiKey } from '@prisma/client'
 import { Exclude, Expose } from 'class-transformer'
 import {
   IsDateString,
@@ -13,13 +13,14 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  ValidateNested,
 } from 'class-validator'
 
 import { User } from '../../user/entities/user.entity'
 
 @ObjectType()
 @Exclude()
-export class ApiKeyEntity implements ApiKey {
+export class ApiKey implements PrismaApiKey {
   @ApiProperty({
     description: 'Unique identifier for the API Key',
     example: 1,
@@ -52,6 +53,7 @@ export class ApiKeyEntity implements ApiKey {
     example: 'dp-aldkhlkanlk,23.dflkj898798h23kbb3llk',
     type: 'string',
   })
+  @ApiHideProperty()
   @IsNotEmpty()
   @IsString()
   key: string
@@ -61,6 +63,8 @@ export class ApiKeyEntity implements ApiKey {
     type: () => User,
     required: false,
   })
+  @ApiHideProperty()
+  @ValidateNested()
   user?: User
 
   @ApiProperty({
@@ -111,7 +115,7 @@ export class ApiKeyEntity implements ApiKey {
   @Expose()
   updatedAt: Date
 
-  constructor(partial: Partial<ApiKeyEntity>) {
+  constructor(partial: Partial<ApiKey>) {
     Object.assign(this, partial)
   }
 }

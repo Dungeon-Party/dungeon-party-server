@@ -8,25 +8,25 @@ import { GqlUser } from '../user/decorators/gql-user.decorator'
 import { User as UserEntity } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-apiKey.dto'
-import { ApiKeyEntity } from './entities/api-key.entity'
+import { ApiKey } from './entities/api-key.entity'
 
-@Resolver(() => ApiKeyEntity)
+@Resolver(() => ApiKey)
 export class ApiKeyResolver {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @UseGuards(GqlJwtAuthGuard)
-  @Query(() => [ApiKeyEntity], { name: 'apiKeys' })
-  async getApiKeys(@GqlUser() user: UserEntity): Promise<ApiKeyEntity[]> {
+  @Query(() => [ApiKey], { name: 'apiKeys' })
+  async getApiKeys(@GqlUser() user: UserEntity): Promise<ApiKey[]> {
     return this.apiKeyService.getAllApiKeys(user).then((apiKeys) => {
-      return apiKeys.map((apiKey) => new ApiKeyEntity(apiKey))
+      return apiKeys.map((apiKey) => new ApiKey(apiKey))
     })
   }
 
   @UseGuards(GqlJwtAuthGuard)
-  @Query(() => ApiKeyEntity, { name: 'apiKey', nullable: true })
-  async getApiKeyById(@Args('id') id: number): Promise<ApiKeyEntity | null> {
+  @Query(() => ApiKey, { name: 'apiKey', nullable: true })
+  async getApiKeyById(@Args('id') id: number): Promise<ApiKey | null> {
     return this.apiKeyService.findApiKeyById(id).then((apiKey) => {
-      return new ApiKeyEntity(apiKey)
+      return new ApiKey(apiKey)
     })
   }
 
@@ -40,11 +40,8 @@ export class ApiKeyResolver {
   }
 
   @UseGuards(GqlJwtAuthGuard)
-  @Mutation(() => ApiKeyEntity, { name: 'deleteApiKey' })
-  async deleteApiKey(
-    @GqlUser() user,
-    @Args('id') id: number,
-  ): Promise<ApiKeyEntity> {
+  @Mutation(() => ApiKey, { name: 'deleteApiKey' })
+  async deleteApiKey(@GqlUser() user, @Args('id') id: number): Promise<ApiKey> {
     return this.apiKeyService.deleteApiKey(user.id, id)
   }
 }
