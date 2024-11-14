@@ -11,10 +11,14 @@ export class UpdateApiKeyDto {
     example: 'Test API Key',
     type: 'string',
   })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: false })
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
   @MaxLength(25)
   name: string
+
+  constructor(partial: Partial<UpdateApiKeyDto>) {
+    Object.assign(this, partial)
+  }
 }
