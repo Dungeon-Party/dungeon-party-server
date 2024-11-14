@@ -15,7 +15,7 @@ import { AuthController } from './auth.controller'
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
 import { AuthService } from './auth.service'
-import { User as UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import { getApiKey, getUser } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
@@ -68,9 +68,7 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
-        user as UserEntity,
-      )
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateUser(
         user.username,
@@ -95,9 +93,7 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
-        user as UserEntity,
-      )
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
       try {
         await authService.validateUser(user.username, 'wrong-password')
@@ -116,7 +112,7 @@ describe('AuthService', () => {
         password: 'test-password',
       }
       configService.get.mockReturnValue('10m')
-      const result = await authService.generateJwt(user as UserEntity)
+      const result = await authService.generateJwt(user as User)
       expect(result).toBeInstanceOf(TokenResponseDto)
     })
 
@@ -128,7 +124,7 @@ describe('AuthService', () => {
         password: 'test-password',
       }
       configService.get.mockReturnValue('10m')
-      const result = await authService.generateJwt(user as UserEntity)
+      const result = await authService.generateJwt(user as User)
       const decodedToken = jwtService.decode(result.accessToken)
       expect(decodedToken).toHaveProperty('sub', user.id)
       expect(decodedToken).toHaveProperty('username', user.username)

@@ -14,7 +14,7 @@ import { ApiKey } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
-import { User as UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import JwtPayloadDto from './dto/jwt-payload.dto'
 import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'
@@ -34,10 +34,7 @@ export class AuthService {
     )
   }
 
-  async validateUser(
-    username: string,
-    pass: string,
-  ): Promise<UserEntity | null> {
+  async validateUser(username: string, pass: string): Promise<User | null> {
     const user = await this.userService.findUserByEmailOrUsername(
       username,
       username,
@@ -51,7 +48,7 @@ export class AuthService {
     return user
   }
 
-  async register(signupDto: SignUpDto): Promise<UserEntity> {
+  async register(signupDto: SignUpDto): Promise<User> {
     if (signupDto.password !== signupDto.passwordConfirmation) {
       throw new BadRequestException('Passwords do not match')
     }
@@ -59,7 +56,7 @@ export class AuthService {
     return this.userService.createUser(signupDto)
   }
 
-  async generateJwt(user: UserEntity): Promise<TokenResponseDto> {
+  async generateJwt(user: User): Promise<TokenResponseDto> {
     const payload: Partial<JwtPayloadDto> = {
       sub: user.id,
       iss: 'dungeon-party',
@@ -96,7 +93,7 @@ export class AuthService {
     })
   }
 
-  async validateApiKey(key: string): Promise<UserEntity> {
+  async validateApiKey(key: string): Promise<User> {
     return this.apiKeyService
       .findValidApiKey(key)
       .then((apiKey: ApiKey) => {
@@ -107,7 +104,7 @@ export class AuthService {
           throw new UnauthorizedException('Invalid API key')
         }
       })
-      .then((userId: UserEntity['id']) => {
+      .then((userId: User['id']) => {
         return this.userService.findUserById(userId)
       })
   }

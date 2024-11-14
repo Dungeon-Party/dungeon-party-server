@@ -5,7 +5,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { GqlJwtAuthGuard } from '../auth/guards/gql-jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
 import { GqlUser } from '../user/decorators/gql-user.decorator'
-import { User as UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-apiKey.dto'
 import { ApiKey } from './entities/api-key.entity'
@@ -16,7 +16,7 @@ export class ApiKeyResolver {
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
-  async getApiKeys(@GqlUser() user: UserEntity): Promise<ApiKey[]> {
+  async getApiKeys(@GqlUser() user: User): Promise<ApiKey[]> {
     return this.apiKeyService.getAllApiKeys(user).then((apiKeys) => {
       return apiKeys.map((apiKey) => new ApiKey(apiKey))
     })

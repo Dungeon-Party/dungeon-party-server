@@ -3,7 +3,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { UserService } from './user.service'
 import { getUser } from '../utils/test-utils'
-import { User as UserEntity } from './entities/user.entity'
+import { User } from './entities/user.entity'
 import { UserResolver } from './user.resolver'
 
 describe('UserResolver', () => {
@@ -41,7 +41,7 @@ describe('UserResolver', () => {
 
   describe('getUsers', () => {
     it('should return the value of userService.getAllUsers', async () => {
-      const users = [getUser(), getUser()] as UserEntity[]
+      const users = [getUser(), getUser()] as User[]
       userService.getAllUsers.mockResolvedValue(users)
       const result = await userResolver.getUsers()
       expect(result).toHaveLength(2)
@@ -52,7 +52,7 @@ describe('UserResolver', () => {
 
   describe('getUserById', () => {
     it('should return the value of userService.findUserById', async () => {
-      const user = { id: 1, name: 'test' } as UserEntity
+      const user = { id: 1, name: 'test' } as User
       userService.findUserById.mockResolvedValue(user)
       const result = await userResolver.getUserById(1)
       expect(result.name).toBe(user.name)
@@ -61,7 +61,7 @@ describe('UserResolver', () => {
 
   describe('createUser', () => {
     it('should return the value of userService.createUser', async () => {
-      const user = getUser() as UserEntity
+      const user = getUser() as User
       userService.createUser.mockResolvedValue(user)
       const result = await userResolver.createUser(user)
       expect(result.name).toBe(user.name)
@@ -72,7 +72,7 @@ describe('UserResolver', () => {
 
   describe('updateUser', () => {
     it('should return the value of userService.updateUser', async () => {
-      const user = getUser() as UserEntity
+      const user = getUser() as User
       userService.updateUser.mockResolvedValue(user)
       const result = await userResolver.updateUser(1, user)
       expect(result.name).toBe(user.name)
@@ -83,7 +83,7 @@ describe('UserResolver', () => {
 
   describe('deleteUser', () => {
     it('should return the value of userService.deleteUser', async () => {
-      const user = getUser() as UserEntity
+      const user = getUser() as User
       userService.deleteUser.mockResolvedValue(user)
       const result = await userResolver.deleteUser(1)
       expect(result.name).toBe(user.name)

@@ -12,8 +12,8 @@ import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
-import { User } from '../user/decorators/user.decorator'
-import { User as UserEntity } from '../user/entities/user.entity'
+import { GetUser } from '../user/decorators/user.decorator'
+import { User } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-apiKey.dto'
 
@@ -28,7 +28,7 @@ export class ApiKeyController {
   @Post()
   create(
     @Body() createApiKeyDto: CreateApiKeyDto,
-    @User('id') userId: UserEntity['id'],
+    @GetUser('id') userId: User['id'],
   ): Promise<CreateApiKeyResponseDto> {
     return this.apiKeyService.createApiKey(userId, createApiKeyDto)
   }
@@ -36,7 +36,7 @@ export class ApiKeyController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  delete(@Param('id') apiKeyId: number, @User('id') userId: UserEntity['id']) {
+  delete(@Param('id') apiKeyId: number, @GetUser('id') userId: User['id']) {
     return this.apiKeyService.deleteApiKey(apiKeyId, userId)
   }
 }

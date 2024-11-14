@@ -5,29 +5,29 @@ import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
 
 import JwtOrApiKeyAuthGuard from '../auth/guards/jwt-apiKey-auth.guard'
 import { UserService } from './user.service'
-import { User } from './decorators/user.decorator'
+import { GetUser } from './decorators/user.decorator'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { User as UserEntity } from './entities/user.entity'
+import { User } from './entities/user.entity'
 
 @ApiTags('users')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @ApiOkResponse({ type: [UserEntity] })
+  @ApiOkResponse({ type: [User] })
   @UseGuards(JwtOrApiKeyAuthGuard)
   @Get()
-  getUsers(): Promise<UserEntity[]> {
+  getUsers(): Promise<User[]> {
     return this.userService.getAllUsers()
   }
 
-  @ApiOkResponse({ type: UserEntity })
+  @ApiOkResponse({ type: User })
   @UseGuards(JwtOrApiKeyAuthGuard)
   @Put()
   updateUser(
-    @User() user: UserEntity,
+    @GetUser() user: User,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     return this.userService.updateUser(user.id, updateUserDto)
   }
 }

@@ -5,7 +5,7 @@ import * as crypto from 'crypto'
 import { Injectable, NotFoundException } from '@nestjs/common'
 import * as argon2 from 'argon2'
 
-import { User as UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-apiKey.dto'
@@ -16,7 +16,7 @@ export class ApiKeyService {
   constructor(private readonly repo: ApiKeyRepository) {}
 
   async createApiKey(
-    userId: UserEntity['id'],
+    userId: User['id'],
     createApiKeyDto: CreateApiKeyDto,
   ): Promise<CreateApiKeyResponseDto> {
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
@@ -47,7 +47,7 @@ export class ApiKeyService {
   }
 
   async deleteApiKey(
-    userId: UserEntity['id'],
+    userId: User['id'],
     apiKeyId: ApiKey['id'],
   ): Promise<ApiKey> {
     return this.repo
@@ -59,7 +59,7 @@ export class ApiKeyService {
       })
   }
 
-  async getAllApiKeys(user: UserEntity): Promise<ApiKey[]> {
+  async getAllApiKeys(user: User): Promise<ApiKey[]> {
     return this.repo
       .findMany({
         where: { userId: user.id },

@@ -6,7 +6,7 @@ import { GqlJwtAuthGuard } from './guards/gql-jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
 import { GqlUser } from '../user/decorators/gql-user.decorator'
-import { User as UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import LoginDto from './dto/login.dto'
 import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'
@@ -26,16 +26,16 @@ export class AuthResolver {
     )
   }
 
-  @Mutation(() => UserEntity)
+  @Mutation(() => User)
   async register(
     @Args('registerInput') registerInput: SignUpDto,
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     return this.authService.register(registerInput)
   }
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => TokenResponseDto)
-  async refresh(@GqlUser() user: UserEntity): Promise<TokenResponseDto> {
+  async refresh(@GqlUser() user: User): Promise<TokenResponseDto> {
     return this.authService.generateJwt(user)
   }
 }
