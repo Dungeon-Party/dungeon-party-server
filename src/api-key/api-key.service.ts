@@ -8,7 +8,7 @@ import * as argon2 from 'argon2'
 import { User as UserEntity } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
-import { CreateApiKeyDto } from './dto/create-api-key.dto'
+import { CreateApiKeyDto } from './dto/create-apiKey.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
 @Injectable()
