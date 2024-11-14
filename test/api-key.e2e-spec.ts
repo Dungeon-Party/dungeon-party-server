@@ -94,15 +94,17 @@ describe('Api-Key (e2e)', () => {
       const apiKey = {
         id: 1,
         name: 'test-key',
+        key: 'test-key', // Ensure that the key is not exposed
         userId: 1,
       } as ApiKeyEntity
-      // apiKeyService.remove.mockResolvedValue(apiKey)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { key, ...response } = apiKey
       apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
         .delete('/api/v1/api-keys/1')
         .expect(200)
-        .expect(apiKey)
+        .expect(response)
     })
 
     it('should return 403 if not authorized', async () => {
