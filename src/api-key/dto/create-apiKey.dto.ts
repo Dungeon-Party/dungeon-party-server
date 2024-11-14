@@ -24,6 +24,7 @@ export class CreateApiKeyDto {
   @IsString()
   @MaxLength(25)
   name: string
+
   @ApiProperty({
     description: 'DateTime the API Key expires at',
     example: '2022-01-01T00:00:00Z',
