@@ -5,6 +5,7 @@
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
 import { ApiProperty } from '@nestjs/swagger'
 import { ApiKey } from '@prisma/client'
+import { Exclude } from 'class-transformer'
 import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
 import { User } from '../../user/entities/user.entity'
@@ -38,6 +39,7 @@ export class ApiKeyEntity implements ApiKey {
     example: 'dp-aldkhlkanlk,23.dflkj898798h23kbb3llk',
     type: 'string',
   })
+  @Exclude()
   @IsNotEmpty()
   @IsString()
   key: string

@@ -6,6 +6,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { ApiKeyService } from './api-key.service'
 import { getApiKey } from '../utils/test-utils'
 import { ApiKeyRepository } from './api-key.repository'
+import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { ApiKeyEntity } from './entities/api-key.entity'
 
 describe('ApiKeyService', () => {
@@ -64,7 +65,7 @@ describe('ApiKeyService', () => {
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
       })
       expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
-      expect(result).toBeInstanceOf(ApiKeyEntity)
+      expect(result).toBeInstanceOf(CreateApiKeyResponseDto)
     })
   })
 

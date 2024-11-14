@@ -39,7 +39,7 @@ export class ApiKeyService {
         },
       })
       .then((apiKey) => {
-        return new ApiKeyEntity({
+        return new CreateApiKeyResponseDto({
           ...apiKey,
           key: apiKeyRaw,
         })

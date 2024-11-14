@@ -77,7 +77,7 @@ describe('Api-Key (e2e)', () => {
         .send({
           name: 'test-key',
         })
-        .expect(403) // 403 Forbidden vs 401
+        .expect(403) // FIXME: 403 Forbidden vs 401
     })
 
     it('should return 400 if name is missing', async () => {
@@ -94,7 +94,6 @@ describe('Api-Key (e2e)', () => {
       const apiKey = {
         id: 1,
         name: 'test-key',
-        key: 'test-key',
         userId: 1,
       } as ApiKeyEntity
       // apiKeyService.remove.mockResolvedValue(apiKey)
@@ -110,7 +109,7 @@ describe('Api-Key (e2e)', () => {
       jwtAuthGuard.canActivate.mockReturnValueOnce(false)
       return request(app.getHttpServer())
         .delete('/api/v1/api-keys/1')
-        .expect(403) // 403 Forbidden vs 401
+        .expect(403) // FIXME: 403 Forbidden vs 401
     })
 
     it('should return 404 if api key does not exist', async () => {
