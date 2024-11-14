@@ -8,22 +8,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator nestgraphql {
-  provider              = "prisma-nestjs-graphql"
-  output                = "../src/@generated/graphql"
-  outputFilePattern     = "{model}/{name}.{type}.ts"
-  noAtomicOperations    = true
-  combineScalarFilters  = true
-  purgeOutput           = true
-  fields_Swagger_from   = "@nestjs/swagger"
-  fields_Swagger_input  = true
-  fields_Swagger_output = true
-  fields_Swagger_model  = true
-}
-
 generator nestjsDto {
   provider                        = "prisma-generator-nestjs-dto"
-  output                          = "../src/@generated/rest"
+  output                          = "../src/@generated"
   outputToNestJsResourceStructure = true
   prettier                        = true
   classValidation                 = true
@@ -41,25 +28,61 @@ datasource db {
 // - Size
 
 model User {
+  /// @example 1
+  /// @description Unique identifier for the user
   id        Int      @id @default(autoincrement())
-  /// @Swagger.ApiProperty()
+  /// @example test@email.com
+  /// @description The user's email address
   email     String   @unique
+  /// @example testuser
+  /// @description The user's username
   username  String   @unique
+  /// @example Test User
+  /// @description The user's name
   name      String?
+  /// @MinLength(8)
+  /// @minLength 8
+  /// @example testpassword
+  /// @description The user's password
   password  String
+  /// @description The user's API Keys
   apiKeys   ApiKey[]
+  /// @example 2022-01-01T00:00:00Z
+  /// @description DateTime the user was created
   createdAt DateTime @default(now())
+  /// @example 2022-01-01T00:00:00Z
+  /// @description DateTime the user was last updated
   updatedAt DateTime @updatedAt
 }
 
 model ApiKey {
+  /// @example 1
+  /// @description Unique identifier for the API Key
   id        Int      @id @default(autoincrement())
+  /// @MaxLength(25)
+  /// @maxLength 25
+  /// @example Test API Key
+  /// @description The name of the API Key
   name      String
+  /// @DtoReadOnly
+  /// @example dp-aldkhlkanlk,23.dflkj898798h23kbb3llk
+  /// @description The API Key
   key       String   @unique
+  /// @description The user the API Key belongs to
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// @example 1
+  /// @description The user's ID
   userId    Int
+  /// @DtoUpdateHidden
+  /// @DtoCreateOptional
+  /// @example 2022-01-01T00:00:00Z
+  /// @description DateTime the API Key expires at
   expiresAt DateTime
+  /// @example 2022-01-01T00:00:00Z
+  /// @description DateTime the API Key was created
   createdAt DateTime @default(now())
+  /// @example 2022-01-01T00:00:00Z
+  /// @description DateTime the API Key was last updated
   updatedAt DateTime @updatedAt
 }
 
