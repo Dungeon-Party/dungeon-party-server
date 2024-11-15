@@ -6,8 +6,6 @@ import { ApiProperty } from '@nestjs/swagger'
 import { Exclude, Expose } from 'class-transformer'
 import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
-import { User } from '../../user/entities/user.entity'
-
 @ObjectType()
 @Exclude()
 export class CreateApiKeyResponseDto {
@@ -17,7 +15,10 @@ export class CreateApiKeyResponseDto {
     type: 'integer',
     format: 'int32',
   })
-  @Field(() => Int, { nullable: false })
+  @Field(() => Int, {
+    nullable: false,
+    description: 'Unique identifier for the API Key',
+  })
   @IsNotEmpty()
   @IsNumber()
   @Expose()
@@ -30,7 +31,10 @@ export class CreateApiKeyResponseDto {
     example: 'Test API Key',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, {
+    nullable: false,
+    description: 'The name of the API Key',
+  })
   @IsNotEmpty()
   @IsString()
   @Expose()
@@ -41,18 +45,11 @@ export class CreateApiKeyResponseDto {
     example: 'dp-aldkhlkanlk,23.dflkj898798h23kbb3llk',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: false, description: 'The API Key' })
   @IsNotEmpty()
   @IsString()
   @Expose()
   key: string
-
-  @ApiProperty({
-    description: 'The user the API Key belongs to',
-    type: () => User,
-    required: false,
-  })
-  user?: User
 
   @ApiProperty({
     description: "The user's ID",
@@ -60,7 +57,7 @@ export class CreateApiKeyResponseDto {
     type: 'integer',
     format: 'int32',
   })
-  @Field(() => Int, { nullable: false })
+  @Field(() => Int, { nullable: false, description: "The user's ID" })
   @IsNotEmpty()
   @IsNumber()
   @Expose()
@@ -72,7 +69,10 @@ export class CreateApiKeyResponseDto {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the API Key expires at',
+  })
   @IsNotEmpty()
   @IsDateString()
   @Expose()
@@ -84,7 +84,10 @@ export class CreateApiKeyResponseDto {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the API Key was created',
+  })
   @IsNotEmpty()
   @IsDateString()
   @Expose()
@@ -96,7 +99,10 @@ export class CreateApiKeyResponseDto {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the API Key was last updated',
+  })
   @IsNotEmpty()
   @IsDateString()
   @Expose()

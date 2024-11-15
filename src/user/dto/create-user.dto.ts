@@ -18,7 +18,10 @@ export class CreateUserDto {
     example: 'test@email.com',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, {
+    nullable: false,
+    description: "The user's email address",
+  })
   @IsNotEmpty()
   @IsString()
   email: string
@@ -30,7 +33,7 @@ export class CreateUserDto {
     example: 'testuser',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: false, description: "The user's username" })
   @IsNotEmpty()
   @IsString()
   @MinLength(4)
@@ -46,7 +49,7 @@ export class CreateUserDto {
     required: false,
     nullable: true,
   })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, description: "The user's name" })
   @IsOptional()
   @IsString()
   @MinLength(2)
@@ -60,7 +63,7 @@ export class CreateUserDto {
     example: 'testpassword',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: false, description: "The user's password" })
   @IsNotEmpty()
   @IsString()
   @MinLength(8)

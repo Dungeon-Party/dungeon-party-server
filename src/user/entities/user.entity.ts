@@ -12,10 +12,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
-  ValidateNested,
 } from 'class-validator'
-
-import { ApiKey } from '../../api-key/entities/api-key.entity'
 
 @ObjectType()
 @Exclude()
@@ -26,7 +23,10 @@ export class User implements PrismaUser {
     type: 'integer',
     format: 'int32',
   })
-  @Field(() => Int, { nullable: false })
+  @Field(() => Int, {
+    nullable: false,
+    description: 'Unique identifier for the user',
+  })
   @IsNumber()
   @IsNotEmpty()
   @Expose()
@@ -40,7 +40,7 @@ export class User implements PrismaUser {
     type: 'string',
     nullable: true,
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: false, description: "The user's name" })
   @IsString()
   @IsNotEmpty()
   @Expose()
@@ -51,7 +51,10 @@ export class User implements PrismaUser {
     example: 'test@email.com',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, {
+    nullable: false,
+    description: "The user's email address",
+  })
   @IsString()
   @IsEmail()
   @IsNotEmpty()
@@ -65,32 +68,16 @@ export class User implements PrismaUser {
     example: 'testuser',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: false, description: "The user's username" })
   @IsString()
   @IsNotEmpty()
   @Expose()
   username: string
 
-  @ApiProperty({
-    description: "The user's password",
-    minLength: 8,
-    maxLength: 30,
-    example: 'testpassword',
-    type: 'string',
-  })
   @ApiHideProperty()
   @IsString()
   @IsNotEmpty()
   password: string
-
-  @ApiProperty({
-    description: "The user's API Keys",
-    type: () => ApiKey,
-    isArray: true,
-    required: false,
-  })
-  @ValidateNested({ each: true })
-  apiKeys?: ApiKey[]
 
   @ApiProperty({
     description: 'DateTime the user was created',
@@ -98,7 +85,10 @@ export class User implements PrismaUser {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the user was created',
+  })
   @IsDateString()
   @IsNotEmpty()
   @Expose()
@@ -110,7 +100,10 @@ export class User implements PrismaUser {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the user was last updated',
+  })
   @IsDateString()
   @IsNotEmpty()
   @Expose()

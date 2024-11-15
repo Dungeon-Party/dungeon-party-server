@@ -13,10 +13,7 @@ import {
   IsString,
   MaxLength,
   MinLength,
-  ValidateNested,
 } from 'class-validator'
-
-import { User } from '../../user/entities/user.entity'
 
 @ObjectType()
 @Exclude()
@@ -48,24 +45,10 @@ export class ApiKey implements PrismaApiKey {
   @Expose()
   name: string
 
-  @ApiProperty({
-    description: 'The API Key',
-    example: 'dp-aldkhlkanlk,23.dflkj898798h23kbb3llk',
-    type: 'string',
-  })
   @ApiHideProperty()
   @IsNotEmpty()
   @IsString()
   key: string
-
-  @ApiProperty({
-    description: 'The user the API Key belongs to',
-    type: () => User,
-    required: false,
-  })
-  @ApiHideProperty()
-  @ValidateNested()
-  user?: User
 
   @ApiProperty({
     description: "The user's ID",

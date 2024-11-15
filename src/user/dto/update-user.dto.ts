@@ -13,7 +13,10 @@ export class UpdateUserDto {
     type: 'string',
     required: false,
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, {
+    nullable: false,
+    description: "The user's email address",
+  })
   @IsOptional()
   @IsString()
   email?: string
@@ -26,7 +29,7 @@ export class UpdateUserDto {
     type: 'string',
     required: false,
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: false, description: "The user's username" })
   @IsOptional()
   @IsString()
   @MinLength(4)
@@ -42,7 +45,7 @@ export class UpdateUserDto {
     required: false,
     nullable: true,
   })
-  @Field(() => String, { nullable: true })
+  @Field(() => String, { nullable: true, description: "The user's name" })
   @IsOptional()
   @IsString()
   @MinLength(2)
@@ -57,7 +60,7 @@ export class UpdateUserDto {
     type: 'string',
     required: false,
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, { nullable: false, description: "The user's password" })
   @IsOptional()
   @IsString()
   @MinLength(8)

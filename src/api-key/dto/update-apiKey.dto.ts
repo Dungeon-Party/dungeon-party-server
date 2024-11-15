@@ -11,7 +11,10 @@ export class UpdateApiKeyDto {
     example: 'Test API Key',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, {
+    nullable: false,
+    description: 'The name of the API Key',
+  })
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
