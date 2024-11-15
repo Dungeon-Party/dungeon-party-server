@@ -1,5 +1,3 @@
-// TODO: Ensure that swagger description, response, and body is added to each method
-// TODO: Inject logger and log any exceptions
 import {
   Body,
   Controller,
@@ -8,22 +6,51 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common'
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger'
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger'
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
+import {
+  BadRequestException,
+  NotFoundException,
+  UnauthorizedException,
+} from '../types'
 import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-apiKey.dto'
+import { ApiKey } from './entities/api-key.entity'
 
 @ApiTags('api-keys')
 @Controller('api-keys')
 export class ApiKeyController {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
+  @ApiBody({
+    type: CreateApiKeyDto,
+    description: 'Request object for creating an API Key',
+  })
+  @ApiOkResponse({
+    type: CreateApiKeyResponseDto,
+    description: 'API Key created successfully',
+  })
+  @ApiUnauthorizedResponse({
+    type: UnauthorizedException,
+    description: 'Unauthorized',
+  })
+  @ApiBadRequestResponse({
+    type: BadRequestException,
+    description: 'Bad Request',
+  })
   @ApiBearerAuth()
-  @ApiBody({ type: CreateApiKeyDto })
   @UseGuards(JwtAuthGuard)
   @Post()
   create(
@@ -33,6 +60,15 @@ export class ApiKeyController {
     return this.apiKeyService.createApiKey(userId, createApiKeyDto)
   }
 
+  @ApiOkResponse({ type: ApiKey, description: 'API Key deleted successfully' })
+  @ApiUnauthorizedResponse({
+    type: UnauthorizedException,
+    description: 'Unauthorized',
+  })
+  @ApiNotFoundResponse({
+    type: NotFoundException,
+    description: 'API Key not found',
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
