@@ -1,19 +1,20 @@
-// TODO: Ensure that swagger description, response, and body is added to each method
-// TODO: Inject logger and log any exceptions
 import { Body, Controller, Get, Logger, Post, UseGuards } from '@nestjs/common'
 import {
+  ApiBadRequestResponse,
+  ApiBasicAuth,
   ApiBearerAuth,
   ApiBody,
   ApiOkResponse,
-  ApiResponse,
   ApiSecurity,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
 
 import JwtOrApiKeyAuthGuard from './guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'
+import { BadRequestException, UnauthorizedException } from '../types'
 import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
 import LoginDto from './dto/login.dto'
@@ -29,20 +30,37 @@ export class AuthController {
   ) {}
 
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ type: TokenResponseDto })
+  @ApiOkResponse({ type: TokenResponseDto, description: 'Login successful' })
+  @ApiUnauthorizedResponse({
+    type: UnauthorizedException,
+    description: 'Invalid credentials',
+  })
+  @ApiBasicAuth()
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@GetUser() user: User) {
+  login(@GetUser() user: User): Promise<TokenResponseDto> {
     return this.authService.generateJwt(user)
   }
 
-  @ApiBody({ type: SignUpDto })
-  @ApiOkResponse({ type: User })
+  @ApiBody({
+    type: SignUpDto,
+    description: 'Request object for creating a user',
+  })
+  @ApiOkResponse({ type: User, description: 'User created successfully' })
+  @ApiBadRequestResponse({
+    type: BadRequestException,
+    description: 'Bad Request',
+  })
   @Post('register')
-  register(@Body() data: SignUpDto) {
+  register(@Body() data: SignUpDto): Promise<User> {
     return this.authService.register(data)
   }
 
+  @ApiOkResponse({ type: TokenResponseDto, description: 'Token refreshed' })
+  @ApiUnauthorizedResponse({
+    type: UnauthorizedException,
+    description: 'Invalid credentials',
+  })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post('refresh')
@@ -50,6 +68,11 @@ export class AuthController {
     return this.authService.generateJwt(user)
   }
 
+  @ApiOkResponse({ type: User, description: 'Profile retrieved successfully' })
+  @ApiUnauthorizedResponse({
+    type: UnauthorizedException,
+    description: 'Invalid credentials',
+  })
   @ApiBearerAuth()
   @ApiSecurity('api-key')
   @UseGuards(JwtOrApiKeyAuthGuard)
