@@ -2,7 +2,8 @@ import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { Request } from 'express'
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import { utilities, WinstonModule } from 'nest-winston'
+import { format, transports } from 'winston'
 
 import { AppModule } from './app.module'
 import bootstrap from './main.config'
@@ -52,10 +53,22 @@ function bootstrapSwagger(app) {
 async function start() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
+    // Setup Winston Logger
+    logger: WinstonModule.createLogger({
+      level: 'info',
+      format: format.combine(
+        format.timestamp(),
+        format.ms(),
+        utilities.format.nestLike('Dungeon Party', {
+          colors: true,
+          prettyPrint: true,
+          processId: false,
+          appName: true,
+        }),
+      ),
+      transports: [new transports.Console()],
+    }),
   })
-
-  // Setup Winston Logger
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
 
   bootstrap(app)
 

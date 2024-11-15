@@ -4,13 +4,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
-import { utilities, WinstonModule } from 'nest-winston'
 import {
   loggingMiddleware,
   LoggingMiddlewareOptions,
   PrismaModule,
 } from 'nestjs-prisma'
-import { format, transports } from 'winston'
 
 import { ApiKeyModule } from './api-key/api-key.module'
 import { AuthModule } from './auth/auth.module'
@@ -27,23 +25,6 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
     ConfigModule.forRoot({
       isGlobal: true,
       load: [httpConfig, databaseConfig, securityConfig, loggingConfig],
-    }),
-    WinstonModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        level: configService.get<string>('logging.level'),
-        format: format.combine(
-          format.timestamp(),
-          format.ms(),
-          utilities.format.nestLike('Dungeon Party', {
-            colors: true,
-            prettyPrint: true,
-            processId: false,
-            appName: true,
-          }),
-        ),
-        transports: [new transports.Console()],
-      }),
-      inject: [ConfigService],
     }),
     PrismaModule.forRootAsync({
       isGlobal: true,
@@ -82,6 +63,7 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
     UserModule,
     HealthModule,
   ],
+  providers: [Logger],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
