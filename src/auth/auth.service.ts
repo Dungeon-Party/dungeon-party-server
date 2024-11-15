@@ -4,6 +4,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
@@ -22,6 +23,7 @@ import TokenResponseDto from './dto/token-response.dto'
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly logger: Logger,
     private configService: ConfigService,
     private userService: UserService,
     private apiKeyService: ApiKeyService,

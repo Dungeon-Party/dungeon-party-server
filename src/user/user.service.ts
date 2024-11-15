@@ -1,7 +1,7 @@
 // TODO: Inject logger and log any exceptions
 // TODO: add JsDoc comments to all methods
 // TODO: Ensure that all method names make sense (getAllApiKeysForUser vs getAllApiKeys)
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import * as argon2 from 'argon2'
 
 import { CreateUserDto } from './dto/create-user.dto'
@@ -11,7 +11,10 @@ import { UserRepository } from './user.repository'
 
 @Injectable()
 export class UserService {
-  constructor(private readonly repo: UserRepository) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly repo: UserRepository,
+  ) {}
 
   async createUser(data: CreateUserDto): Promise<User> {
     const hashedPassword = await argon2.hash(data.password, {

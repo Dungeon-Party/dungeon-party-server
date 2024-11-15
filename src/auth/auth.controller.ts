@@ -1,6 +1,6 @@
 // TODO: Ensure that swagger description, response, and body is added to each method
 // TODO: Inject logger and log any exceptions
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Logger, Post, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,7 +23,10 @@ import TokenResponseDto from './dto/token-response.dto'
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly authService: AuthService,
+  ) {}
 
   @ApiBody({ type: LoginDto })
   @ApiResponse({ type: TokenResponseDto })

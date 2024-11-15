@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Logger,
   Param,
   Post,
   UseGuards,
@@ -32,7 +33,10 @@ import { ApiKey } from './entities/api-key.entity'
 @ApiTags('api-keys')
 @Controller('api-keys')
 export class ApiKeyController {
-  constructor(private readonly apiKeyService: ApiKeyService) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly apiKeyService: ApiKeyService,
+  ) {}
 
   @ApiBody({
     type: CreateApiKeyDto,

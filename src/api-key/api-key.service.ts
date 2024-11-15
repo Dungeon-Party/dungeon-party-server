@@ -2,7 +2,7 @@
 // TODO: add JsDoc comments to all methods
 // TODO: Ensure that all method names make sense (getAllApiKeysForUser vs getAllApiKeys)
 import * as crypto from 'crypto'
-import { Injectable, NotFoundException } from '@nestjs/common'
+import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import * as argon2 from 'argon2'
 
 import { User } from '../user/entities/user.entity'
@@ -13,7 +13,10 @@ import { ApiKey } from './entities/api-key.entity'
 
 @Injectable()
 export class ApiKeyService {
-  constructor(private readonly repo: ApiKeyRepository) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly repo: ApiKeyRepository,
+  ) {}
 
   async createApiKey(
     userId: User['id'],

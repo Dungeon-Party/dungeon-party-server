@@ -1,4 +1,5 @@
 // TODO: Ensure that all necessary methods have guards
+import { Logger } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { UserService } from './user.service'
@@ -8,7 +9,10 @@ import { User } from './entities/user.entity'
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly userService: UserService,
+  ) {}
 
   @Query(() => [User], { name: 'users' })
   async getUsers(): Promise<User[]> {

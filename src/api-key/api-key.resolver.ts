@@ -1,5 +1,5 @@
 // TODO: Ensure that all necessary methods have guards
-import { UseGuards } from '@nestjs/common'
+import { Logger, UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
 import { GqlJwtAuthGuard } from '../auth/guards/gql-jwt-auth.guard'
@@ -12,7 +12,10 @@ import { ApiKey } from './entities/api-key.entity'
 
 @Resolver(() => ApiKey)
 export class ApiKeyResolver {
-  constructor(private readonly apiKeyService: ApiKeyService) {}
+  constructor(
+    private readonly logger: Logger,
+    private readonly apiKeyService: ApiKeyService,
+  ) {}
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
