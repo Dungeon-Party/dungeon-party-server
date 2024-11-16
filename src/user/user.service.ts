@@ -11,10 +11,9 @@ import { UserRepository } from './user.repository'
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly logger: Logger,
-    private readonly repo: UserRepository,
-  ) {}
+  private readonly logger: Logger = new Logger(UserService.name)
+
+  constructor(private readonly repo: UserRepository) {}
 
   async createUser(data: CreateUserDto): Promise<User> {
     const hashedPassword = await argon2.hash(data.password, {

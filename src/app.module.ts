@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
 import { GraphQLError, GraphQLFormattedError } from 'graphql'
+import { LoggerModule } from 'nestjs-pino'
 import {
   loggingMiddleware,
   LoggingMiddlewareOptions,
@@ -22,6 +23,24 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
 
 @Module({
   imports: [
+    LoggerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        pinoHttp: {
+          level: configService.get<string>('logging.level'),
+          customProps: () => ({
+            context: 'HTTP',
+          }),
+          transport: {
+            target: 'pino-pretty',
+            options: {
+              singleLine: true,
+            },
+          },
+        },
+      }),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [httpConfig, databaseConfig, securityConfig, loggingConfig],
@@ -32,12 +51,9 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
         middlewares: [
           loggingMiddleware({
             logger: new Logger('PrismaMiddleware'),
-            logLevel:
-              configService.get<string>('logging.level') === 'info'
-                ? 'log'
-                : (configService.get<string>(
-                    'logging.level',
-                  ) as LoggingMiddlewareOptions['logLevel']),
+            logLevel: configService.get<string>(
+              'logging.level',
+            ) as LoggingMiddlewareOptions['logLevel'],
           }),
         ],
       }),

@@ -22,8 +22,9 @@ import TokenResponseDto from './dto/token-response.dto'
 
 @Injectable()
 export class AuthService {
+  private readonly logger: Logger = new Logger(AuthService.name)
+
   constructor(
-    private readonly logger: Logger,
     private configService: ConfigService,
     private userService: UserService,
     private apiKeyService: ApiKeyService,

@@ -33,10 +33,9 @@ import { ApiKey } from './entities/api-key.entity'
 @ApiTags('api-keys')
 @Controller('api-keys')
 export class ApiKeyController {
-  constructor(
-    private readonly logger: Logger,
-    private readonly apiKeyService: ApiKeyService,
-  ) {}
+  private readonly logger: Logger = new Logger(ApiKeyController.name)
+
+  constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @ApiBody({
     type: CreateApiKeyDto,

@@ -12,10 +12,9 @@ import TokenResponseDto from './dto/token-response.dto'
 
 @Resolver(() => TokenResponseDto)
 export class AuthResolver {
-  constructor(
-    private readonly logger: Logger,
-    private readonly authService: AuthService,
-  ) {}
+  private readonly logger: Logger = new Logger(AuthResolver.name)
+
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Query(() => TokenResponseDto)

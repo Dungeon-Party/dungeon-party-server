@@ -24,10 +24,9 @@ import TokenResponseDto from './dto/token-response.dto'
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    private readonly logger: Logger,
-    private readonly authService: AuthService,
-  ) {}
+  private readonly logger: Logger = new Logger(AuthController.name)
+
+  constructor(private readonly authService: AuthService) {}
 
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({ type: TokenResponseDto, description: 'Login successful' })

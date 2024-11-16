@@ -9,10 +9,9 @@ import { User } from './entities/user.entity'
 
 @Resolver(() => User)
 export class UserResolver {
-  constructor(
-    private readonly logger: Logger,
-    private readonly userService: UserService,
-  ) {}
+  private readonly logger: Logger = new Logger(UserResolver.name)
+
+  constructor(private readonly userService: UserService) {}
 
   @Query(() => [User], { name: 'users' })
   async getUsers(): Promise<User[]> {

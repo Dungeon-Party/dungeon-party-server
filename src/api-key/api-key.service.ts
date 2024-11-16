@@ -13,10 +13,9 @@ import { ApiKey } from './entities/api-key.entity'
 
 @Injectable()
 export class ApiKeyService {
-  constructor(
-    private readonly logger: Logger,
-    private readonly repo: ApiKeyRepository,
-  ) {}
+  private readonly logger: Logger = new Logger(ApiKeyService.name)
+
+  constructor(private readonly repo: ApiKeyRepository) {}
 
   async createApiKey(
     userId: User['id'],

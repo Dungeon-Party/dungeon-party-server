@@ -12,10 +12,9 @@ import { User } from './entities/user.entity'
 @ApiTags('users')
 @Controller('users')
 export class UserController {
-  constructor(
-    private readonly logger: Logger,
-    private readonly userService: UserService,
-  ) {}
+  private readonly logger: Logger = new Logger(UserController.name)
+
+  constructor(private readonly userService: UserService) {}
 
   @ApiOkResponse({ type: [User] })
   @UseGuards(JwtOrApiKeyAuthGuard)

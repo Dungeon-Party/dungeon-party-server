@@ -11,10 +11,9 @@ import { ApiKey } from './entities/api-key.entity'
 
 @Resolver(() => ApiKey)
 export class ApiKeyResolver {
-  constructor(
-    private readonly logger: Logger,
-    private readonly apiKeyService: ApiKeyService,
-  ) {}
+  private readonly logger: Logger = new Logger(ApiKeyResolver.name)
+
+  constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @UseGuards(GqlJwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
