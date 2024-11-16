@@ -8,7 +8,7 @@ import * as argon2 from 'argon2'
 import { User } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
-import { CreateApiKeyDto } from './dto/create-apiKey.dto'
+import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKey } from './entities/api-key.entity'
 
 @Injectable()
@@ -58,6 +58,9 @@ export class ApiKeyService {
         where: { id: apiKeyId, userId: userId },
       })
       .then((apiKey) => {
+        if (!apiKey) {
+          throw new NotFoundException('API key not found')
+        }
         return new ApiKey(apiKey)
       })
   }

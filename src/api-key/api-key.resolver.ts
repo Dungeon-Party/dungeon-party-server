@@ -6,7 +6,7 @@ import { ApiKeyService } from './api-key.service'
 import { GqlUser } from '../user/decorators/gql-user.decorator'
 import { User } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
-import { CreateApiKeyDto } from './dto/create-apiKey.dto'
+import { CreateApiKeyDto } from './dto/create-api-key.dto'
 import { ApiKey } from './entities/api-key.entity'
 
 @Resolver(() => ApiKey)
