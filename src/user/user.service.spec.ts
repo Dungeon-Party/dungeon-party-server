@@ -100,6 +100,15 @@ describe('UserService', () => {
         expect(error).toBeInstanceOf(NotFoundException)
       }
     })
+
+    it('should throw an error when the user does not exist', async () => {
+      userRepository.findFirst.mockResolvedValue(null)
+      try {
+        await userService.findUserByEmailOrUsername('test', 'test')
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException)
+      }
+    })
   })
 
   describe('getAllUsers', () => {
