@@ -9,7 +9,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard'
 import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
-import { UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import { getUser, isGuarded } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
@@ -53,7 +53,7 @@ describe('AuthController', () => {
       const response = await authController.login({
         email: 'test-email',
         password: 'test-password',
-      } as UserEntity)
+      } as User)
       expect(response).toEqual(result)
     })
 
@@ -72,7 +72,7 @@ describe('AuthController', () => {
       const response = await authController.refresh({
         email: 'test-email',
         password: 'test-password',
-      } as UserEntity)
+      } as User)
       expect(response).toEqual(result)
     })
 
@@ -83,7 +83,7 @@ describe('AuthController', () => {
 
   describe('profile', () => {
     it('should return the user profile', () => {
-      const user = { email: 'test-email' } as UserEntity
+      const user = { email: 'test-email' } as User
       expect(authController.getProfile(user)).toEqual(user)
     })
 

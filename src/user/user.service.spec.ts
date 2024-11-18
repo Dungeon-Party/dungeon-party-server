@@ -1,11 +1,12 @@
 import { NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
-import { User } from '@prisma/client'
+import { User as PrismaUser } from '@prisma/client'
+import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { UserService } from './user.service'
 import { getUser } from '../utils/test-utils'
-import { UserEntity } from './entities/user.entity'
+import { User } from './entities/user.entity'
 import { UserRepository } from './user.repository'
 
 describe('UserService', () => {
@@ -35,12 +36,20 @@ describe('UserService', () => {
       expect(result.email).toBe(user.email)
     })
 
-    it('should return the type of UserEntity', async () => {
+    it('should return the type of User', async () => {
       const user = getUser()
-      userRepository.create.mockResolvedValue(user as User)
+      userRepository.create.mockResolvedValue(user as PrismaUser)
       const result = await userService.createUser(user)
-      expect(user).not.toBeInstanceOf(UserEntity)
-      expect(result).toBeInstanceOf(UserEntity)
+      expect(user).not.toBeInstanceOf(User)
+      expect(result).toBeInstanceOf(User)
+    })
+
+    it('should hash the password', async () => {
+      const user = getUser()
+      userRepository.create.mockResolvedValue(user)
+      jest.spyOn(argon2, 'hash').mockResolvedValue('hashed-password')
+      await userService.createUser(user)
+      expect(argon2.hash).toHaveBeenCalled()
     })
   })
 
@@ -52,12 +61,17 @@ describe('UserService', () => {
       expect(result).toEqual(user)
     })
 
-    it('should return the type of UserEntity', async () => {
+    it('should return the type of User', async () => {
       const user = getUser()
-      userRepository.findUnique.mockResolvedValue(user as User)
+      userRepository.findUnique.mockResolvedValue(user as PrismaUser)
       const result = await userService.findUserById(user.id)
-      expect(user).not.toBeInstanceOf(UserEntity)
-      expect(result).toBeInstanceOf(UserEntity)
+      expect(user).not.toBeInstanceOf(User)
+      expect(result).toBeInstanceOf(User)
+    })
+
+    it('should throw an error when the user does not exist', async () => {
+      userRepository.findUnique.mockResolvedValue(null)
+      expect(userService.findUserById(1)).rejects.toThrow(NotFoundException)
     })
   })
 
@@ -72,24 +86,29 @@ describe('UserService', () => {
       expect(result).toEqual(user)
     })
 
-    it('should return the type of UserEntity', async () => {
+    it('should return the type of User', async () => {
       const user = getUser()
       userRepository.findFirst.mockResolvedValue(user)
       const result = await userService.findUserByEmailOrUsername(
         user.email,
         user.username,
       )
-      expect(user).not.toBeInstanceOf(UserEntity)
-      expect(result).toBeInstanceOf(UserEntity)
+      expect(user).not.toBeInstanceOf(User)
+      expect(result).toBeInstanceOf(User)
     })
 
     it('should throw an error when the user does not exist', async () => {
       userRepository.findFirst.mockResolvedValue(null)
-      try {
-        await userService.findUserByEmailOrUsername('test', 'test')
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException)
-      }
+      expect(
+        userService.findUserByEmailOrUsername('test', 'test'),
+      ).rejects.toThrow(NotFoundException)
+    })
+
+    it('should throw an error when the user does not exist', async () => {
+      userRepository.findFirst.mockResolvedValue(null)
+      expect(
+        userService.findUserByEmailOrUsername('test', 'test'),
+      ).rejects.toThrow(NotFoundException)
     })
   })
 
@@ -101,15 +120,15 @@ describe('UserService', () => {
       expect(result).toEqual(users)
     })
 
-    it('should return the type of UserEntity', async () => {
+    it('should return the type of User', async () => {
       const users = [getUser(), getUser()]
       userRepository.findMany.mockResolvedValue(users)
       const result = await userService.getAllUsers()
       for (const user of users) {
-        expect(user).not.toBeInstanceOf(UserEntity)
+        expect(user).not.toBeInstanceOf(User)
       }
       for (const user of result) {
-        expect(user).toBeInstanceOf(UserEntity)
+        expect(user).toBeInstanceOf(User)
       }
     })
   })
@@ -122,12 +141,12 @@ describe('UserService', () => {
       expect(result.name).toBe(user.name)
     })
 
-    it('should return the type of UserEntity', async () => {
+    it('should return the type of User', async () => {
       const user = getUser()
       userRepository.update.mockResolvedValue(user)
       const result = await userService.updateUser(user.id, user)
-      expect(user).not.toBeInstanceOf(UserEntity)
-      expect(result).toBeInstanceOf(UserEntity)
+      expect(user).not.toBeInstanceOf(User)
+      expect(result).toBeInstanceOf(User)
     })
   })
 
@@ -139,12 +158,12 @@ describe('UserService', () => {
       expect(result.name).toBe(user.name)
     })
 
-    it('should return the type of UserEntity', async () => {
+    it('should return the type of User', async () => {
       const user = getUser()
       userRepository.delete.mockResolvedValue(user)
       const result = await userService.deleteUser(user.id)
-      expect(user).not.toBeInstanceOf(UserEntity)
-      expect(result).toBeInstanceOf(UserEntity)
+      expect(user).not.toBeInstanceOf(User)
+      expect(result).toBeInstanceOf(User)
     })
   })
 })

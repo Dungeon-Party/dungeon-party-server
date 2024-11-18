@@ -1,30 +1,21 @@
-// TODO: Ensure that swagger description is added to each field
-// TODO: Class Validator is properly applied to each field
-// TODO: GraphQL decorators are properly applied to each field
-// TODO: Ensure that the class extends the Prisma model
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
-import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
-import { ApiKey as PrismaApiKey } from '@prisma/client'
+import { ApiProperty } from '@nestjs/swagger'
 import { Exclude, Expose } from 'class-transformer'
-import {
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator'
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator'
 
 @ObjectType()
 @Exclude()
-export class ApiKey implements PrismaApiKey {
+export class CreateApiKeyResponseDto {
   @ApiProperty({
     description: 'Unique identifier for the API Key',
     example: 1,
     type: 'integer',
     format: 'int32',
   })
-  @Field(() => Int, { nullable: false })
+  @Field(() => Int, {
+    nullable: false,
+    description: 'Unique identifier for the API Key',
+  })
   @IsNotEmpty()
   @IsNumber()
   @Expose()
@@ -37,17 +28,24 @@ export class ApiKey implements PrismaApiKey {
     example: 'Test API Key',
     type: 'string',
   })
-  @Field(() => String, { nullable: false })
+  @Field(() => String, {
+    nullable: false,
+    description: 'The name of the API Key',
+  })
   @IsNotEmpty()
   @IsString()
-  @MinLength(3)
-  @MaxLength(25)
   @Expose()
   name: string
 
-  @ApiHideProperty()
+  @ApiProperty({
+    description: 'The API Key',
+    example: 'dp-aldkhlkanlk,23.dflkj898798h23kbb3llk',
+    type: 'string',
+  })
+  @Field(() => String, { nullable: false, description: 'The API Key' })
   @IsNotEmpty()
   @IsString()
+  @Expose()
   key: string
 
   @ApiProperty({
@@ -56,7 +54,7 @@ export class ApiKey implements PrismaApiKey {
     type: 'integer',
     format: 'int32',
   })
-  @Field(() => Int, { nullable: false })
+  @Field(() => Int, { nullable: false, description: "The user's ID" })
   @IsNotEmpty()
   @IsNumber()
   @Expose()
@@ -68,7 +66,10 @@ export class ApiKey implements PrismaApiKey {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the API Key expires at',
+  })
   @IsNotEmpty()
   @IsDateString()
   @Expose()
@@ -80,7 +81,10 @@ export class ApiKey implements PrismaApiKey {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the API Key was created',
+  })
   @IsNotEmpty()
   @IsDateString()
   @Expose()
@@ -92,13 +96,16 @@ export class ApiKey implements PrismaApiKey {
     type: 'string',
     format: 'date-time',
   })
-  @Field(() => GraphQLISODateTime, { nullable: false })
+  @Field(() => GraphQLISODateTime, {
+    nullable: false,
+    description: 'DateTime the API Key was last updated',
+  })
   @IsNotEmpty()
   @IsDateString()
   @Expose()
   updatedAt: Date
 
-  constructor(partial: Partial<ApiKey>) {
+  constructor(partial: Partial<CreateApiKeyResponseDto>) {
     Object.assign(this, partial)
   }
 }

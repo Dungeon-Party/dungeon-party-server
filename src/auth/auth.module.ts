@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Logger, Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
@@ -10,6 +10,7 @@ import { ApiKeyModule } from '../api-key/api-key.module'
 import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import { AuthResolver } from './auth.resolver'
 
 @Module({
   imports: [
@@ -30,7 +31,14 @@ import { AuthService } from './auth.service'
     ApiKeyModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, ApiKeyStrategy],
+  providers: [
+    Logger,
+    AuthService,
+    AuthResolver,
+    LocalStrategy,
+    JwtStrategy,
+    ApiKeyStrategy,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}

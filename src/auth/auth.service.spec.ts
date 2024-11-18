@@ -15,7 +15,7 @@ import { AuthController } from './auth.controller'
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
 import { AuthService } from './auth.service'
-import { UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import { getApiKey, getUser } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
@@ -60,6 +60,16 @@ describe('AuthService', () => {
     expect(authService).toBeDefined()
   })
 
+  describe('login', () => {
+    it('should return a type of TokenResponseDto', async () => {
+      const user = getUser()
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
+      jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
+      const result = await authService.login(user.username, user.password)
+      expect(result).toBeInstanceOf(TokenResponseDto)
+    })
+  })
+
   describe('validateUser', () => {
     it('should return a user when the credentials are valid', async () => {
       const user = {
@@ -68,9 +78,7 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
-        user as UserEntity,
-      )
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateUser(
         user.username,
@@ -81,11 +89,9 @@ describe('AuthService', () => {
 
     it('should throw an error when the user does not exist', async () => {
       userService.findUserByEmailOrUsername.mockResolvedValueOnce(null)
-      try {
-        await authService.validateUser('test', 'test')
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException)
-      }
+      expect(authService.validateUser('test', 'test')).rejects.toThrow(
+        NotFoundException,
+      )
     })
 
     it('should throw an error when the password is incorrect', async () => {
@@ -95,15 +101,11 @@ describe('AuthService', () => {
         email: 'test@email.com',
         password: 'test-password',
       }
-      userService.findUserByEmailOrUsername.mockResolvedValueOnce(
-        user as UserEntity,
-      )
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
-      try {
-        await authService.validateUser(user.username, 'wrong-password')
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException)
-      }
+      expect(
+        authService.validateUser(user.username, 'wrong-password'),
+      ).rejects.toThrow(UnauthorizedException)
     })
   })
 
@@ -116,7 +118,7 @@ describe('AuthService', () => {
         password: 'test-password',
       }
       configService.get.mockReturnValue('10m')
-      const result = await authService.generateJwt(user as UserEntity)
+      const result = await authService.generateJwt(user as User)
       expect(result).toBeInstanceOf(TokenResponseDto)
     })
 
@@ -128,7 +130,7 @@ describe('AuthService', () => {
         password: 'test-password',
       }
       configService.get.mockReturnValue('10m')
-      const result = await authService.generateJwt(user as UserEntity)
+      const result = await authService.generateJwt(user as User)
       const decodedToken = jwtService.decode(result.accessToken)
       expect(decodedToken).toHaveProperty('sub', user.id)
       expect(decodedToken).toHaveProperty('username', user.username)
@@ -153,12 +155,9 @@ describe('AuthService', () => {
 
       apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
-      return authService
-        .validateApiKey(apiKey.key)
-        .then(() => new Error('Should not reach this point'))
-        .catch((error) => {
-          expect(error).toBeInstanceOf(UnauthorizedException)
-        })
+      expect(authService.validateApiKey(apiKey.key)).rejects.toThrow(
+        UnauthorizedException,
+      )
     })
   })
 
@@ -186,11 +185,9 @@ describe('AuthService', () => {
         password: user.password,
         passwordConfirmation: 'wrong password',
       }
-      try {
-        await authService.register(signupDto)
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadRequestException)
-      }
+      expect(authService.register(signupDto)).rejects.toThrow(
+        BadRequestException,
+      )
     })
   })
 })

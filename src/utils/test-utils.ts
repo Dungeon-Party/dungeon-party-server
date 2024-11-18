@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { CanActivate } from '@nestjs/common'
-import { ApiKey, User } from '@prisma/client'
+import { ApiKey as PrismaApiKey, User as PrismaUser } from '@prisma/client'
 import { faker } from '@faker-js/faker'
-
-import { UserEntity } from '../user/entities/user.entity'
 
 /**
  * Checks whether a route or a Controller is protected with the specified Guard.
@@ -38,7 +36,7 @@ export const isGuarded = (
   return true
 }
 
-export const getUser = (): UserEntity => {
+export const getUser = (): PrismaUser => {
   const firstName = faker.person.firstName()
   const lastName = faker.person.lastName()
 
@@ -56,10 +54,10 @@ export const getUser = (): UserEntity => {
     password: faker.internet.password(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
-  } as User
+  } as PrismaUser
 }
 
-export const getApiKey = () => {
+export const getApiKey = (): PrismaApiKey => {
   return {
     id: faker.number.int(),
     name: faker.lorem.word(),
@@ -68,5 +66,5 @@ export const getApiKey = () => {
     expiresAt: faker.date.future(),
     createdAt: faker.date.past(),
     updatedAt: faker.date.recent(),
-  } as ApiKey
+  } as PrismaApiKey
 }

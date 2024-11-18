@@ -1,12 +1,14 @@
 import * as crypto from 'crypto'
+import { NotFoundException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import { ApiKeyService } from './api-key.service'
-import { getApiKey } from '../utils/test-utils'
+import { getApiKey, getUser } from '../utils/test-utils'
 import { ApiKeyRepository } from './api-key.repository'
-import { ApiKeyEntity } from './entities/api-key.entity'
+import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
+import { ApiKey } from './entities/api-key.entity'
 
 describe('ApiKeyService', () => {
   let apiKeyService: ApiKeyService
@@ -36,7 +38,7 @@ describe('ApiKeyService', () => {
         .mockResolvedValueOnce(apiKeyPart.toString('hex'))
       const createApiKeyDto = { name: 'test' }
 
-      const result = await apiKeyService.createApiKey(createApiKeyDto, 1)
+      const result = await apiKeyService.createApiKey(1, createApiKeyDto)
       expect(result).toEqual({
         ...apiKey,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
@@ -46,7 +48,7 @@ describe('ApiKeyService', () => {
       })
     })
 
-    it('should return the type of ApiKeyEntity', async () => {
+    it('should return the type of ApiKey', async () => {
       const apiKeyPart = Buffer.from('kljsdf892hhlk3hkl')
       const apiKey = getApiKey()
       apiKeyRepository.create.mockResolvedValueOnce(apiKey)
@@ -58,13 +60,13 @@ describe('ApiKeyService', () => {
         .mockResolvedValueOnce(apiKeyPart.toString('hex'))
       const createApiKeyDto = { name: 'test', userId: 1 }
 
-      const result = await apiKeyService.createApiKey(createApiKeyDto, 1)
+      const result = await apiKeyService.createApiKey(1, createApiKeyDto)
       expect(result).toEqual({
         ...apiKey,
         key: `dp-${apiKeyPart.toString('hex')}.${apiKeyPart.toString('hex')}`,
       })
-      expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
-      expect(result).toBeInstanceOf(ApiKeyEntity)
+      expect(apiKey).not.toBeInstanceOf(ApiKey)
+      expect(result).toBeInstanceOf(CreateApiKeyResponseDto)
     })
   })
 
@@ -77,18 +79,30 @@ describe('ApiKeyService', () => {
       expect(result).toEqual(apiKey)
     })
 
-    it('should return the type of ApiKeyEntity', async () => {
+    it('should return the type of ApiKey', async () => {
       const apiKey = getApiKey()
       apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
 
       const result = await apiKeyService.deleteApiKey(apiKey.id, apiKey.userId)
       expect(result).toEqual(apiKey)
-      expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
-      expect(result).toBeInstanceOf(ApiKeyEntity)
+      expect(apiKey).not.toBeInstanceOf(ApiKey)
+      expect(result).toBeInstanceOf(ApiKey)
+    })
+
+    it('should throw NotFoundException if the apiKey is not found', async () => {
+      const apiKey = getApiKey()
+      apiKeyRepository.delete.mockResolvedValueOnce(null)
+
+      apiKeyService
+        .deleteApiKey(apiKey.userId, apiKey.id)
+        .then(() => new Error('Should not reach this point'))
+        .catch((error) => {
+          expect(error).toBeInstanceOf(NotFoundException)
+        })
     })
   })
 
-  describe('findOne', () => {
+  describe('findValidApiKey', () => {
     it('should return the result of apiKeyRepository.findFirst method', async () => {
       const result = {
         id: 1,
@@ -111,13 +125,82 @@ describe('ApiKeyService', () => {
       expect(response).toEqual(result)
     })
 
-    it('should return the type of ApiKeyEntity', async () => {
+    it('should return the type of ApiKey', async () => {
       const apiKey = getApiKey()
       apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
       const result = await apiKeyService.findValidApiKey(apiKey.key)
       expect(result).toEqual(apiKey)
-      expect(apiKey).not.toBeInstanceOf(ApiKeyEntity)
-      expect(result).toBeInstanceOf(ApiKeyEntity)
+      expect(apiKey).not.toBeInstanceOf(ApiKey)
+      expect(result).toBeInstanceOf(ApiKey)
+    })
+
+    it('should throw NotFoundException if the apiKey is not found', async () => {
+      const apiKey = getApiKey()
+      apiKeyRepository.findFirst.mockResolvedValueOnce(null)
+
+      apiKeyService
+        .findValidApiKey(apiKey.key)
+        .then(() => new Error('Should not reach this point'))
+        .catch((error) => {
+          expect(error).toBeInstanceOf(NotFoundException)
+        })
+    })
+  })
+
+  describe('getAllApiKeys', () => {
+    it('should return the result of apiKeyRepository.findMany method', async () => {
+      const user = getUser()
+      const apiKeys = [getApiKey(), getApiKey()]
+      apiKeyRepository.findMany.mockResolvedValueOnce(apiKeys)
+
+      const result = await apiKeyService.getAllApiKeys(user)
+      expect(apiKeyRepository.findMany).toHaveBeenCalled()
+      expect(result).toEqual(apiKeys)
+    })
+
+    it('should return the type of ApiKey', async () => {
+      const user = getUser()
+      const apiKeys = [getApiKey(), getApiKey()]
+      apiKeyRepository.findMany.mockResolvedValueOnce(apiKeys)
+
+      const result = await apiKeyService.getAllApiKeys(user)
+      expect(result).toEqual(apiKeys)
+      for (const resultApiKey of result) {
+        expect(resultApiKey).toBeInstanceOf(ApiKey)
+      }
+    })
+  })
+
+  describe('findApiKeyById', () => {
+    it('should return the result of apiKeyRepository.findFirst method', async () => {
+      const apiKey = getApiKey()
+      apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
+
+      const result = await apiKeyService.findApiKeyById(apiKey.id)
+      expect(apiKeyRepository.findFirst).toHaveBeenCalled()
+      expect(result).toEqual(apiKey)
+    })
+
+    it('should return the type of ApiKey', async () => {
+      const apiKey = getApiKey()
+      apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
+
+      const result = await apiKeyService.findApiKeyById(apiKey.id)
+      expect(result).toEqual(apiKey)
+      expect(apiKey).not.toBeInstanceOf(ApiKey)
+      expect(result).toBeInstanceOf(ApiKey)
+    })
+
+    it('should throw NotFoundException if the apiKey is not found', async () => {
+      const apiKey = getApiKey()
+      apiKeyRepository.findFirst.mockResolvedValueOnce(null)
+
+      apiKeyService
+        .findApiKeyById(apiKey.id)
+        .then(() => new Error('Should not reach this point'))
+        .catch((error) => {
+          expect(error).toBeInstanceOf(NotFoundException)
+        })
     })
   })
 })

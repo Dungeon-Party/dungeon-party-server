@@ -5,7 +5,7 @@ import { UserController } from './user.controller'
 import { UserService } from './user.service'
 import { getUser } from '../utils/test-utils'
 import { UpdateUserDto } from './dto/update-user.dto'
-import { UserEntity } from './entities/user.entity'
+import { User } from './entities/user.entity'
 
 describe('UserController', () => {
   let controller: UserController
@@ -30,7 +30,7 @@ describe('UserController', () => {
 
   describe('getUsers', () => {
     it('should return an array of users', async () => {
-      const users: UserEntity[] = [getUser(), getUser()]
+      const users: User[] = [getUser(), getUser()]
       userService.getAllUsers.mockResolvedValue(users)
       const respone = await controller.getUsers()
 

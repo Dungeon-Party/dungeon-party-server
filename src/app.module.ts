@@ -1,12 +1,15 @@
 import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import { utilities, WinstonModule } from 'nest-winston'
+import { GraphQLModule } from '@nestjs/graphql'
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
+import { GraphQLError, GraphQLFormattedError } from 'graphql'
+import { LoggerModule } from 'nestjs-pino'
 import {
   loggingMiddleware,
   LoggingMiddlewareOptions,
   PrismaModule,
 } from 'nestjs-prisma'
-import { format, transports } from 'winston'
 
 import { ApiKeyModule } from './api-key/api-key.module'
 import { AuthModule } from './auth/auth.module'
@@ -20,26 +23,27 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
 
 @Module({
   imports: [
+    LoggerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        pinoHttp: {
+          level: configService.get<string>('logging.level'),
+          customProps: () => ({
+            context: 'HTTP',
+          }),
+          transport: {
+            target: 'pino-pretty',
+            options: {
+              singleLine: true,
+            },
+          },
+        },
+      }),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [httpConfig, databaseConfig, securityConfig, loggingConfig],
-    }),
-    WinstonModule.forRootAsync({
-      useFactory: (configService: ConfigService) => ({
-        level: configService.get<string>('logging.level'),
-        format: format.combine(
-          format.timestamp(),
-          format.ms(),
-          utilities.format.nestLike('Dungeon Party', {
-            colors: true,
-            prettyPrint: true,
-            processId: false,
-            appName: true,
-          }),
-        ),
-        transports: [new transports.Console()],
-      }),
-      inject: [ConfigService],
     }),
     PrismaModule.forRootAsync({
       isGlobal: true,
@@ -47,22 +51,35 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
         middlewares: [
           loggingMiddleware({
             logger: new Logger('PrismaMiddleware'),
-            logLevel:
-              configService.get<string>('logging.level') === 'info'
-                ? 'log'
-                : (configService.get<string>(
-                    'logging.level',
-                  ) as LoggingMiddlewareOptions['logLevel']),
+            logLevel: configService.get<string>(
+              'logging.level',
+            ) as LoggingMiddlewareOptions['logLevel'],
           }),
         ],
       }),
       inject: [ConfigService],
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: true,
+      playground: false,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      context: ({ req, res }) => ({ req, res }),
+      formatError: (error: GraphQLError) => {
+        const graphQLFormattedError: GraphQLFormattedError = {
+          message:
+            (error.extensions?.originalError as Error)?.message ||
+            error.message,
+        }
+        return graphQLFormattedError
+      },
     }),
     AuthModule,
     ApiKeyModule,
     UserModule,
     HealthModule,
   ],
+  providers: [Logger],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

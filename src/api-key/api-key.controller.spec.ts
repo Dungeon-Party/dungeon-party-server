@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyController } from './api-key.controller'
 import { ApiKeyService } from './api-key.service'
 import { getApiKey, isGuarded } from '../utils/test-utils'
-import { ApiKeyEntity } from './entities/api-key.entity'
+import { ApiKey } from './entities/api-key.entity'
 
 describe('ApiKeyController', () => {
   let apiKeyController: ApiKeyController
@@ -30,7 +30,7 @@ describe('ApiKeyController', () => {
 
   describe('create', () => {
     it('should return the result of apiKeyService create method', () => {
-      const result: ApiKeyEntity = {
+      const result: ApiKey = {
         id: 1,
         name: 'test',
         key: 'test-api-key',
@@ -49,8 +49,8 @@ describe('ApiKeyController', () => {
       const createApiKeyDto = { name: 'test' }
       apiKeyController.create(createApiKeyDto, 1)
       expect(apiKeyService.createApiKey).toHaveBeenCalledWith(
-        createApiKeyDto,
         1,
+        createApiKeyDto,
       )
     })
 

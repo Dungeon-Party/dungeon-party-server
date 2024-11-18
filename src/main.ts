@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { Request } from 'express'
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston'
+import { Logger } from 'nestjs-pino'
 
 import { AppModule } from './app.module'
 import bootstrap from './main.config'
@@ -53,9 +53,7 @@ async function start() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true,
   })
-
-  // Setup Winston Logger
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER))
+  app.useLogger(app.get(Logger))
 
   bootstrap(app)
 

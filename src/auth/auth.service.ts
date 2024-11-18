@@ -1,23 +1,29 @@
+// TODO: Inject logger and log any exceptions
+// TODO: add JsDoc comments to all methods
+// TODO: Ensure that all method names make sense (getAllApiKeysForUser vs getAllApiKeys)
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import * as argon2 from 'argon2'
-import { ApiKeyEntity } from 'src/api-key/entities/api-key.entity'
+import { ApiKey } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
-import { UserEntity } from '../user/entities/user.entity'
+import { User } from '../user/entities/user.entity'
 import JwtPayloadDto from './dto/jwt-payload.dto'
 import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'
 
 @Injectable()
 export class AuthService {
+  private readonly logger: Logger = new Logger(AuthService.name)
+
   constructor(
     private configService: ConfigService,
     private userService: UserService,
@@ -25,10 +31,13 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(
-    username: string,
-    pass: string,
-  ): Promise<UserEntity | null> {
+  async login(username: string, password: string): Promise<TokenResponseDto> {
+    return this.validateUser(username, password).then((user) =>
+      this.generateJwt(user),
+    )
+  }
+
+  async validateUser(username: string, pass: string): Promise<User | null> {
     const user = await this.userService.findUserByEmailOrUsername(
       username,
       username,
@@ -42,7 +51,7 @@ export class AuthService {
     return user
   }
 
-  async register(signupDto: SignUpDto): Promise<UserEntity> {
+  async register(signupDto: SignUpDto): Promise<User> {
     if (signupDto.password !== signupDto.passwordConfirmation) {
       throw new BadRequestException('Passwords do not match')
     }
@@ -50,7 +59,7 @@ export class AuthService {
     return this.userService.createUser(signupDto)
   }
 
-  async generateJwt(user: UserEntity): Promise<TokenResponseDto> {
+  async generateJwt(user: User): Promise<TokenResponseDto> {
     const payload: Partial<JwtPayloadDto> = {
       sub: user.id,
       iss: 'dungeon-party',
@@ -60,6 +69,7 @@ export class AuthService {
 
     /* istanbul ignore next */
     const jwtSecret =
+      // FIXME: This is a workaround to make tests pass
       process.env.NODE_ENV === 'test'
         ? 'test-secret'
         : this.configService.get<string>('security.jwt.secret')
@@ -86,16 +96,18 @@ export class AuthService {
     })
   }
 
-  async validateApiKey(key: string): Promise<UserEntity> {
+  async validateApiKey(key: string): Promise<User> {
     return this.apiKeyService
       .findValidApiKey(key)
-      .then((apiKey: ApiKeyEntity) => {
+      .then(async (apiKey: ApiKey) => {
         const apiKeyToVerify = apiKey.key.split('.')[1]
-        if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
+        if (await argon2.verify(apiKeyToVerify, key.split('.')[1])) {
           return apiKey.userId
+        } else {
+          throw new UnauthorizedException('Invalid API key')
         }
       })
-      .then((userId: UserEntity['id']) => {
+      .then((userId: User['id']) => {
         return this.userService.findUserById(userId)
       })
   }
