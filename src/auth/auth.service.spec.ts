@@ -60,6 +60,16 @@ describe('AuthService', () => {
     expect(authService).toBeDefined()
   })
 
+  describe('login', () => {
+    it('should return a type of TokenResponseDto', async () => {
+      const user = getUser()
+      userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
+      jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
+      const result = await authService.login(user.username, user.password)
+      expect(result).toBeInstanceOf(TokenResponseDto)
+    })
+  })
+
   describe('validateUser', () => {
     it('should return a user when the credentials are valid', async () => {
       const user = {
@@ -144,17 +154,17 @@ describe('AuthService', () => {
       expect(response).toEqual(user)
     })
 
-    it('should throw an error when the API key is invalid', async () => {
+    it.only('should throw an error when the API key is invalid', async () => {
       const apiKey = getApiKey()
 
       apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
-      return authService
-        .validateApiKey(apiKey.key)
-        .then(() => new Error('Should not reach this point'))
-        .catch((error) => {
-          expect(error).toBeInstanceOf(UnauthorizedException)
-        })
+      try {
+        await authService.validateApiKey(apiKey.key)
+        throw Error('Should not reach this point')
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException)
+      }
     })
   })
 

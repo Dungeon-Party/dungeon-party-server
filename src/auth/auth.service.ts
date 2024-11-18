@@ -99,9 +99,9 @@ export class AuthService {
   async validateApiKey(key: string): Promise<User> {
     return this.apiKeyService
       .findValidApiKey(key)
-      .then((apiKey: ApiKey) => {
+      .then(async (apiKey: ApiKey) => {
         const apiKeyToVerify = apiKey.key.split('.')[1]
-        if (argon2.verify(apiKeyToVerify, key.split('.')[1])) {
+        if (await argon2.verify(apiKeyToVerify, key.split('.')[1])) {
           return apiKey.userId
         } else {
           throw new UnauthorizedException('Invalid API key')
