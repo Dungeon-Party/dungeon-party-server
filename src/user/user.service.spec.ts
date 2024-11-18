@@ -68,6 +68,11 @@ describe('UserService', () => {
       expect(user).not.toBeInstanceOf(User)
       expect(result).toBeInstanceOf(User)
     })
+
+    it('should throw an error when the user does not exist', async () => {
+      userRepository.findUnique.mockResolvedValue(null)
+      expect(userService.findUserById(1)).rejects.toThrow(NotFoundException)
+    })
   })
 
   describe('findUserByEmailOrUsername', () => {
@@ -94,20 +99,16 @@ describe('UserService', () => {
 
     it('should throw an error when the user does not exist', async () => {
       userRepository.findFirst.mockResolvedValue(null)
-      try {
-        await userService.findUserByEmailOrUsername('test', 'test')
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException)
-      }
+      expect(
+        userService.findUserByEmailOrUsername('test', 'test'),
+      ).rejects.toThrow(NotFoundException)
     })
 
     it('should throw an error when the user does not exist', async () => {
       userRepository.findFirst.mockResolvedValue(null)
-      try {
-        await userService.findUserByEmailOrUsername('test', 'test')
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException)
-      }
+      expect(
+        userService.findUserByEmailOrUsername('test', 'test'),
+      ).rejects.toThrow(NotFoundException)
     })
   })
 

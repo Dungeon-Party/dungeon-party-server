@@ -89,11 +89,9 @@ describe('AuthService', () => {
 
     it('should throw an error when the user does not exist', async () => {
       userService.findUserByEmailOrUsername.mockResolvedValueOnce(null)
-      try {
-        await authService.validateUser('test', 'test')
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException)
-      }
+      expect(authService.validateUser('test', 'test')).rejects.toThrow(
+        NotFoundException,
+      )
     })
 
     it('should throw an error when the password is incorrect', async () => {
@@ -105,11 +103,9 @@ describe('AuthService', () => {
       }
       userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
-      try {
-        await authService.validateUser(user.username, 'wrong-password')
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException)
-      }
+      expect(
+        authService.validateUser(user.username, 'wrong-password'),
+      ).rejects.toThrow(UnauthorizedException)
     })
   })
 
@@ -154,17 +150,14 @@ describe('AuthService', () => {
       expect(response).toEqual(user)
     })
 
-    it.only('should throw an error when the API key is invalid', async () => {
+    it('should throw an error when the API key is invalid', async () => {
       const apiKey = getApiKey()
 
       apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
-      try {
-        await authService.validateApiKey(apiKey.key)
-        throw Error('Should not reach this point')
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException)
-      }
+      expect(authService.validateApiKey(apiKey.key)).rejects.toThrow(
+        UnauthorizedException,
+      )
     })
   })
 
@@ -192,11 +185,9 @@ describe('AuthService', () => {
         password: user.password,
         passwordConfirmation: 'wrong password',
       }
-      try {
-        await authService.register(signupDto)
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadRequestException)
-      }
+      expect(authService.register(signupDto)).rejects.toThrow(
+        BadRequestException,
+      )
     })
   })
 })
