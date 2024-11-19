@@ -1,4 +1,4 @@
-import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { Logger, Module, NestModule } from '@nestjs/common'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -19,7 +19,6 @@ import databaseConfig from './config/database.config'
 import httpConfig from './config/http.config'
 import loggingConfig from './config/logging.config'
 import securityConfig from './config/security.config'
-import { RequestLoggingMiddleware } from './middleware/request-logging.middleware'
 
 @Module({
   imports: [
@@ -82,7 +81,5 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
   providers: [Logger],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggingMiddleware).forRoutes('*')
-  }
+  configure() {}
 }

@@ -20,9 +20,9 @@ import {
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
 import {
-  BadRequestException,
-  NotFoundException,
-  UnauthorizedException,
+  BadRequestExceptionI,
+  NotFoundExceptionI,
+  UnauthorizedExceptionI,
 } from '../types'
 import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
@@ -46,11 +46,11 @@ export class ApiKeyController {
     description: 'API Key created successfully',
   })
   @ApiUnauthorizedResponse({
-    type: UnauthorizedException,
+    type: UnauthorizedExceptionI,
     description: 'Unauthorized',
   })
   @ApiBadRequestResponse({
-    type: BadRequestException,
+    type: BadRequestExceptionI,
     description: 'Bad Request',
   })
   @ApiBearerAuth()
@@ -65,11 +65,11 @@ export class ApiKeyController {
 
   @ApiOkResponse({ type: ApiKey, description: 'API Key deleted successfully' })
   @ApiUnauthorizedResponse({
-    type: UnauthorizedException,
+    type: UnauthorizedExceptionI,
     description: 'Unauthorized',
   })
   @ApiNotFoundResponse({
-    type: NotFoundException,
+    type: NotFoundExceptionI,
     description: 'API Key not found',
   })
   @ApiBearerAuth()

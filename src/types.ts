@@ -3,11 +3,27 @@ import { ApiProperty } from '@nestjs/swagger'
 export const ROLES_KEY = 'roles'
 
 export enum UserRole {
-  ADMIN = 'admin',
-  USER = 'user',
+  ADMIN = 'ADMIN',
+  USER = 'USER',
 }
 
-export class UnauthorizedException {
+export class ForbiddenExceptionI {
+  @ApiProperty({
+    type: 'string',
+    example: 'Forbidden',
+    description: 'The error message',
+  })
+  message: string
+
+  @ApiProperty({
+    type: 'number',
+    example: 403,
+    description: 'The status code',
+  })
+  statusCode: number
+}
+
+export class UnauthorizedExceptionI {
   @ApiProperty({
     type: 'string',
     example: 'Unauthorized',
@@ -23,7 +39,7 @@ export class UnauthorizedException {
   statusCode: number
 }
 
-export class NotFoundException {
+export class NotFoundExceptionI {
   @ApiProperty({
     type: 'string',
     example: 'Not Found',
@@ -39,7 +55,7 @@ export class NotFoundException {
   statusCode: number
 }
 
-export class BadRequestException {
+export class BadRequestExceptionI {
   @ApiProperty({
     type: 'array',
     items: {
