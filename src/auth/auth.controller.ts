@@ -77,6 +77,7 @@ export class AuthController {
   @UseGuards(JwtOrApiKeyAuthGuard)
   @Get('profile')
   getProfile(@GetUser() user: User) {
+    // FIXME: The user should be a param and not from the token
     return new User(user)
   }
 }
