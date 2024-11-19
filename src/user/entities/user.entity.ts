@@ -13,6 +13,7 @@ import {
   IsNumber,
   IsString,
 } from 'class-validator'
+import { Mock } from 'mockingbird'
 
 @ObjectType()
 @Exclude()
@@ -27,6 +28,7 @@ export class User implements PrismaUser {
     nullable: false,
     description: 'Unique identifier for the user',
   })
+  @Mock((faker) => faker.datatype.number(1000))
   @IsNumber()
   @IsNotEmpty()
   @Expose()
@@ -41,6 +43,7 @@ export class User implements PrismaUser {
     nullable: true,
   })
   @Field(() => String, { nullable: false, description: "The user's name" })
+  @Mock((faker) => faker.name.findName())
   @IsString()
   @IsNotEmpty()
   @Expose()
@@ -55,6 +58,7 @@ export class User implements PrismaUser {
     nullable: false,
     description: "The user's email address",
   })
+  @Mock((faker) => faker.internet.email())
   @IsString()
   @IsEmail()
   @IsNotEmpty()
@@ -69,12 +73,14 @@ export class User implements PrismaUser {
     type: 'string',
   })
   @Field(() => String, { nullable: false, description: "The user's username" })
+  @Mock((faker) => faker.internet.userName())
   @IsString()
   @IsNotEmpty()
   @Expose()
   username: string
 
   @ApiHideProperty()
+  @Mock((faker) => faker.internet.password())
   @IsString()
   @IsNotEmpty()
   password: string
@@ -85,6 +91,7 @@ export class User implements PrismaUser {
     example: 'USER',
   })
   @Field(() => String, { nullable: false, description: 'The user role' })
+  @Mock((faker) => faker.random.arrayElement(Object.values(UserRole)))
   @IsString()
   @IsNotEmpty()
   @Expose()
@@ -100,6 +107,7 @@ export class User implements PrismaUser {
     nullable: false,
     description: 'DateTime the user was created',
   })
+  @Mock((faker) => faker.date.past())
   @IsDateString()
   @IsNotEmpty()
   @Expose()
@@ -115,6 +123,7 @@ export class User implements PrismaUser {
     nullable: false,
     description: 'DateTime the user was last updated',
   })
+  @Mock((faker) => faker.date.recent())
   @IsDateString()
   @IsNotEmpty()
   @Expose()

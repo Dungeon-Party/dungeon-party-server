@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { MockFactory } from 'mockingbird'
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyController } from './api-key.controller'
 import { ApiKeyService } from './api-key.service'
-import { getApiKey, isGuarded } from '../utils/test-utils'
 import { ApiKey } from './entities/api-key.entity'
 
 describe('ApiKeyController', () => {
@@ -55,13 +55,17 @@ describe('ApiKeyController', () => {
     })
 
     it('should be protected by the jwt guard', () => {
-      expect(isGuarded(apiKeyController.create, JwtAuthGuard)).toBeTruthy()
+      expect(
+        Reflect.getMetadata('__guards__', apiKeyController.create).some(
+          (guard) => guard.name === JwtAuthGuard.name,
+        ),
+      ).toBeTruthy()
     })
   })
 
   describe('delete', () => {
     it('should return the result of apiKeyService delete method', () => {
-      const apiKey = getApiKey()
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
       apiKeyService.deleteApiKey.mockResolvedValue(apiKey)
       expect(
         apiKeyController.delete(apiKey.id, apiKey.userId),
@@ -69,7 +73,7 @@ describe('ApiKeyController', () => {
     })
 
     it('should call apiKeyService delete method with the correct arguments', async () => {
-      const apiKey = getApiKey()
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
       await apiKeyController.delete(apiKey.id, apiKey.userId)
       expect(apiKeyService.deleteApiKey).toHaveBeenCalledWith(
         apiKey.id,
@@ -78,7 +82,11 @@ describe('ApiKeyController', () => {
     })
 
     it('should be protected by the jwt guard', () => {
-      expect(isGuarded(apiKeyController.create, JwtAuthGuard)).toBeTruthy()
+      expect(
+        Reflect.getMetadata('__guards__', apiKeyController.delete).some(
+          (guard) => guard.name === JwtAuthGuard.name,
+        ),
+      ).toBeTruthy()
     })
   })
 })

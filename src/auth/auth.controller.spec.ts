@@ -2,6 +2,7 @@ import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { MockFactory } from 'mockingbird'
 
 import JwtOrApiKeyAuthGuard from './guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
@@ -10,7 +11,6 @@ import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
 import { User } from '../user/entities/user.entity'
-import { getUser, isGuarded } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
 describe('AuthController', () => {
@@ -58,7 +58,11 @@ describe('AuthController', () => {
     })
 
     it('should be protected by the local guard', () => {
-      expect(isGuarded(authController.login, LocalAuthGuard)).toBeTruthy()
+      expect(
+        Reflect.getMetadata('__guards__', authController.login).some(
+          (guard) => guard.name === LocalAuthGuard.name,
+        ),
+      ).toBeTruthy()
     })
   })
 
@@ -77,7 +81,11 @@ describe('AuthController', () => {
     })
 
     it('should be protected by the jwt strategy', () => {
-      expect(isGuarded(authController.refresh, JwtAuthGuard)).toBeTruthy()
+      expect(
+        Reflect.getMetadata('__guards__', authController.refresh).some(
+          (guard) => guard.name === JwtAuthGuard.name,
+        ),
+      ).toBeTruthy()
     })
   })
 
@@ -89,14 +97,16 @@ describe('AuthController', () => {
 
     it('should be protected by the jwt or api-key strategy', () => {
       expect(
-        isGuarded(authController.getProfile, JwtOrApiKeyAuthGuard),
+        Reflect.getMetadata('__guards__', authController.getProfile).some(
+          (guard) => guard.name === JwtOrApiKeyAuthGuard.name,
+        ),
       ).toBeTruthy()
     })
   })
 
   describe('register', () => {
     it('should return the result of AuthService.register', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       authService.register.mockResolvedValueOnce(user)
       const result = await authController.register({
         name: user.name,

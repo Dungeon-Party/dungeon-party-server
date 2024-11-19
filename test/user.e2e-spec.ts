@@ -4,6 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import 'prisma'
 
+import { MockFactory } from 'mockingbird'
 import { PrismaService } from 'nestjs-prisma'
 import * as request from 'supertest'
 
@@ -11,7 +12,7 @@ import JwtOrApiKeyAuthGuard from '../src/auth/guards/jwt-apiKey-auth.guard'
 import { AuthModule } from '../src/auth/auth.module'
 import { UserModule } from '../src/user/user.module'
 import bootstrap from '../src/main.config'
-import { getUser } from '../src/utils/test-utils'
+import { User } from '../src/user/entities/user.entity'
 
 describe.only('Api-Key (e2e)', () => {
   let app: INestApplication
@@ -49,7 +50,10 @@ describe.only('Api-Key (e2e)', () => {
   describe('/api/v1/users GET', () => {
     // FIXME: This test is failing because the user is not being set on the request
     it.skip('should return all users', async () => {
-      const users = [getUser(), getUser()]
+      const users = [
+        MockFactory<User>(User).one(),
+        MockFactory<User>(User).one(),
+      ]
 
       jwtOrApiKeyAuthGuard.canActivate.mockReturnValueOnce(true)
       prismaService.user.findUnique.mockResolvedValueOnce(users[0])
@@ -72,7 +76,7 @@ describe.only('Api-Key (e2e)', () => {
 
   describe('/api/v1/users PUT', () => {
     it('should update a user', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       const updatedUser = {
         ...user,
         username: 'new-username',

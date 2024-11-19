@@ -3,9 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { User as PrismaUser } from '@prisma/client'
 import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { MockFactory } from 'mockingbird'
 
 import { UserService } from './user.service'
-import { getUser } from '../utils/test-utils'
 import { User } from './entities/user.entity'
 import { UserRepository } from './user.repository'
 
@@ -28,7 +28,7 @@ describe('UserService', () => {
 
   describe('createUser', () => {
     it('should return the value of userRepository.create', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       userRepository.create.mockResolvedValue(user)
       const result = await userService.createUser(user)
       expect(result.name).toBe(user.name)
@@ -37,7 +37,7 @@ describe('UserService', () => {
     })
 
     it('should return the type of User', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).plain().one()
       userRepository.create.mockResolvedValue(user as PrismaUser)
       const result = await userService.createUser(user)
       expect(user).not.toBeInstanceOf(User)
@@ -45,7 +45,7 @@ describe('UserService', () => {
     })
 
     it('should hash the password', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       userRepository.create.mockResolvedValue(user)
       jest.spyOn(argon2, 'hash').mockResolvedValue('hashed-password')
       await userService.createUser(user)
@@ -55,14 +55,14 @@ describe('UserService', () => {
 
   describe('findUserById', () => {
     it('should return the value of userRepository.findUnique', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       userRepository.findUnique.mockResolvedValue(user)
       const result = await userService.findUserById(user.id)
       expect(result).toEqual(user)
     })
 
     it('should return the type of User', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).plain().one()
       userRepository.findUnique.mockResolvedValue(user as PrismaUser)
       const result = await userService.findUserById(user.id)
       expect(user).not.toBeInstanceOf(User)
@@ -77,7 +77,7 @@ describe('UserService', () => {
 
   describe('findUserByEmailOrUsername', () => {
     it('should return the value of userRepository.findFirst', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       userRepository.findFirst.mockResolvedValue(user)
       const result = await userService.findUserByEmailOrUsername(
         user.email,
@@ -87,7 +87,7 @@ describe('UserService', () => {
     })
 
     it('should return the type of User', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).plain().one()
       userRepository.findFirst.mockResolvedValue(user)
       const result = await userService.findUserByEmailOrUsername(
         user.email,
@@ -114,14 +114,20 @@ describe('UserService', () => {
 
   describe('getAllUsers', () => {
     it('should return the value of userRepository.findMany', async () => {
-      const users = [getUser(), getUser()]
+      const users = [
+        MockFactory<User>(User).one(),
+        MockFactory<User>(User).one(),
+      ]
       userRepository.findMany.mockResolvedValue(users)
       const result = await userService.getAllUsers()
       expect(result).toEqual(users)
     })
 
     it('should return the type of User', async () => {
-      const users = [getUser(), getUser()]
+      const users = [
+        MockFactory<User>(User).plain().one(),
+        MockFactory<User>(User).plain().one(),
+      ]
       userRepository.findMany.mockResolvedValue(users)
       const result = await userService.getAllUsers()
       for (const user of users) {
@@ -135,14 +141,14 @@ describe('UserService', () => {
 
   describe('updateUser', () => {
     it('should return the value of userRepository.update', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       userRepository.update.mockResolvedValue(user)
       const result = await userService.updateUser(user.id, user)
       expect(result.name).toBe(user.name)
     })
 
     it('should return the type of User', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).plain().one()
       userRepository.update.mockResolvedValue(user)
       const result = await userService.updateUser(user.id, user)
       expect(user).not.toBeInstanceOf(User)
@@ -152,14 +158,14 @@ describe('UserService', () => {
 
   describe('deleteUser', () => {
     it('should return the value of userRepository.delete', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       userRepository.delete.mockResolvedValue(user)
       const result = await userService.deleteUser(user.id)
       expect(result.name).toBe(user.name)
     })
 
     it('should return the type of User', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).plain().one()
       userRepository.delete.mockResolvedValue(user)
       const result = await userService.deleteUser(user.id)
       expect(user).not.toBeInstanceOf(User)
