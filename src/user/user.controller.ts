@@ -1,9 +1,10 @@
 // TODO: Ensure that swagger description, response, and body is added to each method
 // TODO: Inject logger and log any exceptions
 import { Body, Controller, Get, Logger, Put, UseGuards } from '@nestjs/common'
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 
 import JwtOrApiKeyAuthGuard from '../auth/guards/jwt-apiKey-auth.guard'
+import { RolesGuard } from '../auth/guards/roles.guard'
 import { UserService } from './user.service'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { UserRole } from '../types'
@@ -18,8 +19,9 @@ export class UserController {
 
   constructor(private readonly userService: UserService) {}
 
+  @ApiBearerAuth()
   @ApiOkResponse({ type: [User] })
-  @UseGuards(JwtOrApiKeyAuthGuard)
+  @UseGuards(JwtOrApiKeyAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Get()
   getUsers(): Promise<User[]> {

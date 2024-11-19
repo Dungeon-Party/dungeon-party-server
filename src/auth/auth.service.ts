@@ -65,6 +65,7 @@ export class AuthService {
       iss: 'dungeon-party',
       username: user.username,
       email: user.email,
+      role: user.role,
     }
 
     /* istanbul ignore next */

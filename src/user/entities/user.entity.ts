@@ -4,7 +4,7 @@
 // TODO: Ensure that the class implements the Prisma model
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql'
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger'
-import { User as PrismaUser } from '@prisma/client'
+import { User as PrismaUser, UserRole } from '@prisma/client'
 import { Exclude, Expose } from 'class-transformer'
 import {
   IsDateString,
@@ -78,6 +78,17 @@ export class User implements PrismaUser {
   @IsString()
   @IsNotEmpty()
   password: string
+
+  @ApiProperty({
+    description: "The user's role",
+    enum: UserRole,
+    example: 'USER',
+  })
+  @Field(() => String, { nullable: false, description: 'The user role' })
+  @IsString()
+  @IsNotEmpty()
+  @Expose()
+  role: UserRole
 
   @ApiProperty({
     description: 'DateTime the user was created',
