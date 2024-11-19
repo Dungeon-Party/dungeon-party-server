@@ -1,7 +1,7 @@
 import { Logger, UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 
-import { GqlJwtAuthGuard } from '../auth/guards/gql-jwt-auth.guard'
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
 import { GqlUser } from '../user/decorators/gql-user.decorator'
 import { User } from '../user/entities/user.entity'
@@ -15,7 +15,7 @@ export class ApiKeyResolver {
 
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
-  @UseGuards(GqlJwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
   async getApiKeys(@GqlUser() user: User): Promise<ApiKey[]> {
     return this.apiKeyService.getAllApiKeys(user).then((apiKeys) => {
@@ -23,7 +23,7 @@ export class ApiKeyResolver {
     })
   }
 
-  @UseGuards(GqlJwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Query(() => ApiKey, { name: 'apiKey', nullable: true })
   async getApiKeyById(@Args('id') id: number): Promise<ApiKey | null> {
     return this.apiKeyService.findApiKeyById(id).then((apiKey) => {
@@ -31,7 +31,7 @@ export class ApiKeyResolver {
     })
   }
 
-  @UseGuards(GqlJwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => CreateApiKeyResponseDto, { name: 'createApiKey' })
   async createApiKey(
     @GqlUser() user,
@@ -40,7 +40,7 @@ export class ApiKeyResolver {
     return this.apiKeyService.createApiKey(user.id, input)
   }
 
-  @UseGuards(GqlJwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => ApiKey, { name: 'deleteApiKey' })
   async deleteApiKey(@GqlUser() user, @Args('id') id: number): Promise<ApiKey> {
     return this.apiKeyService.deleteApiKey(user.id, id)
