@@ -10,7 +10,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
 
-import JwtOrApiKeyAuthGuard from './guards/jwt-apiKey-auth.guard'
+import { JwtOrApiKeyAuthGuard } from './guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { AuthService } from './auth.service'

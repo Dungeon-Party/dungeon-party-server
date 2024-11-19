@@ -3,7 +3,7 @@
 import { Body, Controller, Get, Logger, Put, UseGuards } from '@nestjs/common'
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 
-import JwtOrApiKeyAuthGuard from '../auth/guards/jwt-apiKey-auth.guard'
+import { JwtOrApiKeyAuthGuard } from '../auth/guards/jwt-apiKey-auth.guard'
 import { RolesGuard } from '../auth/guards/roles.guard'
 import { UserService } from './user.service'
 import { Roles } from '../auth/decorators/roles.decorator'

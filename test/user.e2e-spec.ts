@@ -8,7 +8,7 @@ import { MockFactory } from 'mockingbird'
 import { PrismaService } from 'nestjs-prisma'
 import * as request from 'supertest'
 
-import JwtOrApiKeyAuthGuard from '../src/auth/guards/jwt-apiKey-auth.guard'
+import { JwtOrApiKeyAuthGuard } from '../src/auth/guards/jwt-apiKey-auth.guard'
 import { AuthModule } from '../src/auth/auth.module'
 import { UserModule } from '../src/user/user.module'
 import bootstrap from '../src/main.config'

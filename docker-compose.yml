@@ -1,4 +1,29 @@
 services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    depends_on:
+      - postgres
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      file: .env
+      # change the host to the Postgres service name
+      DATABASE_POSTGRES_HOST: postgres
+    command: > 
+      sh -cx "npm i -g pm2
+      && pm2 start yarn --interpreter bash --name api -- start:debug
+      && pm2 start yarn --interpreter bash --name prisma -- db:studio
+      && pm2 logs"
+    ports:
+      - 8080:3000
+      # prisma studio port
+      - 5555:5555
+      # debugging port
+      - 9229:9229
   postgres:
     image: postgres
     restart: always
@@ -10,7 +35,5 @@ services:
       - POSTGRES_DB=${DATABASE_POSTGRES_DB}
     volumes:
       - postgres:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
 volumes:
   postgres:

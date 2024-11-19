@@ -3,10 +3,7 @@ import { GqlExecutionContext } from '@nestjs/graphql'
 import { AuthGuard } from '@nestjs/passport'
 
 @Injectable()
-export default class JwtOrApiKeyAuthGuard extends AuthGuard([
-  'api-key',
-  'jwt',
-]) {
+export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
   getRequest(context: ExecutionContext) {
     if (context.getType<ContextType | 'graphql'>() === 'graphql') {
       return GqlExecutionContext.create(context).getContext().req

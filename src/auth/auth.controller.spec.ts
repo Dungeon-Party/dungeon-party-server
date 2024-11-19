@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { MockFactory } from 'mockingbird'
 
-import JwtOrApiKeyAuthGuard from './guards/jwt-apiKey-auth.guard'
+import { JwtOrApiKeyAuthGuard } from './guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { LocalAuthGuard } from './guards/local-auth.guard'
 import { UserModule } from '../user/user.module'
