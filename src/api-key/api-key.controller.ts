@@ -67,7 +67,7 @@ export class ApiKeyController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(
+  async create(
     @Body() createApiKeyDto: CreateApiKeyDto,
     @GetUser() user: User,
   ): Promise<CreateApiKeyResponseDto> {

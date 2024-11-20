@@ -1,3 +1,4 @@
+import { ForbiddenException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { MockFactory } from 'mockingbird'
@@ -5,6 +6,7 @@ import { MockFactory } from 'mockingbird'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyController } from './api-key.controller'
 import { ApiKeyService } from './api-key.service'
+import { UserRole } from '../types'
 import { User } from '../user/entities/user.entity'
 import { ApiKey } from './entities/api-key.entity'
 
@@ -31,20 +33,12 @@ describe('ApiKeyController', () => {
 
   describe('create', () => {
     it('should return the result of apiKeyService create method', () => {
-      const result: ApiKey = {
-        id: 1,
-        name: 'test',
-        key: 'test-api-key',
-        expiresAt: new Date(),
-        userId: 1,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }
-      const user = MockFactory<User>(User).mutate({ id: 1 }).one()
-      apiKeyService.createApiKey.mockResolvedValueOnce(result)
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
+      const user = MockFactory<User>(User).mutate({ id: apiKey.userId }).one()
+      apiKeyService.createApiKey.mockResolvedValueOnce(apiKey)
       expect(
-        apiKeyController.create({ name: result.name, userId: 1 }, user),
-      ).resolves.toEqual(result)
+        apiKeyController.create({ name: apiKey.name, userId: user.id }, user),
+      ).resolves.toEqual(apiKey)
     })
 
     it('should call apiKeyService create method with the correct arguments', () => {
@@ -60,6 +54,32 @@ describe('ApiKeyController', () => {
           (guard) => guard.name === JwtAuthGuard.name,
         ),
       ).toBeTruthy()
+    })
+
+    it('should create an API Key when the user is an admin and creates an API Key for another user', async () => {
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
+      const user = MockFactory<User>(User)
+        .mutate({ role: UserRole.ADMIN })
+        .one()
+      apiKeyService.createApiKey.mockResolvedValueOnce(apiKey)
+      expect(
+        apiKeyController.create(
+          { name: apiKey.name, userId: apiKey.userId },
+          user,
+        ),
+      ).resolves.toEqual(apiKey)
+    })
+
+    it('should throw a ForbiddenException error when the user is not an admin and tries to create an API Key for another user', () => {
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
+      const user = MockFactory<User>(User).mutate({ role: UserRole.USER }).one()
+      apiKeyService.createApiKey.mockResolvedValueOnce(apiKey)
+      expect(
+        apiKeyController.create(
+          { name: apiKey.name, userId: apiKey.userId },
+          user,
+        ),
+      ).rejects.toThrow(ForbiddenException)
     })
   })
 
