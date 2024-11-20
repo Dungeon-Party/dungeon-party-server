@@ -17,6 +17,7 @@ describe('Auth (e2e)', () => {
   let jwtAuthGuard: DeepMockProxy<JwtAuthGuard>
 
   beforeEach(async () => {
+    // FIXME: It is best practice to use the AppModule instead of importing the modules directly, but it times out when running the tests
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthModule],
     })

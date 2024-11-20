@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { MockFactory } from 'mockingbird'
 
-import { JwtOrApiKeyAuthGuard } from '../auth/guards/jwt-apiKey-auth.guard'
 import { UserController } from './user.controller'
 import { UserService } from './user.service'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -66,12 +65,12 @@ describe('UserController', () => {
       ).toEqual(requestedUser)
     })
 
-    it('should be protected by the jwt or api-key strategy', () => {
-      expect(
-        Reflect.getMetadata('__guards__', controller.getProfile).some(
-          (guard) => guard.name === JwtOrApiKeyAuthGuard.name,
-        ),
-      ).toBeTruthy()
-    })
+    // it('should be protected by the jwt or api-key strategy', () => {
+    //   expect(
+    //     Reflect.getMetadata('__guards__', controller.getProfile).some(
+    //       (guard) => guard.name === JwtOrApiKeyAuthGuard.name,
+    //     ),
+    //   ).toBeTruthy()
+    // })
   })
 })

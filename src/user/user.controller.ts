@@ -9,7 +9,6 @@ import {
   Param,
   ParseIntPipe,
   Put,
-  UseGuards,
 } from '@nestjs/common'
 import {
   ApiBearerAuth,
@@ -20,8 +19,6 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
 
-import { JwtOrApiKeyAuthGuard } from '../auth/guards/jwt-apiKey-auth.guard'
-import { RolesGuard } from '../auth/guards/roles.guard'
 import { UserService } from './user.service'
 import { Roles } from '../auth/decorators/roles.decorator'
 import { ForbiddenExceptionI, UnauthorizedExceptionI, UserRole } from '../types'
@@ -38,7 +35,6 @@ export class UserController {
 
   @ApiBearerAuth()
   @ApiOkResponse({ type: [User] })
-  @UseGuards(JwtOrApiKeyAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @Get()
   getUsers(): Promise<User[]> {
@@ -46,7 +42,6 @@ export class UserController {
   }
 
   @ApiOkResponse({ type: User })
-  @UseGuards(JwtOrApiKeyAuthGuard)
   @Put()
   updateUser(
     @GetUser() user: User,
@@ -67,7 +62,6 @@ export class UserController {
   })
   @ApiBearerAuth()
   @ApiSecurity('api-key')
-  @UseGuards(JwtOrApiKeyAuthGuard)
   @Get('profile/:id')
   getProfile(
     @Param('id', ParseIntPipe) id: number,

@@ -19,6 +19,7 @@ import {
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
+import { DisableGlobalAuth } from '../auth/decorators/disable-auth.decorator'
 import {
   BadRequestExceptionI,
   NotFoundExceptionI,
@@ -55,6 +56,7 @@ export class ApiKeyController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @DisableGlobalAuth()
   @Post()
   create(
     @Body() createApiKeyDto: CreateApiKeyDto,
@@ -74,6 +76,7 @@ export class ApiKeyController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @DisableGlobalAuth()
   @Delete(':id')
   delete(@Param('id') apiKeyId: number, @GetUser('id') userId: User['id']) {
     return this.apiKeyService.deleteApiKey(apiKeyId, userId)

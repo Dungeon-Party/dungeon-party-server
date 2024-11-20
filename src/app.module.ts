@@ -11,6 +11,8 @@ import {
   PrismaModule,
 } from 'nestjs-prisma'
 
+import { JwtOrApiKeyAuthGuard } from './auth/guards/jwt-apiKey-auth.guard'
+import { RolesGuard } from './auth/guards/roles.guard'
 import { ApiKeyModule } from './api-key/api-key.module'
 import { AuthModule } from './auth/auth.module'
 import { HealthModule } from './health/health.module'
@@ -78,7 +80,17 @@ import securityConfig from './config/security.config'
     UserModule,
     HealthModule,
   ],
-  providers: [Logger],
+  providers: [
+    Logger,
+    {
+      provide: 'APP_GUARD',
+      useClass: JwtOrApiKeyAuthGuard,
+    },
+    {
+      provide: 'APP_GUARD',
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure() {}

@@ -22,6 +22,7 @@ import { AuthService } from './auth.service'
 import { BadRequestExceptionI, UnauthorizedExceptionI } from '../types'
 import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
+import { DisableGlobalAuth } from './decorators/disable-auth.decorator'
 import LoginDto from './dto/login.dto'
 import { SignUpDto } from './dto/signup.dto'
 import TokenResponseDto from './dto/token-response.dto'
@@ -41,6 +42,7 @@ export class AuthController {
   })
   @ApiBasicAuth()
   @UseGuards(LocalAuthGuard)
+  @DisableGlobalAuth()
   @HttpCode(200)
   @Post('login')
   login(@GetUser() user: User): Promise<TokenResponseDto> {
@@ -56,6 +58,7 @@ export class AuthController {
     type: BadRequestExceptionI,
     description: 'Bad Request',
   })
+  @DisableGlobalAuth()
   @Post('register')
   register(@Body() data: SignUpDto): Promise<User> {
     return this.authService.register(data)
@@ -68,6 +71,7 @@ export class AuthController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @DisableGlobalAuth()
   @HttpCode(200)
   @Post('refresh')
   refresh(@GetUser() user: User) {

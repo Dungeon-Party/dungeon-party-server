@@ -16,12 +16,28 @@ import { User } from '../src/user/entities/user.entity'
 
 describe.only('Api-Key (e2e)', () => {
   let app: INestApplication
-  let jwtOrApiKeyAuthGuard: DeepMockProxy<JwtOrApiKeyAuthGuard>
   let prismaService: DeepMockProxy<PrismaService>
+  const jwtAuthMock = jest.fn()
+  const rolesMock = jest.fn()
 
-  beforeEach(async () => {
+  beforeAll(async () => {
+    // FIXME: It is best practice to use the AppModule instead of importing the modules directly, but it times out when running the tests
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [UserModule, AuthModule],
+      providers: [
+        {
+          provide: 'APP_GUARD',
+          useValue: {
+            canActivate: jwtAuthMock,
+          },
+        },
+        {
+          provide: 'APP_GUARD',
+          useValue: {
+            canActivate: rolesMock,
+          },
+        },
+      ],
     })
       .overrideProvider(PrismaService)
       .useValue(mockDeep<PrismaService>())
@@ -30,10 +46,9 @@ describe.only('Api-Key (e2e)', () => {
       .useMocker(mockDeep)
       .compile()
 
-    prismaService = moduleFixture.get(PrismaService)
-    jwtOrApiKeyAuthGuard = moduleFixture.get(JwtOrApiKeyAuthGuard)
     app = moduleFixture.createNestApplication()
 
+    prismaService = moduleFixture.get(PrismaService)
     bootstrap(app)
 
     await app.init()
@@ -48,15 +63,14 @@ describe.only('Api-Key (e2e)', () => {
   })
 
   describe('/api/v1/users GET', () => {
-    // FIXME: This test is failing because the user is not being set on the request
-    it.skip('should return all users', async () => {
+    it('should return all users', async () => {
       const users = [
         MockFactory<User>(User).one(),
         MockFactory<User>(User).one(),
       ]
 
-      jwtOrApiKeyAuthGuard.canActivate.mockReturnValueOnce(true)
-      prismaService.user.findUnique.mockResolvedValueOnce(users[0])
+      jwtAuthMock.mockReturnValueOnce(true)
+      rolesMock.mockReturnValueOnce(true)
       prismaService.user.findMany.mockResolvedValueOnce(users)
       return request(app.getHttpServer())
         .get('/api/v1/users')
@@ -81,7 +95,8 @@ describe.only('Api-Key (e2e)', () => {
         ...user,
         username: 'new-username',
       }
-      jwtOrApiKeyAuthGuard.canActivate.mockImplementationOnce((ctx) => {
+      rolesMock.mockReturnValueOnce(true)
+      jwtAuthMock.mockImplementationOnce((ctx) => {
         const request = ctx.switchToHttp().getRequest()
         request.user = user
         return true
