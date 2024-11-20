@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Logger,
   Param,
   Post,
@@ -11,6 +12,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
@@ -22,8 +24,10 @@ import { ApiKeyService } from './api-key.service'
 import { DisableGlobalAuth } from '../auth/decorators/disable-auth.decorator'
 import {
   BadRequestExceptionI,
+  ForbiddenExceptionI,
   NotFoundExceptionI,
   UnauthorizedExceptionI,
+  UserRole,
 } from '../types'
 import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
@@ -50,6 +54,10 @@ export class ApiKeyController {
     type: UnauthorizedExceptionI,
     description: 'Unauthorized',
   })
+  @ApiForbiddenResponse({
+    type: ForbiddenExceptionI,
+    description: 'Forbidden',
+  })
   @ApiBadRequestResponse({
     type: BadRequestExceptionI,
     description: 'Bad Request',
@@ -60,9 +68,14 @@ export class ApiKeyController {
   @Post()
   create(
     @Body() createApiKeyDto: CreateApiKeyDto,
-    @GetUser('id') userId: User['id'],
+    @GetUser() user: User,
   ): Promise<CreateApiKeyResponseDto> {
-    return this.apiKeyService.createApiKey(userId, createApiKeyDto)
+    if (createApiKeyDto.userId !== user.id && user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException(
+        'You are not allowed to create an API Key for another user',
+      )
+    }
+    return this.apiKeyService.createApiKey(createApiKeyDto)
   }
 
   @ApiOkResponse({ type: ApiKey, description: 'API Key deleted successfully' })

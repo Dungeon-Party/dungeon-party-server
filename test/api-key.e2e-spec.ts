@@ -5,6 +5,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import 'prisma'
 
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+import { MockFactory } from 'mockingbird'
 import * as request from 'supertest'
 
 import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard'
@@ -12,6 +13,8 @@ import { ApiKeyModule } from '../src/api-key/api-key.module'
 import { ApiKeyRepository } from '../src/api-key/api-key.repository'
 import { ApiKey } from '../src/api-key/entities/api-key.entity'
 import bootstrap from '../src/main.config'
+import { UserRole } from '../src/types'
+import { User } from '../src/user/entities/user.entity'
 
 describe('Api-Key (e2e)', () => {
   let app: INestApplication
@@ -47,19 +50,21 @@ describe('Api-Key (e2e)', () => {
   })
 
   describe('/api/v1/api-keys POST', () => {
-    it('should create an api key', async () => {
-      const apiKey = {
-        id: 1,
-        name: 'test-key',
-        key: 'test-key',
-        userId: 1,
-      } as ApiKey
+    it('should create an api key if the authenticated user is not an admin and tries to create an API Key for themselves', async () => {
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
+      const user = MockFactory<User>(User)
+        .mutate({ id: apiKey.userId, role: UserRole.USER })
+        .one()
       apiKeyRepository.create.mockResolvedValueOnce(apiKey)
-      jwtAuthGuard.canActivate.mockReturnValueOnce(true)
+      jwtAuthGuard.canActivate.mockImplementationOnce((context) => {
+        context.switchToHttp().getRequest().user = user
+        return true
+      })
       return request(app.getHttpServer())
         .post('/api/v1/api-keys')
         .send({
-          name: 'test-key',
+          name: apiKey.name,
+          userId: apiKey.userId,
         })
         .then((response) => {
           expect(response.status).toBe(201)
@@ -70,21 +75,78 @@ describe('Api-Key (e2e)', () => {
         })
     })
 
-    it('should return 403 if not authorized', async () => {
-      jwtAuthGuard.canActivate.mockReturnValueOnce(false)
+    it('should create an api key if the authenticate is an admin and tries to create an API Key for another user', () => {
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
+      const user = MockFactory<User>(User)
+        .mutate({ role: UserRole.ADMIN })
+        .one()
+      apiKeyRepository.create.mockResolvedValueOnce(apiKey)
+      jwtAuthGuard.canActivate.mockImplementationOnce((context) => {
+        context.switchToHttp().getRequest().user = user
+        return true
+      })
+      return request(app.getHttpServer())
+        .post('/api/v1/api-keys')
+        .send({
+          name: apiKey.name,
+          userId: apiKey.userId,
+        })
+        .then((response) => {
+          expect(response.status).toBe(201)
+          expect(response.body).toHaveProperty('id', apiKey.id)
+          expect(response.body).toHaveProperty('name', apiKey.name)
+          expect(response.body).toHaveProperty('key')
+          expect(response.body).toHaveProperty('userId', apiKey.userId)
+        })
+    })
+
+    it('should return 403 if the authenticated user is not an admin and tries to create an api key for another user', () => {
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
+      const user = MockFactory<User>(User).mutate({ role: UserRole.USER }).one()
+      apiKeyRepository.create.mockResolvedValueOnce(apiKey)
+      jwtAuthGuard.canActivate.mockImplementationOnce((context) => {
+        context.switchToHttp().getRequest().user = user
+        return true
+      })
       return request(app.getHttpServer())
         .post('/api/v1/api-keys')
         .send({
           name: 'test-key',
+          userId: apiKey.userId,
+        })
+        .then((response) => {
+          expect(response.status).toBe(403)
+        })
+    })
+
+    it('should return 401 if not authorized', async () => {
+      jwtAuthGuard.canActivate.mockImplementationOnce((context) => {
+        context.switchToHttp().getRequest().isAuthenticated = false
+        return false
+      })
+      return request(app.getHttpServer())
+        .post('/api/v1/api-keys')
+        .set('Authorization', 'Bearer test-token')
+        .send({
+          name: 'test-key',
+          userId: 1,
         })
         .expect(403) // FIXME: 403 Forbidden vs 401
+    })
+
+    it('should return 400 if the user id is missing', async () => {
+      jwtAuthGuard.canActivate.mockReturnValueOnce(true)
+      return request(app.getHttpServer())
+        .post('/api/v1/api-keys')
+        .send({ name: 'test-key' })
+        .expect(400)
     })
 
     it('should return 400 if name is missing', async () => {
       jwtAuthGuard.canActivate.mockReturnValueOnce(true)
       return request(app.getHttpServer())
         .post('/api/v1/api-keys')
-        .send({})
+        .send({ userId: 1 })
         .expect(400)
     })
   })

@@ -18,7 +18,6 @@ export class ApiKeyService {
   constructor(private readonly repo: ApiKeyRepository) {}
 
   async createApiKey(
-    userId: User['id'],
     createApiKeyDto: CreateApiKeyDto,
   ): Promise<CreateApiKeyResponseDto> {
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
@@ -37,7 +36,7 @@ export class ApiKeyService {
           name: createApiKeyDto.name,
           key: apiKeyHashed,
           expiresAt: expirationDate.toISOString(),
-          user: { connect: { id: userId } },
+          user: { connect: { id: createApiKeyDto.userId } },
         },
       })
       .then((apiKey) => {

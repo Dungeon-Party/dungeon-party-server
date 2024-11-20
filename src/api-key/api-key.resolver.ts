@@ -1,5 +1,6 @@
-import { Logger, UseGuards } from '@nestjs/common'
+import { ForbiddenException, Logger, UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
+import { UserRole } from '@prisma/client'
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
@@ -37,7 +38,12 @@ export class ApiKeyResolver {
     @GqlUser() user,
     @Args('data') input: CreateApiKeyDto,
   ): Promise<CreateApiKeyResponseDto> {
-    return this.apiKeyService.createApiKey(user.id, input)
+    if (input.userId !== user.id && user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException(
+        'You are not allowed to create an API Key for another user',
+      )
+    }
+    return this.apiKeyService.createApiKey(input)
   }
 
   @UseGuards(JwtAuthGuard)

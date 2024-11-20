@@ -5,6 +5,7 @@ import { MockFactory } from 'mockingbird'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyController } from './api-key.controller'
 import { ApiKeyService } from './api-key.service'
+import { User } from '../user/entities/user.entity'
 import { ApiKey } from './entities/api-key.entity'
 
 describe('ApiKeyController', () => {
@@ -39,19 +40,18 @@ describe('ApiKeyController', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       }
+      const user = MockFactory<User>(User).mutate({ id: 1 }).one()
       apiKeyService.createApiKey.mockResolvedValueOnce(result)
       expect(
-        apiKeyController.create({ name: result.name }, 1),
+        apiKeyController.create({ name: result.name, userId: 1 }, user),
       ).resolves.toEqual(result)
     })
 
     it('should call apiKeyService create method with the correct arguments', () => {
-      const createApiKeyDto = { name: 'test' }
-      apiKeyController.create(createApiKeyDto, 1)
-      expect(apiKeyService.createApiKey).toHaveBeenCalledWith(
-        1,
-        createApiKeyDto,
-      )
+      const user = MockFactory<User>(User).mutate({ id: 1 }).one()
+      const createApiKeyDto = { name: 'test', userId: user.id }
+      apiKeyController.create(createApiKeyDto, user)
+      expect(apiKeyService.createApiKey).toHaveBeenCalledWith(createApiKeyDto)
     })
 
     it('should be protected by the jwt guard', () => {
