@@ -19,9 +19,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
 
+import { JwtOrApiKeyAuthGuard } from '../auth/guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
-import { DisableGlobalAuth } from '../auth/decorators/disable-auth.decorator'
+import { AuthMetaData } from '../auth/decorators/auth-metadata.decorator'
 import {
   BadRequestExceptionI,
   ForbiddenExceptionI,
@@ -37,6 +38,7 @@ import { ApiKey } from './entities/api-key.entity'
 
 @ApiTags('api-keys')
 @Controller('api-keys')
+@AuthMetaData(`${JwtOrApiKeyAuthGuard.name}Skip`)
 export class ApiKeyController {
   private readonly logger: Logger = new Logger(ApiKeyController.name)
 
@@ -64,7 +66,6 @@ export class ApiKeyController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @DisableGlobalAuth()
   @Post()
   create(
     @Body() createApiKeyDto: CreateApiKeyDto,
@@ -89,7 +90,6 @@ export class ApiKeyController {
   })
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @DisableGlobalAuth()
   @Delete(':id')
   delete(@Param('id') apiKeyId: number, @GetUser('id') userId: User['id']) {
     return this.apiKeyService.deleteApiKey(apiKeyId, userId)

@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { AuthGuard } from '@nestjs/passport'
 
-import { DISABLE_AUTH_KEY } from '../decorators/disable-auth.decorator'
+import { AUTH_METADATA_KEY } from '../decorators/auth-metadata.decorator'
 
 @Injectable()
 export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
@@ -20,12 +20,12 @@ export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
   }
 
   canActivate(context: ExecutionContext) {
-    const disableAuth = this.reflector.get<boolean>(
-      DISABLE_AUTH_KEY,
-      context.getHandler(),
+    const authMetadata = this.reflector.getAllAndOverride<string[]>(
+      AUTH_METADATA_KEY,
+      [context.getHandler(), context.getClass()],
     )
 
-    if (disableAuth) {
+    if (authMetadata.includes(`${JwtOrApiKeyAuthGuard.name}Skip`)) {
       return true
     }
 
