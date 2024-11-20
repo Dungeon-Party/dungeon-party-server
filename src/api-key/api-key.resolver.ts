@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client'
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
-import { GqlUser } from '../user/decorators/gql-user.decorator'
+import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
@@ -22,7 +22,7 @@ export class ApiKeyResolver {
     description: 'Create an API Key',
   })
   async create(
-    @GqlUser() user,
+    @GetUser() user,
     @Args('data') createApiKeyDto: CreateApiKeyDto,
   ): Promise<CreateApiKeyResponseDto> {
     if (createApiKeyDto.userId !== user.id && user.role !== UserRole.ADMIN) {
@@ -35,7 +35,7 @@ export class ApiKeyResolver {
 
   @UseGuards(JwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
-  async getApiKeys(@GqlUser() user: User): Promise<ApiKey[]> {
+  async getApiKeys(@GetUser() user: User): Promise<ApiKey[]> {
     return this.apiKeyService.getAllApiKeys(user).then((apiKeys) => {
       return apiKeys.map((apiKey) => new ApiKey(apiKey))
     })
@@ -51,7 +51,7 @@ export class ApiKeyResolver {
 
   @UseGuards(JwtAuthGuard)
   @Mutation(() => ApiKey, { name: 'deleteApiKey' })
-  async deleteApiKey(@GqlUser() user, @Args('id') id: number): Promise<ApiKey> {
+  async deleteApiKey(@GetUser() user, @Args('id') id: number): Promise<ApiKey> {
     return this.apiKeyService.deleteApiKey(user.id, id)
   }
 }
