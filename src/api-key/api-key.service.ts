@@ -3,6 +3,7 @@
 // TODO: Ensure that all method names make sense (getAllApiKeysForUser vs getAllApiKeys)
 import * as crypto from 'crypto'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import * as argon2 from 'argon2'
 
 import { User } from '../user/entities/user.entity'
@@ -15,20 +16,29 @@ import { ApiKey } from './entities/api-key.entity'
 export class ApiKeyService {
   private readonly logger: Logger = new Logger(ApiKeyService.name)
 
-  constructor(private readonly repo: ApiKeyRepository) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly repo: ApiKeyRepository,
+  ) {}
 
   async createApiKey(
     createApiKeyDto: CreateApiKeyDto,
   ): Promise<CreateApiKeyResponseDto> {
+    const apiKeyIdPrefix = this.configService.get<string>(
+      'security.apiKey.prefix',
+    )
+    const apiKeyExpirationLength = this.configService.get<number>(
+      'security.apiKey.expirationLength',
+    )
     const apiKeyPrefix = crypto.randomBytes(10).toString('hex')
     const apiKeyString = crypto.randomBytes(16).toString('hex')
     const apiKeyStringHashed = await argon2.hash(apiKeyString, {
       type: argon2.argon2i,
     })
-    const apiKeyRaw = `dp-${apiKeyPrefix}.${apiKeyString}`
-    const apiKeyHashed = `dp-${apiKeyPrefix}.${apiKeyStringHashed}`
+    const apiKeyRaw = `${apiKeyIdPrefix}-${apiKeyPrefix}.${apiKeyString}`
+    const apiKeyHashed = `${apiKeyIdPrefix}-${apiKeyPrefix}.${apiKeyStringHashed}`
     const expirationDate = new Date()
-    expirationDate.setDate(expirationDate.getDate() + 7)
+    expirationDate.setDate(expirationDate.getDate() + apiKeyExpirationLength)
 
     return this.repo
       .create({

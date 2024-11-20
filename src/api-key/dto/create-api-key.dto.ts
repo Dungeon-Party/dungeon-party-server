@@ -1,10 +1,8 @@
-import { Field, GraphQLISODateTime, InputType, Int } from '@nestjs/graphql'
+import { Field, InputType, Int } from '@nestjs/graphql'
 import { ApiProperty } from '@nestjs/swagger'
 import {
-  IsDateString,
   IsNotEmpty,
   IsNumber,
-  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -18,6 +16,7 @@ export class CreateApiKeyDto {
     maxLength: 25,
     example: 'Test API Key',
     type: 'string',
+    required: true,
   })
   @Field(() => String, {
     nullable: false,
@@ -34,25 +33,12 @@ export class CreateApiKeyDto {
     example: 1,
     type: 'integer',
     format: 'int32',
+    required: true,
   })
   @Field(() => Int, { nullable: false })
   @IsNotEmpty()
   @IsNumber()
   userId: number
-
-  @ApiProperty({
-    description: 'DateTime the API Key expires at',
-    example: '2022-01-01T00:00:00Z',
-    type: 'string',
-    format: 'date-time',
-  })
-  @Field(() => GraphQLISODateTime, {
-    nullable: false,
-    description: 'DateTime the API Key expires at',
-  })
-  @IsOptional()
-  @IsDateString()
-  expiresAt?: Date
 
   constructor(partial: Partial<CreateApiKeyDto>) {
     Object.assign(this, partial)

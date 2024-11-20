@@ -17,6 +17,23 @@ export class ApiKeyResolver {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @UseGuards(JwtAuthGuard)
+  @Mutation(() => CreateApiKeyResponseDto, {
+    name: 'createApiKey',
+    description: 'Create an API Key',
+  })
+  async create(
+    @GqlUser() user,
+    @Args('data') createApiKeyDto: CreateApiKeyDto,
+  ): Promise<CreateApiKeyResponseDto> {
+    if (createApiKeyDto.userId !== user.id && user.role !== UserRole.ADMIN) {
+      throw new ForbiddenException(
+        'You are not allowed to create an API Key for another user',
+      )
+    }
+    return this.apiKeyService.createApiKey(createApiKeyDto)
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
   async getApiKeys(@GqlUser() user: User): Promise<ApiKey[]> {
     return this.apiKeyService.getAllApiKeys(user).then((apiKeys) => {
@@ -30,20 +47,6 @@ export class ApiKeyResolver {
     return this.apiKeyService.findApiKeyById(id).then((apiKey) => {
       return new ApiKey(apiKey)
     })
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Mutation(() => CreateApiKeyResponseDto, { name: 'createApiKey' })
-  async createApiKey(
-    @GqlUser() user,
-    @Args('data') input: CreateApiKeyDto,
-  ): Promise<CreateApiKeyResponseDto> {
-    if (input.userId !== user.id && user.role !== UserRole.ADMIN) {
-      throw new ForbiddenException(
-        'You are not allowed to create an API Key for another user',
-      )
-    }
-    return this.apiKeyService.createApiKey(input)
   }
 
   @UseGuards(JwtAuthGuard)

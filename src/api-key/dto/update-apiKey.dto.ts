@@ -10,6 +10,7 @@ export class UpdateApiKeyDto {
     maxLength: 25,
     example: 'Test API Key',
     type: 'string',
+    required: true,
   })
   @Field(() => String, {
     nullable: false,

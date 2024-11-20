@@ -7,4 +7,8 @@ export default registerAs('security', () => ({
     accessExpiresIn: process.env.SECURITY_JWT_ACCESS_EXPIRES || '10m',
     refreshExpiresIn: process.env.SECURITY_JWT_REFRESH_EXPIRES || '7d',
   },
+  apiKey: {
+    prefix: process.env.SECURITY_API_KEY_PREFIX || 'dp',
+    expirationLength: process.env.SECURITY_API_KEY_EXPIRATION_LENGTH || 7,
+  },
 }))

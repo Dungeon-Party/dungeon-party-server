@@ -4,6 +4,7 @@ import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 
 import 'prisma'
 
+import { ConfigModule } from '@nestjs/config'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import { MockFactory } from 'mockingbird'
 import * as request from 'supertest'
@@ -12,6 +13,10 @@ import { JwtAuthGuard } from '../src/auth/guards/jwt-auth.guard'
 import { ApiKeyModule } from '../src/api-key/api-key.module'
 import { ApiKeyRepository } from '../src/api-key/api-key.repository'
 import { ApiKey } from '../src/api-key/entities/api-key.entity'
+import databaseConfig from '../src/config/database.config'
+import httpConfig from '../src/config/http.config'
+import loggingConfig from '../src/config/logging.config'
+import securityConfig from '../src/config/security.config'
 import bootstrap from '../src/main.config'
 import { UserRole } from '../src/types'
 import { User } from '../src/user/entities/user.entity'
@@ -23,7 +28,13 @@ describe('Api-Key (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [ApiKeyModule],
+      imports: [
+        ApiKeyModule,
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [httpConfig, databaseConfig, securityConfig, loggingConfig],
+        }),
+      ],
     })
       .overrideProvider(ApiKeyRepository)
       .useValue(mockDeep<ApiKeyRepository>())

@@ -1,11 +1,16 @@
 import * as crypto from 'crypto'
 import { NotFoundException } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
 import { MockFactory } from 'mockingbird'
 
 import { ApiKeyService } from './api-key.service'
+import databaseConfig from '../config/database.config'
+import httpConfig from '../config/http.config'
+import loggingConfig from '../config/logging.config'
+import securityConfig from '../config/security.config'
 import { User } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
@@ -17,6 +22,12 @@ describe('ApiKeyService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          load: [httpConfig, databaseConfig, securityConfig, loggingConfig],
+        }),
+      ],
       providers: [ApiKeyService],
     })
       .useMocker(mockDeep)
