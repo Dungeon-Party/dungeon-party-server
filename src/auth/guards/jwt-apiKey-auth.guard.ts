@@ -37,8 +37,6 @@ export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
       [ctx.getHandler(), ctx.getClass()],
     )
 
-    console.log(authMetadata)
-
     if (
       authMetadata &&
       authMetadata.includes(`${JwtOrApiKeyAuthGuard.name}Skip`)

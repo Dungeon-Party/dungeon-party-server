@@ -2,8 +2,10 @@ import { ForbiddenException, Logger, UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
 import { UserRole } from '@prisma/client'
 
+import { JwtOrApiKeyAuthGuard } from '../auth/guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
 import { ApiKeyService } from './api-key.service'
+import { AuthMetaData } from '../auth/decorators/auth-metadata.decorator'
 import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
@@ -17,6 +19,9 @@ export class ApiKeyResolver {
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
   @UseGuards(JwtAuthGuard)
+  // FIXME: The AuthMetaData decorator is not being applied to the createApiKey mutation
+  // https://stackoverflow.com/questions/79212346/nestjs-graphql-access-resolver-method-metadata
+  @AuthMetaData(`${JwtOrApiKeyAuthGuard.name}Skip`)
   @Mutation(() => CreateApiKeyResponseDto, {
     name: 'createApiKey',
     description: 'Create an API Key',
