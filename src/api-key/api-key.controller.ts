@@ -68,15 +68,15 @@ export class ApiKeyController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(
-    @Body() createApiKeyDto: CreateApiKeyDto,
     @GetUser() user: User,
+    @Body() createApiKeyDto: CreateApiKeyDto,
   ): Promise<CreateApiKeyResponseDto> {
     if (createApiKeyDto.userId !== user.id && user.role !== UserRole.ADMIN) {
       throw new ForbiddenException(
         'You are not allowed to create an API Key for another user',
       )
     }
-    return this.apiKeyService.createApiKey(createApiKeyDto)
+    return this.apiKeyService.create(createApiKeyDto)
   }
 
   @ApiOkResponse({ type: ApiKey, description: 'API Key deleted successfully' })

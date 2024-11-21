@@ -21,7 +21,7 @@ export class ApiKeyService {
     private readonly repo: ApiKeyRepository,
   ) {}
 
-  async createApiKey(
+  async create(
     createApiKeyDto: CreateApiKeyDto,
   ): Promise<CreateApiKeyResponseDto> {
     const apiKeyIdPrefix = this.configService.get<string>(

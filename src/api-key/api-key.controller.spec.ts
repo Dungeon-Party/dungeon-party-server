@@ -32,20 +32,20 @@ describe('ApiKeyController', () => {
   })
 
   describe('create', () => {
-    it('should return the result of apiKeyService create method', () => {
+    it('should create an API Key when the authenticated user tries to create an API Key for themselves', () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
       const user = MockFactory<User>(User).mutate({ id: apiKey.userId }).one()
-      apiKeyService.createApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyService.create.mockResolvedValueOnce(apiKey)
       expect(
-        apiKeyController.create({ name: apiKey.name, userId: user.id }, user),
+        apiKeyController.create(user, { name: apiKey.name, userId: user.id }),
       ).resolves.toEqual(apiKey)
     })
 
     it('should call apiKeyService create method with the correct arguments', () => {
       const user = MockFactory<User>(User).mutate({ id: 1 }).one()
       const createApiKeyDto = { name: 'test', userId: user.id }
-      apiKeyController.create(createApiKeyDto, user)
-      expect(apiKeyService.createApiKey).toHaveBeenCalledWith(createApiKeyDto)
+      apiKeyController.create(user, createApiKeyDto)
+      expect(apiKeyService.create).toHaveBeenCalledWith(createApiKeyDto)
     })
 
     it('should be protected by the jwt guard', () => {
@@ -61,24 +61,24 @@ describe('ApiKeyController', () => {
       const user = MockFactory<User>(User)
         .mutate({ role: UserRole.ADMIN })
         .one()
-      apiKeyService.createApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyService.create.mockResolvedValueOnce(apiKey)
       expect(
-        apiKeyController.create(
-          { name: apiKey.name, userId: apiKey.userId },
-          user,
-        ),
+        apiKeyController.create(user, {
+          name: apiKey.name,
+          userId: apiKey.userId,
+        }),
       ).resolves.toEqual(apiKey)
     })
 
     it('should throw a ForbiddenException error when the user is not an admin and tries to create an API Key for another user', () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
       const user = MockFactory<User>(User).mutate({ role: UserRole.USER }).one()
-      apiKeyService.createApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyService.create.mockResolvedValueOnce(apiKey)
       expect(
-        apiKeyController.create(
-          { name: apiKey.name, userId: apiKey.userId },
-          user,
-        ),
+        apiKeyController.create(user, {
+          name: apiKey.name,
+          userId: apiKey.userId,
+        }),
       ).rejects.toThrow(ForbiddenException)
     })
   })

@@ -30,7 +30,7 @@ export class ApiKeyResolver {
         'You are not allowed to create an API Key for another user',
       )
     }
-    return this.apiKeyService.createApiKey(createApiKeyDto)
+    return this.apiKeyService.create(createApiKeyDto)
   }
 
   @UseGuards(JwtAuthGuard)

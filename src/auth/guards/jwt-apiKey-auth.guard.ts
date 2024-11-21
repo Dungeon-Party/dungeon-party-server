@@ -11,6 +11,16 @@ export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
     super()
   }
 
+  getContext(
+    context: ExecutionContext,
+  ): ExecutionContext | GqlExecutionContext {
+    if (context.getType<ContextType | 'graphql'>() === 'graphql') {
+      return GqlExecutionContext.create(context)
+    } else {
+      return context
+    }
+  }
+
   getRequest(context: ExecutionContext) {
     if (context.getType<ContextType | 'graphql'>() === 'graphql') {
       return GqlExecutionContext.create(context).getContext().req
@@ -20,15 +30,22 @@ export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
   }
 
   canActivate(context: ExecutionContext) {
+    const ctx: ExecutionContext | GqlExecutionContext = this.getContext(context)
+
     const authMetadata = this.reflector.getAllAndOverride<string[]>(
       AUTH_METADATA_KEY,
-      [context.getHandler(), context.getClass()],
+      [ctx.getHandler(), ctx.getClass()],
     )
 
-    if (authMetadata.includes(`${JwtOrApiKeyAuthGuard.name}Skip`)) {
+    console.log(authMetadata)
+
+    if (
+      authMetadata &&
+      authMetadata.includes(`${JwtOrApiKeyAuthGuard.name}Skip`)
+    ) {
       return true
     }
 
-    return super.canActivate(context)
+    return super.canActivate(ctx)
   }
 }
