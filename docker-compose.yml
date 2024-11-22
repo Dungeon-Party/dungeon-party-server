@@ -15,7 +15,7 @@ services:
       DATABASE_POSTGRES_HOST: postgres
     command: > 
       sh -cx "npm i -g pm2
-      && pm2 start yarn --interpreter bash --name api -- start:debug
+      && pm2 start yarn --interpreter bash --name api --watch false -- start:debug
       && pm2 start yarn --interpreter bash --name prisma -- db:studio
       && pm2 logs"
     ports:

@@ -75,4 +75,37 @@ describe('ApiKeyResolver', () => {
       ).rejects.toThrow(ForbiddenException)
     })
   })
+
+  describe('getAllApiKeys', () => {
+    it('should return the result of ApiKeyService.getAllApiKeys method', async () => {
+      const apiKeys = [MockFactory<ApiKey>(ApiKey).one()]
+      apiKeyService.getAllApiKeys.mockResolvedValueOnce(apiKeys)
+
+      const user = MockFactory<User>(User).one()
+      const result = await apiKeyResolver.getAllApiKeys(user)
+      expect(result).toEqual(apiKeys)
+    })
+
+    it('should call ApiKeyService.getAllApiKeys with the user id if the user is not an admin', async () => {
+      const apiKeys = [MockFactory<ApiKey>(ApiKey).one()]
+      apiKeyService.getAllApiKeys.mockResolvedValueOnce(apiKeys)
+
+      const user = MockFactory<User>(User).mutate({ role: UserRole.USER }).one()
+      await apiKeyResolver.getAllApiKeys(user)
+      expect(apiKeyService.getAllApiKeys).toHaveBeenCalledWith({
+        where: { userId: user.id },
+      })
+    })
+
+    it('should call ApiKeyService.getAllApiKeys with empty parameters if the user is an admin', async () => {
+      const apiKeys = [MockFactory<ApiKey>(ApiKey).one()]
+      apiKeyService.getAllApiKeys.mockResolvedValueOnce(apiKeys)
+
+      const user = MockFactory<User>(User)
+        .mutate({ role: UserRole.ADMIN })
+        .one()
+      await apiKeyResolver.getAllApiKeys(user)
+      expect(apiKeyService.getAllApiKeys).toHaveBeenCalledWith({})
+    })
+  })
 })

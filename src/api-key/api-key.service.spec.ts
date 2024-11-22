@@ -11,7 +11,6 @@ import databaseConfig from '../config/database.config'
 import httpConfig from '../config/http.config'
 import loggingConfig from '../config/logging.config'
 import securityConfig from '../config/security.config'
-import { User } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { ApiKey } from './entities/api-key.entity'
@@ -161,27 +160,25 @@ describe('ApiKeyService', () => {
 
   describe('getAllApiKeys', () => {
     it('should return the result of apiKeyRepository.findMany method', async () => {
-      const user = MockFactory<User>(User).one()
       const apiKeys = [
         MockFactory<ApiKey>(ApiKey).one(),
         MockFactory<ApiKey>(ApiKey).one(),
       ]
       apiKeyRepository.findMany.mockResolvedValueOnce(apiKeys)
 
-      const result = await apiKeyService.getAllApiKeys(user)
+      const result = await apiKeyService.getAllApiKeys({})
       expect(apiKeyRepository.findMany).toHaveBeenCalled()
       expect(result).toEqual(apiKeys)
     })
 
     it('should return the type of ApiKey', async () => {
-      const user = MockFactory<User>(User).one()
       const apiKeys = [
         MockFactory<ApiKey>(ApiKey).plain().one(),
         MockFactory<ApiKey>(ApiKey).plain().one(),
       ]
       apiKeyRepository.findMany.mockResolvedValueOnce(apiKeys)
 
-      const result = await apiKeyService.getAllApiKeys(user)
+      const result = await apiKeyService.getAllApiKeys({})
       expect(result).toEqual(apiKeys)
       for (const apiKey of apiKeys) {
         expect(apiKey).not.toBeInstanceOf(ApiKey)

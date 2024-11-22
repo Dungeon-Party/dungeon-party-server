@@ -1,4 +1,9 @@
-import { ContextType, ExecutionContext, Injectable } from '@nestjs/common'
+import {
+  ContextType,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from '@nestjs/common'
 import { Reflector } from '@nestjs/core'
 import { GqlExecutionContext } from '@nestjs/graphql'
 import { AuthGuard } from '@nestjs/passport'
@@ -7,6 +12,8 @@ import { AUTH_METADATA_KEY } from '../decorators/auth-metadata.decorator'
 
 @Injectable()
 export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
+  private readonly logger: Logger = new Logger(JwtOrApiKeyAuthGuard.name)
+
   constructor(private readonly reflector: Reflector) {
     super()
   }
@@ -41,6 +48,7 @@ export class JwtOrApiKeyAuthGuard extends AuthGuard(['api-key', 'jwt']) {
       authMetadata &&
       authMetadata.includes(`${JwtOrApiKeyAuthGuard.name}Skip`)
     ) {
+      this.logger.debug(`Skipping ${JwtOrApiKeyAuthGuard.name}`)
       return true
     }
 

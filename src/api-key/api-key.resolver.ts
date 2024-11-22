@@ -1,6 +1,6 @@
 import { ForbiddenException, Logger, UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { UserRole } from '@prisma/client'
+import { Prisma, UserRole } from '@prisma/client'
 
 import { JwtOrApiKeyAuthGuard } from '../auth/guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
@@ -40,8 +40,11 @@ export class ApiKeyResolver {
 
   @UseGuards(JwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
-  async getApiKeys(@GetUser() user: User): Promise<ApiKey[]> {
-    return this.apiKeyService.getAllApiKeys(user).then((apiKeys) => {
+  async getAllApiKeys(@GetUser() user: User): Promise<ApiKey[]> {
+    const params: Prisma.ApiKeyFindManyArgs =
+      user.role === UserRole.ADMIN ? {} : { where: { userId: user.id } }
+
+    return this.apiKeyService.getAllApiKeys(params).then((apiKeys) => {
       return apiKeys.map((apiKey) => new ApiKey(apiKey))
     })
   }

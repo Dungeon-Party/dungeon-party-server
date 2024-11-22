@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   ForbiddenException,
+  Get,
   Logger,
   Param,
   Post,
@@ -18,6 +19,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger'
+import { Prisma } from '@prisma/client'
 
 import { JwtOrApiKeyAuthGuard } from '../auth/guards/jwt-apiKey-auth.guard'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
@@ -39,6 +41,10 @@ import { ApiKey } from './entities/api-key.entity'
 @ApiTags('api-keys')
 @Controller('api-keys')
 @AuthMetaData(`${JwtOrApiKeyAuthGuard.name}Skip`)
+@ApiUnauthorizedResponse({
+  type: UnauthorizedExceptionI,
+  description: 'Unauthorized',
+})
 export class ApiKeyController {
   private readonly logger: Logger = new Logger(ApiKeyController.name)
 
@@ -51,10 +57,6 @@ export class ApiKeyController {
   @ApiOkResponse({
     type: CreateApiKeyResponseDto,
     description: 'API Key created successfully',
-  })
-  @ApiUnauthorizedResponse({
-    type: UnauthorizedExceptionI,
-    description: 'Unauthorized',
   })
   @ApiForbiddenResponse({
     type: ForbiddenExceptionI,
@@ -79,11 +81,22 @@ export class ApiKeyController {
     return this.apiKeyService.create(createApiKeyDto)
   }
 
-  @ApiOkResponse({ type: ApiKey, description: 'API Key deleted successfully' })
-  @ApiUnauthorizedResponse({
-    type: UnauthorizedExceptionI,
-    description: 'Unauthorized',
+  @ApiOkResponse({
+    type: ApiKey,
+    description: 'List of API Keys',
+    isArray: true,
   })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  getAllApiKeys(@GetUser() user: User) {
+    const params: Prisma.ApiKeyFindManyArgs =
+      user.role === UserRole.ADMIN ? {} : { where: { userId: user.id } }
+
+    return this.apiKeyService.getAllApiKeys(params)
+  }
+
+  @ApiOkResponse({ type: ApiKey, description: 'API Key deleted successfully' })
   @ApiNotFoundResponse({
     type: NotFoundExceptionI,
     description: 'API Key not found',

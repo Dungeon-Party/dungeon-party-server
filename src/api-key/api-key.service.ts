@@ -4,6 +4,7 @@
 import * as crypto from 'crypto'
 import { Injectable, Logger, NotFoundException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { Prisma } from '@prisma/client'
 import * as argon2 from 'argon2'
 
 import { User } from '../user/entities/user.entity'
@@ -73,14 +74,12 @@ export class ApiKeyService {
       })
   }
 
-  async getAllApiKeys(user: User): Promise<ApiKey[]> {
-    return this.repo
-      .findMany({
-        where: { userId: user.id },
-      })
-      .then((apiKeys) => {
-        return apiKeys.map((apiKey) => new ApiKey(apiKey))
-      })
+  async getAllApiKeys(
+    apiKeyFindManyArgs: Prisma.ApiKeyFindManyArgs,
+  ): Promise<ApiKey[]> {
+    return this.repo.findMany(apiKeyFindManyArgs).then((apiKeys) => {
+      return apiKeys.map((apiKey) => new ApiKey(apiKey))
+    })
   }
 
   async findApiKeyById(apiKeyId: ApiKey['id']): Promise<ApiKey> {

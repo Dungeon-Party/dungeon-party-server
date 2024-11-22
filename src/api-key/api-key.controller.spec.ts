@@ -109,4 +109,26 @@ describe('ApiKeyController', () => {
       ).toBeTruthy()
     })
   })
+
+  describe('getAllApiKeys', () => {
+    it('should call apiKeyService.getAllApiKeys with empty params to retrieve all API Keys if the authenticated user is an Admin', () => {
+      const apiKeys = MockFactory<ApiKey>(ApiKey).many(5)
+      const user = MockFactory<User>(User)
+        .mutate({ role: UserRole.ADMIN })
+        .one()
+      apiKeyService.getAllApiKeys.mockResolvedValue(apiKeys)
+      expect(apiKeyController.getAllApiKeys(user)).resolves.toEqual(apiKeys)
+      expect(apiKeyService.getAllApiKeys).toHaveBeenCalledWith({})
+    })
+
+    it('should call apiKeyService.getAllApiKeys with the uer id to retrieve API Keys if the authenticated user is not an Admin', () => {
+      const apiKeys = MockFactory<ApiKey>(ApiKey).many(5)
+      const user = MockFactory<User>(User).mutate({ role: UserRole.USER }).one()
+      apiKeyService.getAllApiKeys.mockResolvedValue(apiKeys)
+      expect(apiKeyController.getAllApiKeys(user)).resolves.toEqual(apiKeys)
+      expect(apiKeyService.getAllApiKeys).toHaveBeenCalledWith({
+        where: { userId: user.id },
+      })
+    })
+  })
 })
