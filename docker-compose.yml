@@ -1,5 +1,7 @@
+version: '3.8'
 services:
   api:
+    container_name: api
     build:
       dockerfile: Dockerfile
       context: .
@@ -10,7 +12,6 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     environment:
-      file: .env
       # change the host to the Postgres service name
       DATABASE_POSTGRES_HOST: postgres
     command: > 
@@ -18,24 +19,18 @@ services:
       && pm2 start yarn --interpreter bash --name api --watch false -- start:debug
       && pm2 start yarn --interpreter bash --name prisma -- db:studio
       && pm2 logs"
-    ports:
-      - 8080:3000
-      # prisma studio port
-      - 5555:5555
-      # debugging port
-      - 9229:9229
   postgres:
+    container_name: postgres
     image: postgres
-    restart: always
-    env_file:
-        - .env
     environment:
       - POSTGRES_USER=${DATABASE_POSTGRES_USER}
       - POSTGRES_PASSWORD=${DATABASE_POSTGRES_PASSWORD}
       - POSTGRES_DB=${DATABASE_POSTGRES_DB}
     volumes:
-      - postgres:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
+    expose:
+      - 5432
     ports:
       - 5432:5432
 volumes:
-  postgres:
+  postgres-data:

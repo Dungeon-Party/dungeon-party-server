@@ -1,0 +1,50 @@
+{
+  "name": "Dungeon Party API",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "api",
+  "workspaceFolder": "/usr/src/app",
+  "forwardPorts": [
+    3000,
+    5555,
+    9229
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "API",
+      "onAutoForward": "silent"
+    },
+    "5555": {
+      "label": "Prisma Studio",
+      "onAutoForward": "openBrowser"
+    },
+    "9229": {
+      "label": "Debugging",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "prisma.prisma",
+        "dbaeumer.vscode-eslint",
+        "Gruntfuggly.todo-tree"
+      ],
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "eslint.run": "onSave",
+        "editor.codeActionsOnSave": {
+          "source.fixAll": "explicit"
+        },
+        "eslint.validate": [
+          "javascript",
+          "typescript"
+        ],
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "editor.tabSize": 2
+      }
+    }
+  },
+  "postCreateCommand": "yarn",
+  "shutdownAction": "stopCompose"
+}

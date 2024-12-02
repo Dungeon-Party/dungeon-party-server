@@ -1,7 +1,8 @@
 {
     "recommendations": [
+        "ms-vscode-remote.vscode-remote-extensionpack",
         "prisma.prisma",
-        "ms-azuretools.vscode-docker",
-        "dbaeumer.vscode-eslint"
+        "dbaeumer.vscode-eslint",
+        "Gruntfuggly.todo-tree"
     ]
 }
