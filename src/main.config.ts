@@ -49,6 +49,7 @@ export default function bootstrap(app: INestApplication): void {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      transformOptions: { enableImplicitConversion: true },
       forbidNonWhitelisted: true,
       whitelist: true,
     }),

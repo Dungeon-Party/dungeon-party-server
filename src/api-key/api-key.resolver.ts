@@ -10,18 +10,17 @@ import { GetUser } from '../user/decorators/user.decorator'
 import { User } from '../user/entities/user.entity'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
+import { GetApiKeyParamsDto } from './dto/get-api-key-params.dto'
 import { ApiKey } from './entities/api-key.entity'
 
 @Resolver(() => ApiKey)
+@UseGuards(JwtAuthGuard)
+@AuthMetaData(`${JwtOrApiKeyAuthGuard.name}Skip`)
 export class ApiKeyResolver {
   private readonly logger: Logger = new Logger(ApiKeyResolver.name)
 
   constructor(private readonly apiKeyService: ApiKeyService) {}
 
-  @UseGuards(JwtAuthGuard)
-  // FIXME: The AuthMetaData decorator is not being applied to the createApiKey mutation
-  // https://stackoverflow.com/questions/79212346/nestjs-graphql-access-resolver-method-metadata
-  @AuthMetaData(`${JwtOrApiKeyAuthGuard.name}Skip`)
   @Mutation(() => CreateApiKeyResponseDto, {
     name: 'createApiKey',
     description: 'Create an API Key',
@@ -38,26 +37,19 @@ export class ApiKeyResolver {
     return this.apiKeyService.create(createApiKeyDto)
   }
 
-  @UseGuards(JwtAuthGuard)
   @Query(() => [ApiKey], { name: 'apiKeys' })
-  async getAllApiKeys(@GetUser() user: User): Promise<ApiKey[]> {
-    const params: Prisma.ApiKeyFindManyArgs =
-      user.role === UserRole.ADMIN ? {} : { where: { userId: user.id } }
+  async getApiKeys(
+    @GetUser() user: User,
+    @Args() query: GetApiKeyParamsDto,
+  ): Promise<ApiKey[]> {
+    const params: Prisma.ApiKeyWhereInput =
+      user.role === UserRole.ADMIN ? query : { userId: user.id }
 
     return this.apiKeyService.getAllApiKeys(params).then((apiKeys) => {
       return apiKeys.map((apiKey) => new ApiKey(apiKey))
     })
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Query(() => ApiKey, { name: 'apiKey', nullable: true })
-  async getApiKeyById(@Args('id') id: number): Promise<ApiKey | null> {
-    return this.apiKeyService.findApiKeyById(id).then((apiKey) => {
-      return new ApiKey(apiKey)
-    })
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Mutation(() => ApiKey, { name: 'deleteApiKey' })
   async deleteApiKey(@GetUser() user, @Args('id') id: number): Promise<ApiKey> {
     return this.apiKeyService.deleteApiKey(user.id, id)

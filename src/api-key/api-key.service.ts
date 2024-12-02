@@ -11,6 +11,7 @@ import { User } from '../user/entities/user.entity'
 import { ApiKeyRepository } from './api-key.repository'
 import { CreateApiKeyResponseDto } from './dto/create-api-key-response.dto'
 import { CreateApiKeyDto } from './dto/create-api-key.dto'
+import { GetApiKeyParamsDto } from './dto/get-api-key-params.dto'
 import { ApiKey } from './entities/api-key.entity'
 
 @Injectable()
@@ -74,10 +75,11 @@ export class ApiKeyService {
       })
   }
 
-  async getAllApiKeys(
-    apiKeyFindManyArgs: Prisma.ApiKeyFindManyArgs,
-  ): Promise<ApiKey[]> {
-    return this.repo.findMany(apiKeyFindManyArgs).then((apiKeys) => {
+  async getAllApiKeys(query?: Prisma.ApiKeyWhereInput): Promise<ApiKey[]> {
+    const params: Prisma.ApiKeyFindManyArgs =
+      GetApiKeyParamsDto.buildParams(query)
+
+    return this.repo.findMany(params).then((apiKeys) => {
       return apiKeys.map((apiKey) => new ApiKey(apiKey))
     })
   }
