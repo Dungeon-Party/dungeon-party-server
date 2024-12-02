@@ -29,6 +29,10 @@ export default class JwtPayloadDto {
   email: string
 
   @IsNotEmpty()
+  @IsString()
+  role: string
+
+  @IsNotEmpty()
   @IsNumber()
   @Exclude()
   iat: number

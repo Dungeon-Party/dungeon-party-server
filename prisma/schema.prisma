@@ -27,6 +27,11 @@ datasource db {
 // - SourceType
 // - Size
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 model User {
   /// @example 1
   /// @description Unique identifier for the user
@@ -48,6 +53,8 @@ model User {
   /// @example Test User
   /// @description The user's name
   name      String?
+  /// @description The user's role
+  role      UserRole @default(USER)
   /// @MinLength(8)
   /// @minLength 8
   /// @MaxLength(30)
@@ -99,134 +106,134 @@ model ApiKey {
   updatedAt DateTime @updatedAt
 }
 
-// model Source {
-//   id           Int        @id @default(autoincrement())
-//   name         String
-//   abbreviation String?
-//   type         String
-//   system       System     @relation(fields: [systemId], references: [id])
-//   systemId     Int
-//   classes      Class[]
-//   subclasses   SubClass[]
-//   races        Race[]
-//   subRaces     SubRace[]
-//   createdAt    DateTime   @default(now())
-//   updatedAt    DateTime   @updatedAt
-// }
+model Source {
+  id           Int        @id @default(autoincrement())
+  name         String
+  abbreviation String?
+  type         String
+  system       System     @relation(fields: [systemId], references: [id])
+  systemId     Int
+  classes      Class[]
+  subclasses   SubClass[]
+  races        Race[]
+  subRaces     SubRace[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
 
-// model System {
-//   id            Int            @id @default(autoincrement())
-//   name          String         @unique
-//   desc          String?
-//   sources       Source[]
-//   abilityScores AbilityScore[]
-//   skills        Skill[]
-//   createdAt     DateTime       @default(now())
-//   updatedAt     DateTime       @updatedAt
-// }
+model System {
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
+  desc          String?
+  sources       Source[]
+  abilityScores AbilityScore[]
+  skills        Skill[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
 
-// model AbilityScore {
-//   id        Int      @id @default(autoincrement())
-//   name      String
-//   full_name String
-//   desc      String?
-//   skills    Skill[]
-//   system    System   @relation(fields: [systemId], references: [id])
-//   systemId  Int
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
+model AbilityScore {
+  id        Int      @id @default(autoincrement())
+  name      String
+  full_name String
+  desc      String?
+  skills    Skill[]
+  system    System   @relation(fields: [systemId], references: [id])
+  systemId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-//   @@unique([id, systemId])
-//   @@unique([name, systemId])
-// }
+  @@unique([id, systemId])
+  @@unique([name, systemId])
+}
 
-// model Skill {
-//   id        Int          @id @default(autoincrement())
-//   name      String
-//   desc      String?
-//   ability   AbilityScore @relation(fields: [abilityId, systemId], references: [id, systemId])
-//   abilityId Int
-//   system    System       @relation(fields: [systemId], references: [id])
-//   systemId  Int
-//   createdAt DateTime     @default(now())
-//   updatedAt DateTime     @updatedAt
+model Skill {
+  id        Int          @id @default(autoincrement())
+  name      String
+  desc      String?
+  ability   AbilityScore @relation(fields: [abilityId, systemId], references: [id, systemId])
+  abilityId Int
+  system    System       @relation(fields: [systemId], references: [id])
+  systemId  Int
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
 
-//   @@unique([name, systemId])
-// }
+  @@unique([name, systemId])
+}
 
-// model Class {
-//   id         Int        @id @default(autoincrement())
-//   name       String
-//   desc       String?
-//   hitDie     Int
-//   subclasses SubClass[]
-//   source     Source     @relation(fields: [sourceId], references: [id])
-//   sourceId   Int
-//   createdAt  DateTime   @default(now())
-//   updatedAt  DateTime   @updatedAt
-// }
+model Class {
+  id         Int        @id @default(autoincrement())
+  name       String
+  desc       String?
+  hitDie     Int
+  subclasses SubClass[]
+  source     Source     @relation(fields: [sourceId], references: [id])
+  sourceId   Int
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
 
-// model SubClass {
-//   id        Int      @id @default(autoincrement())
-//   name      String
-//   desc      String?
-//   class     Class    @relation(fields: [classId], references: [id])
-//   classId   Int
-//   source    Source   @relation(fields: [sourceId], references: [id])
-//   sourceId  Int
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model SubClass {
+  id        Int      @id @default(autoincrement())
+  name      String
+  desc      String?
+  class     Class    @relation(fields: [classId], references: [id])
+  classId   Int
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-// model Race {
-//   id        Int       @id @default(autoincrement())
-//   name      String
-//   speed     Int
-//   size      String
-//   subRaces  SubRace[]
-//   source    Source    @relation(fields: [sourceId], references: [id])
-//   sourceId  Int
-//   createdAt DateTime  @default(now())
-//   updatedAt DateTime  @updatedAt
-// }
+model Race {
+  id        Int       @id @default(autoincrement())
+  name      String
+  speed     Int
+  size      String
+  subRaces  SubRace[]
+  source    Source    @relation(fields: [sourceId], references: [id])
+  sourceId  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
 
-// model SubRace {
-//   id        Int      @id @default(autoincrement())
-//   name      String
-//   race      Race     @relation(fields: [raceId], references: [id])
-//   raceId    Int
-//   source    Source   @relation(fields: [sourceId], references: [id])
-//   sourceId  Int
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model SubRace {
+  id        Int      @id @default(autoincrement())
+  name      String
+  race      Race     @relation(fields: [raceId], references: [id])
+  raceId    Int
+  source    Source   @relation(fields: [sourceId], references: [id])
+  sourceId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-// model Spell {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model Spell {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-// model Item {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model Item {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-// model Monster {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model Monster {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-// model Trait {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model Trait {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-// model Feat {
-//   id        Int      @id @default(autoincrement())
-//   createdAt DateTime @default(now())
-//   updatedAt DateTime @updatedAt
-// }
+model Feat {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

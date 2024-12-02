@@ -9,14 +9,15 @@ import { PassportModule } from '@nestjs/passport'
 import { Test, TestingModule } from '@nestjs/testing'
 import * as argon2 from 'argon2'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { MockFactory } from 'mockingbird'
 
 import { UserModule } from '../user/user.module'
 import { AuthController } from './auth.controller'
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
 import { AuthService } from './auth.service'
+import { ApiKey } from '../api-key/entities/api-key.entity'
 import { User } from '../user/entities/user.entity'
-import { getApiKey, getUser } from '../utils/test-utils'
 import TokenResponseDto from './dto/token-response.dto'
 
 describe('AuthService', () => {
@@ -62,7 +63,7 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should return a type of TokenResponseDto', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       userService.findUserByEmailOrUsername.mockResolvedValueOnce(user as User)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const result = await authService.login(user.username, user.password)
@@ -140,8 +141,8 @@ describe('AuthService', () => {
 
   describe('validateApiKey', () => {
     it('should return a user when the API key is valid', async () => {
-      const user = getUser()
-      const apiKey = getApiKey()
+      const user = MockFactory<User>(User).one()
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
 
       userService.findUserById.mockResolvedValueOnce(user)
       apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
@@ -151,7 +152,7 @@ describe('AuthService', () => {
     })
 
     it('should throw an error when the API key is invalid', async () => {
-      const apiKey = getApiKey()
+      const apiKey = MockFactory<ApiKey>(ApiKey).one()
 
       apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
@@ -163,7 +164,7 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('should return a user when the registration is successful', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       const signupDto = {
         name: user.name,
         username: user.username,
@@ -177,7 +178,7 @@ describe('AuthService', () => {
     })
 
     it('should throw an error when the passwords do not match', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       const signupDto = {
         name: user.name,
         username: user.username,

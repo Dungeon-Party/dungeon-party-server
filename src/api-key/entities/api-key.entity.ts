@@ -14,6 +14,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator'
+import { Mock } from 'mockingbird'
 
 @ObjectType()
 @Exclude()
@@ -25,6 +26,7 @@ export class ApiKey implements PrismaApiKey {
     format: 'int32',
   })
   @Field(() => Int, { nullable: false })
+  @Mock((faker) => faker.datatype.number(1000))
   @IsNotEmpty()
   @IsNumber()
   @Expose()
@@ -38,6 +40,7 @@ export class ApiKey implements PrismaApiKey {
     type: 'string',
   })
   @Field(() => String, { nullable: false })
+  @Mock((faker) => faker.lorem.words(2))
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
@@ -46,6 +49,7 @@ export class ApiKey implements PrismaApiKey {
   name: string
 
   @ApiHideProperty()
+  @Mock((faker) => faker.random.alphaNumeric(32))
   @IsNotEmpty()
   @IsString()
   key: string
@@ -57,6 +61,7 @@ export class ApiKey implements PrismaApiKey {
     format: 'int32',
   })
   @Field(() => Int, { nullable: false })
+  @Mock((faker) => faker.datatype.number(1000))
   @IsNotEmpty()
   @IsNumber()
   @Expose()
@@ -69,6 +74,7 @@ export class ApiKey implements PrismaApiKey {
     format: 'date-time',
   })
   @Field(() => GraphQLISODateTime, { nullable: false })
+  @Mock((faker) => faker.date.future())
   @IsNotEmpty()
   @IsDateString()
   @Expose()
@@ -81,6 +87,7 @@ export class ApiKey implements PrismaApiKey {
     format: 'date-time',
   })
   @Field(() => GraphQLISODateTime, { nullable: false })
+  @Mock((faker) => faker.date.past())
   @IsNotEmpty()
   @IsDateString()
   @Expose()
@@ -93,6 +100,7 @@ export class ApiKey implements PrismaApiKey {
     format: 'date-time',
   })
   @Field(() => GraphQLISODateTime, { nullable: false })
+  @Mock((faker) => faker.date.recent())
   @IsNotEmpty()
   @IsDateString()
   @Expose()

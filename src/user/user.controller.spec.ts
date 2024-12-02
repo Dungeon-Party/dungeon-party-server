@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { MockFactory } from 'mockingbird'
 
 import { UserController } from './user.controller'
 import { UserService } from './user.service'
-import { getUser } from '../utils/test-utils'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { User } from './entities/user.entity'
 
@@ -30,7 +30,10 @@ describe('UserController', () => {
 
   describe('getUsers', () => {
     it('should return an array of users', async () => {
-      const users: User[] = [getUser(), getUser()]
+      const users: User[] = [
+        MockFactory<User>(User).one(),
+        MockFactory<User>(User).one(),
+      ]
       userService.getAllUsers.mockResolvedValue(users)
       const respone = await controller.getUsers()
 
@@ -40,12 +43,34 @@ describe('UserController', () => {
 
   describe('updateUser', () => {
     it('should return the result of userService.updateUser', async () => {
-      const user = getUser()
+      const user = MockFactory<User>(User).one()
       const payload = { name: 'test' } as UpdateUserDto
       userService.updateUser.mockResolvedValue({ ...user, ...payload })
       const result = await controller.updateUser(user, payload)
 
       expect(result.name).toBe(payload.name)
     })
+  })
+
+  describe('profile', () => {
+    it('should return the user profile when the user id passed is the same as the users', async () => {
+      const requestingUser = MockFactory<User>(User).plain().one()
+      const requestedUser = MockFactory<User>(User)
+        .mutate({ id: requestingUser.id })
+        .plain()
+        .one()
+      userService.findUserById.mockResolvedValue(requestedUser)
+      expect(
+        await controller.getProfile(requestedUser.id, requestingUser),
+      ).toEqual(requestedUser)
+    })
+
+    // it('should be protected by the jwt or api-key strategy', () => {
+    //   expect(
+    //     Reflect.getMetadata('__guards__', controller.getProfile).some(
+    //       (guard) => guard.name === JwtOrApiKeyAuthGuard.name,
+    //     ),
+    //   ).toBeTruthy()
+    // })
   })
 })

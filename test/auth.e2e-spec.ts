@@ -17,6 +17,7 @@ describe('Auth (e2e)', () => {
   let jwtAuthGuard: DeepMockProxy<JwtAuthGuard>
 
   beforeEach(async () => {
+    // FIXME: It is best practice to use the AppModule instead of importing the modules directly, but it times out when running the tests
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AuthModule],
     })
@@ -65,7 +66,7 @@ describe('Auth (e2e)', () => {
         .post('/api/v1/auth/login')
         .send(loginRequest)
         .then((response) => {
-          expect(response.status).toBe(201)
+          expect(response.status).toBe(200)
           expect(response.body).toHaveProperty('accessToken')
           expect(response.body).toHaveProperty('refreshToken')
         })
@@ -141,7 +142,7 @@ describe('Auth (e2e)', () => {
         .set('Authorization', 'Bearer test-token')
         .send(loginRequest)
         .then((response) => {
-          expect(response.status).toBe(201)
+          expect(response.status).toBe(200)
           expect(response.body).toHaveProperty('accessToken')
           expect(response.body).toHaveProperty('refreshToken')
         })

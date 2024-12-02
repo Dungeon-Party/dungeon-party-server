@@ -1,0 +1,77 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "yarn",
+      "args": [
+        "build"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Unit Tests",
+      "type": "shell",
+      "command": "yarn",
+      "args": [
+        "test:cov"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "never",
+        "revealProblems": "onProblem",
+        "clear": true,
+        "close": true
+      }
+    },
+    {
+      "label": "End to End Tests",
+      "type": "shell",
+      "command": "yarn",
+      "args": [
+        "test:e2e:cov"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "never",
+        "revealProblems": "onProblem",
+        "clear": true,
+        "close": true
+      }
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "yarn",
+      "args": [
+        "lint"
+      ],
+      "problemMatcher": [
+        "$eslint-stylish"
+      ],
+      "group": "test",
+      "presentation": {
+        "reveal": "never",
+        "revealProblems": "onProblem",
+        "clear": true,
+        "close": true
+      }
+    },
+    {
+      "label": "Test",
+      "dependsOn": [
+        "Unit Tests",
+        "End to End Tests",
+        "Lint"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    }
+  ]
+}

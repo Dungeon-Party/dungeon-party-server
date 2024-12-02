@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended'
+import { MockFactory } from 'mockingbird'
 
 import { UserService } from './user.service'
-import { getUser } from '../utils/test-utils'
 import { User } from './entities/user.entity'
 import { UserResolver } from './user.resolver'
 
@@ -41,7 +41,10 @@ describe('UserResolver', () => {
 
   describe('getUsers', () => {
     it('should return the value of userService.getAllUsers', async () => {
-      const users = [getUser(), getUser()] as User[]
+      const users = [
+        MockFactory<User>(User).one(),
+        MockFactory<User>(User).one(),
+      ] as User[]
       userService.getAllUsers.mockResolvedValue(users)
       const result = await userResolver.getUsers()
       expect(result).toHaveLength(2)
@@ -61,7 +64,7 @@ describe('UserResolver', () => {
 
   describe('createUser', () => {
     it('should return the value of userService.createUser', async () => {
-      const user = getUser() as User
+      const user = MockFactory<User>(User).one() as User
       userService.createUser.mockResolvedValue(user)
       const result = await userResolver.createUser(user)
       expect(result.name).toBe(user.name)
@@ -72,7 +75,7 @@ describe('UserResolver', () => {
 
   describe('updateUser', () => {
     it('should return the value of userService.updateUser', async () => {
-      const user = getUser() as User
+      const user = MockFactory<User>(User).one() as User
       userService.updateUser.mockResolvedValue(user)
       const result = await userResolver.updateUser(1, user)
       expect(result.name).toBe(user.name)
@@ -83,7 +86,7 @@ describe('UserResolver', () => {
 
   describe('deleteUser', () => {
     it('should return the value of userService.deleteUser', async () => {
-      const user = getUser() as User
+      const user = MockFactory<User>(User).one() as User
       userService.deleteUser.mockResolvedValue(user)
       const result = await userResolver.deleteUser(1)
       expect(result.name).toBe(user.name)

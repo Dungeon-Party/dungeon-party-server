@@ -1,5 +1,6 @@
 import {
   ClassSerializerInterceptor,
+  INestApplication,
   ValidationPipe,
   VersioningType,
 } from '@nestjs/common'
@@ -7,7 +8,7 @@ import { HttpAdapterHost, Reflector } from '@nestjs/core'
 import helmet from 'helmet'
 import { PrismaClientExceptionFilter } from 'nestjs-prisma'
 
-export default function bootstrap(app) {
+export default function bootstrap(app: INestApplication): void {
   // Setup helmet
   app.use(
     helmet({
@@ -39,6 +40,7 @@ export default function bootstrap(app) {
     defaultVersion: '1',
   })
 
+  // Setup global prisma client exception
   const { httpAdapter } = app.get(HttpAdapterHost)
   app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter))
 
@@ -47,6 +49,7 @@ export default function bootstrap(app) {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      transformOptions: { enableImplicitConversion: true },
       forbidNonWhitelisted: true,
       whitelist: true,
     }),

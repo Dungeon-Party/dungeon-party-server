@@ -1,4 +1,4 @@
-import { Logger, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
+import { Logger, Module, NestModule } from '@nestjs/common'
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -11,6 +11,8 @@ import {
   PrismaModule,
 } from 'nestjs-prisma'
 
+import { JwtOrApiKeyAuthGuard } from './auth/guards/jwt-apiKey-auth.guard'
+import { RolesGuard } from './auth/guards/roles.guard'
 import { ApiKeyModule } from './api-key/api-key.module'
 import { AuthModule } from './auth/auth.module'
 import { HealthModule } from './health/health.module'
@@ -19,7 +21,6 @@ import databaseConfig from './config/database.config'
 import httpConfig from './config/http.config'
 import loggingConfig from './config/logging.config'
 import securityConfig from './config/security.config'
-import { RequestLoggingMiddleware } from './middleware/request-logging.middleware'
 
 @Module({
   imports: [
@@ -79,10 +80,18 @@ import { RequestLoggingMiddleware } from './middleware/request-logging.middlewar
     UserModule,
     HealthModule,
   ],
-  providers: [Logger],
+  providers: [
+    Logger,
+    {
+      provide: 'APP_GUARD',
+      useClass: JwtOrApiKeyAuthGuard,
+    },
+    {
+      provide: 'APP_GUARD',
+      useClass: RolesGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggingMiddleware).forRoutes('*')
-  }
+  configure() {}
 }

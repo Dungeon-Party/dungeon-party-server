@@ -11,10 +11,10 @@ import {
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import * as argon2 from 'argon2'
-import { ApiKey } from 'src/api-key/entities/api-key.entity'
 
 import { ApiKeyService } from '../api-key/api-key.service'
 import { UserService } from '../user/user.service'
+import { ApiKey } from '../api-key/entities/api-key.entity'
 import { User } from '../user/entities/user.entity'
 import JwtPayloadDto from './dto/jwt-payload.dto'
 import { SignUpDto } from './dto/signup.dto'
@@ -65,6 +65,7 @@ export class AuthService {
       iss: 'dungeon-party',
       username: user.username,
       email: user.email,
+      role: user.role,
     }
 
     /* istanbul ignore next */

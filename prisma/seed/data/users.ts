@@ -3,9 +3,18 @@ import * as argon2 from 'argon2'
 const users = [
   {
     id: 1,
-    name: 'Rick',
-    username: 'rick',
-    email: 'rick@prisma.io',
+    name: 'Admin',
+    username: 'admin',
+    role: 'ADMIN',
+    email: 'admin@prisma.io',
+    password: 'password',
+  },
+  {
+    id: 2,
+    name: 'User',
+    username: 'user',
+    role: 'USER',
+    email: 'user@prisma.io',
     password: 'password',
   },
 ]
