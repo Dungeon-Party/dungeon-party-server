@@ -15,7 +15,7 @@
     },
     "5555": {
       "label": "Prisma Studio",
-      "onAutoForward": "openBrowser"
+      "onAutoForward": "notify"
     },
     "9229": {
       "label": "Debugging",
@@ -27,7 +27,8 @@
       "extensions": [
         "prisma.prisma",
         "dbaeumer.vscode-eslint",
-        "Gruntfuggly.todo-tree"
+        "Gruntfuggly.todo-tree",
+        "SeyyedKhandon.firacode"
       ],
       "settings": {
         "terminal.integrated.shell.linux": "/bin/bash",
@@ -41,10 +42,22 @@
         ],
         "typescript.preferences.importModuleSpecifier": "relative",
         "typescript.updateImportsOnFileMove.enabled": "always",
-        "editor.tabSize": 2
+        "editor.tabSize": 2,
+        "workbench.iconTheme": "vs-seti-firacodenerdfontmono",
+        "editor.fontLigatures": true,
+        "editor.fontFamily": "'FiraCode Nerd Font Mono', 'Droid Sans Mono', 'monospace', monospace"
       }
     }
   },
-  "postCreateCommand": "yarn",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/starship:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/nestjs-cli:2": {},
+    "ghcr.io/devcontainers-extra/features/prisma:2": {}
+  },
+  "postCreateCommand": [
+    "printf 'eval \"$(starship init bash)\"' >> '/root/.bashrc'",
+    "yarn"
+  ],
   "shutdownAction": "stopCompose"
 }

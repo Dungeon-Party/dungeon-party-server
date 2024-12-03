@@ -15,10 +15,9 @@ services:
       # change the host to the Postgres service name
       DATABASE_POSTGRES_HOST: postgres
     command: > 
-      sh -cx "npm i -g pm2
-      && pm2 start yarn --interpreter bash --name api --watch false -- start:debug
-      && pm2 start yarn --interpreter bash --name prisma -- db:studio
-      && pm2 logs"
+      sh -cx "npx pm2 start yarn --interpreter bash --name api --watch false -- start:debug
+      && npx pm2 start yarn --interpreter bash --name prisma -- db:studio
+      && npx pm2 logs"
   postgres:
     container_name: postgres
     image: postgres

@@ -89,6 +89,7 @@
     "jest-mock-extended": "^4.0.0-beta1",
     "lint-staged": "^15.2.10",
     "mockingbird": "^2.1.2",
+    "pm2": "^5.4.3",
     "prettier": "^3.0.0",
     "prisma": "^5.22.0",
     "source-map-support": "^0.5.21",
