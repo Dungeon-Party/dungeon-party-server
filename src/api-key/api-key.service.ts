@@ -59,10 +59,7 @@ export class ApiKeyService {
       })
   }
 
-  async deleteApiKey(
-    userId: User['id'],
-    apiKeyId: ApiKey['id'],
-  ): Promise<ApiKey> {
+  async delete(userId: User['id'], apiKeyId: ApiKey['id']): Promise<ApiKey> {
     return this.repo
       .delete({
         where: { id: apiKeyId, userId: userId },
@@ -75,7 +72,7 @@ export class ApiKeyService {
       })
   }
 
-  async getAllApiKeys(query?: Prisma.ApiKeyWhereInput): Promise<ApiKey[]> {
+  async getAll(query?: Prisma.ApiKeyWhereInput): Promise<ApiKey[]> {
     const params: Prisma.ApiKeyFindManyArgs =
       GetApiKeyParamsDto.buildParams(query)
 
@@ -84,7 +81,7 @@ export class ApiKeyService {
     })
   }
 
-  async findApiKeyById(apiKeyId: ApiKey['id']): Promise<ApiKey> {
+  async getById(apiKeyId: ApiKey['id']): Promise<ApiKey> {
     return this.repo.findFirst({ where: { id: apiKeyId } }).then((apiKey) => {
       if (!apiKey) {
         throw new NotFoundException('API key not found')
@@ -93,7 +90,7 @@ export class ApiKeyService {
     })
   }
 
-  async findValidApiKey(key: string): Promise<ApiKey> {
+  async getValid(key: string): Promise<ApiKey> {
     const keyPrefix = key.split('.')[0]
     return this.repo
       .findFirst({

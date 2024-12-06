@@ -81,12 +81,12 @@ describe('ApiKeyService', () => {
     })
   })
 
-  describe('deleteApiKey', () => {
+  describe('delete', () => {
     it('should return the result of ApiKeyRepository.delete method', async () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
       apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
 
-      const result = await apiKeyService.deleteApiKey(apiKey.id, apiKey.userId)
+      const result = await apiKeyService.delete(apiKey.id, apiKey.userId)
       expect(result).toEqual(apiKey)
     })
 
@@ -94,7 +94,7 @@ describe('ApiKeyService', () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).plain().one()
       apiKeyRepository.delete.mockResolvedValueOnce(apiKey)
 
-      const result = await apiKeyService.deleteApiKey(apiKey.id, apiKey.userId)
+      const result = await apiKeyService.delete(apiKey.id, apiKey.userId)
       expect(result).toEqual(apiKey)
       expect(apiKey).not.toBeInstanceOf(ApiKey)
       expect(result).toBeInstanceOf(ApiKey)
@@ -105,7 +105,7 @@ describe('ApiKeyService', () => {
       apiKeyRepository.delete.mockResolvedValueOnce(null)
 
       apiKeyService
-        .deleteApiKey(apiKey.userId, apiKey.id)
+        .delete(apiKey.userId, apiKey.id)
         .then(() => new Error('Should not reach this point'))
         .catch((error) => {
           expect(error).toBeInstanceOf(NotFoundException)
@@ -113,7 +113,7 @@ describe('ApiKeyService', () => {
     })
   })
 
-  describe('findValidApiKey', () => {
+  describe('getValid', () => {
     it('should return the result of apiKeyRepository.findFirst method', async () => {
       const result = {
         id: 1,
@@ -127,7 +127,7 @@ describe('ApiKeyService', () => {
 
       apiKeyRepository.findFirst.mockResolvedValueOnce(result)
       const key = 'dp-kljsdf892hhlk3hkl.1657894531'
-      const response = await apiKeyService.findValidApiKey(key)
+      const response = await apiKeyService.getValid(key)
       const prismaServiceFindFirstArgs =
         apiKeyRepository.findFirst.mock.calls[0][0]
       expect(prismaServiceFindFirstArgs.where.key).toEqual({
@@ -139,7 +139,7 @@ describe('ApiKeyService', () => {
     it('should return the type of ApiKey', async () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).plain().one()
       apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
-      const result = await apiKeyService.findValidApiKey(apiKey.key)
+      const result = await apiKeyService.getValid(apiKey.key)
       expect(result).toEqual(apiKey)
       expect(apiKey).not.toBeInstanceOf(ApiKey)
       expect(result).toBeInstanceOf(ApiKey)
@@ -150,7 +150,7 @@ describe('ApiKeyService', () => {
       apiKeyRepository.findFirst.mockResolvedValueOnce(null)
 
       apiKeyService
-        .findValidApiKey(apiKey.key)
+        .getValid(apiKey.key)
         .then(() => new Error('Should not reach this point'))
         .catch((error) => {
           expect(error).toBeInstanceOf(NotFoundException)
@@ -158,7 +158,7 @@ describe('ApiKeyService', () => {
     })
   })
 
-  describe('getAllApiKeys', () => {
+  describe('getAll', () => {
     it('should return the result of apiKeyRepository.findMany method', async () => {
       const apiKeys = [
         MockFactory<ApiKey>(ApiKey).one(),
@@ -166,7 +166,7 @@ describe('ApiKeyService', () => {
       ]
       apiKeyRepository.findMany.mockResolvedValueOnce(apiKeys)
 
-      const result = await apiKeyService.getAllApiKeys({})
+      const result = await apiKeyService.getAll({})
       expect(apiKeyRepository.findMany).toHaveBeenCalled()
       expect(result).toEqual(apiKeys)
     })
@@ -178,7 +178,7 @@ describe('ApiKeyService', () => {
       ]
       apiKeyRepository.findMany.mockResolvedValueOnce(apiKeys)
 
-      const result = await apiKeyService.getAllApiKeys({})
+      const result = await apiKeyService.getAll({})
       expect(result).toEqual(apiKeys)
       for (const apiKey of apiKeys) {
         expect(apiKey).not.toBeInstanceOf(ApiKey)
@@ -189,12 +189,12 @@ describe('ApiKeyService', () => {
     })
   })
 
-  describe('findApiKeyById', () => {
+  describe('getById', () => {
     it('should return the result of apiKeyRepository.findFirst method', async () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
       apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
 
-      const result = await apiKeyService.findApiKeyById(apiKey.id)
+      const result = await apiKeyService.getById(apiKey.id)
       expect(apiKeyRepository.findFirst).toHaveBeenCalled()
       expect(result).toEqual(apiKey)
     })
@@ -203,7 +203,7 @@ describe('ApiKeyService', () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).plain().one()
       apiKeyRepository.findFirst.mockResolvedValueOnce(apiKey)
 
-      const result = await apiKeyService.findApiKeyById(apiKey.id)
+      const result = await apiKeyService.getById(apiKey.id)
       expect(result).toEqual(apiKey)
       expect(apiKey).not.toBeInstanceOf(ApiKey)
       expect(result).toBeInstanceOf(ApiKey)
@@ -214,7 +214,7 @@ describe('ApiKeyService', () => {
       apiKeyRepository.findFirst.mockResolvedValueOnce(null)
 
       apiKeyService
-        .findApiKeyById(apiKey.id)
+        .getById(apiKey.id)
         .then(() => new Error('Should not reach this point'))
         .catch((error) => {
           expect(error).toBeInstanceOf(NotFoundException)

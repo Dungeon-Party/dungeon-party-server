@@ -145,7 +145,7 @@ describe('AuthService', () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
 
       userService.findUserById.mockResolvedValueOnce(user)
-      apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyService.getValid.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(true)
       const response = await authService.validateApiKey(apiKey.key)
       expect(response).toEqual(user)
@@ -154,7 +154,7 @@ describe('AuthService', () => {
     it('should throw an error when the API key is invalid', async () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
 
-      apiKeyService.findValidApiKey.mockResolvedValueOnce(apiKey)
+      apiKeyService.getValid.mockResolvedValueOnce(apiKey)
       jest.spyOn(argon2, 'verify').mockResolvedValueOnce(false)
       expect(authService.validateApiKey(apiKey.key)).rejects.toThrow(
         UnauthorizedException,

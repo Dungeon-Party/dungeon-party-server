@@ -99,7 +99,7 @@ export class AuthService {
 
   async validateApiKey(key: string): Promise<User> {
     return this.apiKeyService
-      .findValidApiKey(key)
+      .getValid(key)
       .then(async (apiKey: ApiKey) => {
         const apiKeyToVerify = apiKey.key.split('.')[1]
         if (await argon2.verify(apiKeyToVerify, key.split('.')[1])) {

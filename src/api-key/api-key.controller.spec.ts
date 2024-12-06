@@ -89,7 +89,7 @@ describe('ApiKeyController', () => {
   describe('delete', () => {
     it('should return the result of apiKeyService delete method', () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
-      apiKeyService.deleteApiKey.mockResolvedValue(apiKey)
+      apiKeyService.delete.mockResolvedValue(apiKey)
       expect(
         apiKeyController.delete(apiKey.id, apiKey.userId),
       ).resolves.toEqual(apiKey)
@@ -98,34 +98,34 @@ describe('ApiKeyController', () => {
     it('should call apiKeyService delete method with the correct arguments', async () => {
       const apiKey = MockFactory<ApiKey>(ApiKey).one()
       await apiKeyController.delete(apiKey.id, apiKey.userId)
-      expect(apiKeyService.deleteApiKey).toHaveBeenCalledWith(
+      expect(apiKeyService.delete).toHaveBeenCalledWith(
         apiKey.id,
         apiKey.userId,
       )
     })
   })
 
-  describe('getAllApiKeys', () => {
-    it('should call apiKeyService.getAllApiKeys with empty params to retrieve all API Keys if the authenticated user is an Admin', () => {
+  describe('getAll', () => {
+    it('should call apiKeyService.getAll with empty params to retrieve all API Keys if the authenticated user is an Admin', () => {
       const apiKeys = MockFactory<ApiKey>(ApiKey).many(5)
       const user = MockFactory<User>(User)
         .mutate({ role: UserRole.ADMIN })
         .one()
-      apiKeyService.getAllApiKeys.mockResolvedValue(apiKeys)
+      apiKeyService.getAll.mockResolvedValue(apiKeys)
       expect(
-        apiKeyController.getAllApiKeys(user, {} as GetApiKeyParamsDto),
+        apiKeyController.getAll(user, {} as GetApiKeyParamsDto),
       ).resolves.toEqual(apiKeys)
-      expect(apiKeyService.getAllApiKeys).toHaveBeenCalledWith({})
+      expect(apiKeyService.getAll).toHaveBeenCalledWith({})
     })
 
-    it('should call apiKeyService.getAllApiKeys with the uer id to retrieve API Keys if the authenticated user is not an Admin', () => {
+    it('should call apiKeyService.getAll with the uer id to retrieve API Keys if the authenticated user is not an Admin', () => {
       const apiKeys = MockFactory<ApiKey>(ApiKey).many(5)
       const user = MockFactory<User>(User).mutate({ role: UserRole.USER }).one()
-      apiKeyService.getAllApiKeys.mockResolvedValue(apiKeys)
+      apiKeyService.getAll.mockResolvedValue(apiKeys)
       expect(
-        apiKeyController.getAllApiKeys(user, {} as GetApiKeyParamsDto),
+        apiKeyController.getAll(user, {} as GetApiKeyParamsDto),
       ).resolves.toEqual(apiKeys)
-      expect(apiKeyService.getAllApiKeys).toHaveBeenCalledWith({
+      expect(apiKeyService.getAll).toHaveBeenCalledWith({
         userId: user.id,
       })
     })

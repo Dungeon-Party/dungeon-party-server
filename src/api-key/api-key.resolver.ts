@@ -45,13 +45,13 @@ export class ApiKeyResolver {
     const params: Prisma.ApiKeyWhereInput =
       user.role === UserRole.ADMIN ? query : { userId: user.id }
 
-    return this.apiKeyService.getAllApiKeys(params).then((apiKeys) => {
+    return this.apiKeyService.getAll(params).then((apiKeys) => {
       return apiKeys.map((apiKey) => new ApiKey(apiKey))
     })
   }
 
   @Mutation(() => ApiKey, { name: 'deleteApiKey' })
   async deleteApiKey(@GetUser() user, @Args('id') id: number): Promise<ApiKey> {
-    return this.apiKeyService.deleteApiKey(user.id, id)
+    return this.apiKeyService.delete(user.id, id)
   }
 }

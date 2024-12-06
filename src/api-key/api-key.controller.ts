@@ -103,7 +103,7 @@ export class ApiKeyController {
   })
   @ApiBearerAuth()
   @Get()
-  getAllApiKeys(@GetUser() user: User, @Query() query: GetApiKeyParamsDto) {
+  async getAll(@GetUser() user: User, @Query() query: GetApiKeyParamsDto) {
     if (user.role !== UserRole.ADMIN) {
       if (query.userId && query.userId !== user.id) {
         throw new ForbiddenException(
@@ -113,7 +113,7 @@ export class ApiKeyController {
       query = { ...query, userId: user.id }
     }
 
-    return this.apiKeyService.getAllApiKeys(query)
+    return this.apiKeyService.getAll(query)
   }
 
   @ApiOkResponse({ type: ApiKey, description: 'API Key deleted successfully' })
@@ -123,7 +123,10 @@ export class ApiKeyController {
   })
   @ApiBearerAuth()
   @Delete(':id')
-  delete(@Param('id') apiKeyId: number, @GetUser('id') userId: User['id']) {
-    return this.apiKeyService.deleteApiKey(apiKeyId, userId)
+  async delete(
+    @Param('id') apiKeyId: number,
+    @GetUser('id') userId: User['id'],
+  ) {
+    return this.apiKeyService.delete(apiKeyId, userId)
   }
 }
