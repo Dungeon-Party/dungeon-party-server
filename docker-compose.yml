@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   api:
     container_name: api
@@ -20,7 +19,7 @@ services:
     ports:
       - ${HTTP_PORT}:${HTTP_PORT}
     command: > 
-      sh -cx "npx pm2 start yarn --interpreter bash --name api --watch false -- start:debug
+      sh -cx "npx pm2 start yarn --interpreter bash --name api --watch true -- start:debug
       && npx pm2 start yarn --interpreter bash --name prisma -- db:studio
       && npx pm2 logs"
   postgres:
